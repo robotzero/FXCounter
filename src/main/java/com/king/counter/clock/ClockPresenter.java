@@ -3,6 +3,9 @@ package com.king.counter.clock;
 import com.googlecode.totallylazy.collections.PersistentMap;
 import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
+import com.king.counter.domain.AnimationMetadata;
+import com.sun.org.apache.regexp.internal.RE;
+import javafx.animation.Animation;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -22,8 +25,10 @@ import org.reactfx.Subscription;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntBinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.googlecode.totallylazy.collections.PersistentMap.constructors.map;
@@ -45,6 +50,8 @@ public class ClockPresenter implements Initializable {
     @FXML
     Group group;
 
+    private final List<AnimationMetadata> animationMetadatas = new ArrayList<>();
+
     @Inject
     private SceneConfiguration sceneConfiguration;
 
@@ -57,14 +64,16 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         this.populateSeconds();
+
         EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
         buttonClicks.subscribe(click -> {
-            animator.animate(this.group);
+            animator.animate(this.animationMetadatas);
             this.subscribe  = ticks.subscribe((something) -> {
-                    animator.animate(this.group);
+                    List<AnimationMetadata> l = this.group.getChildren().stream().map(n -> new AnimationMetadata((Rectangle) n)).collect(Collectors.toList());
+                    animator.animate(l);
                 }
             );
         });
@@ -85,13 +94,12 @@ public class ClockPresenter implements Initializable {
             rectangle.setStroke(Color.BLACK);
             rectangle.setTranslateY(cellsize * i);
 
+            AnimationMetadata animationMetadata = new AnimationMetadata(rectangle);
+            animationMetadatas.add(animationMetadata);
+
             return rectangle;
-        }).map(s -> s).forEach(group.getChildren()::add);
+        }).map(r -> r).forEach(group.getChildren()::add);
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
-    }
-
-    private void setCorrectSizes(Pane gridPane) {
-        System.out.println(gridPane.getScene());
     }
 }

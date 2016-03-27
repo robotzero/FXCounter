@@ -1,25 +1,25 @@
 package com.king.counter.domain;
 
 public enum Direction {
-    UP(0, 0), DOWN(0, 0), LEFT(0, 0), RIGHT(0, 0), SWITCHUP(0, 0), SWITCHDOWN(0, 0), STARTUP(0, 0), STARTDOWN(0, 0);
+    UP(0, -60), DOWN(0, 60), SWITCHUP(0, -60), SWITCHDOWN(0, 60), STARTUP(0, -60), STARTDOWN(0, 60);
 
-    private final int x;
+    private final int xOffset;
 
-    private final int y;
+    private final int yOffset;
 
-    Direction(int x, int y)
+    Direction(int xOffset, int yOffset)
     {
-        this.x = x;
-        this.y = y;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
-    public int getX()
+    public int getxOffset()
     {
-        return this.x;
+        return this.xOffset;
     }
 
-    public int getY()
+    public int getyOffset()
     {
-        return this.y;
+        return this.yOffset;
     }
 }

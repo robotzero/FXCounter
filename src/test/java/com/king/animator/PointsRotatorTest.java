@@ -109,7 +109,6 @@ public class PointsRotatorTest
     @UseDataProvider("hashMapAndTickProvider")
     public void testFullRotation(int tick, Map hash1, Map hash2, Map hash3, Map hash4) {
 
-        PointsRotator rotator = new PointsRotator();
 
         List<Point2D> from = new LinkedList<>();
         from.add(new Point2D(0, 60));

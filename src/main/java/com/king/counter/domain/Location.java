@@ -13,7 +13,7 @@ public class Location {
 
     public Location move(Direction direction)
     {
-        Point2D point = new Point2D(this.point.getX() + direction.getX(), this.point.getY() + direction.getY());
+        Point2D point = new Point2D(this.point.getX() + direction.getxOffset(), this.point.getY() + direction.getyOffset());
         return new Location(point);
     }
 }
