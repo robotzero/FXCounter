@@ -10,11 +10,11 @@ import java.util.List;
 
 public class Animator {
 
-    public void animate(List<AnimationMetadata> l) {
+    public void animate(List<AnimationMetadata> l, double delta) {
         l.stream().map(ll -> {
             TranslateTransition t = new TranslateTransition(Duration.millis(600), ll.getRectangle());
-            t.setFromY(ll.getFrom().getY());
-            t.setToY(ll.getTo().getY());
+            t.setFromY(ll.getFrom(delta).getY());
+            t.setToY(ll.getTo(delta).getY());
             t.setInterpolator(Interpolator.EASE_IN);
             return t;
         }).forEach(Animation::play);
