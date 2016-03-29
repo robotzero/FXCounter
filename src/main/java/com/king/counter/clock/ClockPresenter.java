@@ -3,40 +3,34 @@ package com.king.counter.clock;
 import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
 import com.king.counter.domain.AnimationMetadata;
-import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.event.EventHandler;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Window;
-import org.reactfx.*;
-import org.reactfx.value.Val;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
+import org.reactfx.Subscription;
 
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -87,12 +81,7 @@ public class ClockPresenter implements Initializable {
         this.populateSeconds();
 
         delta.addListener((observable, oldValue, newValue) -> {
-//            if (oldValue && !newValue) {
-                first = true;
-//            }
-//            if (!oldValue && newValue) {
-              //  first = true;
-//            }
+            first = true;
         });
 
         EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
@@ -129,7 +118,6 @@ public class ClockPresenter implements Initializable {
                 t.setText(clock.get() + "");
             });
             animator.animate(l, scrollEvent.getDeltaY());
-            first = false;
         });
 
         buttonClicks.subscribe(click -> {
