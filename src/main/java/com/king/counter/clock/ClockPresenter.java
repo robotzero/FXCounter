@@ -118,6 +118,7 @@ public class ClockPresenter implements Initializable {
                 t.setText(clock.get() + "");
             });
             animator.animate(l, scrollEvent.getDeltaY());
+            first = false;
         });
 
         buttonClicks.subscribe(click -> {
