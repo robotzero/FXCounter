@@ -44,8 +44,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.lang.Thread.sleep;
-
 public class ClockPresenter implements Initializable {
 
     private final static int cellsize = 60;
@@ -78,24 +76,23 @@ public class ClockPresenter implements Initializable {
     private IntegerProperty clock = new SimpleIntegerProperty();
     private LocalTime time;
 
-
-    private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault());
     private List<Node> labels;
     private LocalTime userTime;
     private boolean first = true;
     private BooleanProperty delta = new SimpleBooleanProperty(true);
-    private BooleanProperty consumable = new SimpleBooleanProperty(true);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         this.populateSeconds();
 
-        clock.set(time.getSecond());
         delta.addListener((observable, oldValue, newValue) -> {
-           if (oldValue && !newValue) {
-               first = true;
-           }
+//            if (oldValue && !newValue) {
+                first = true;
+//            }
+//            if (!oldValue && newValue) {
+              //  first = true;
+//            }
         });
 
         EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
@@ -104,21 +101,24 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
         scroll.subscribe(scrollEvent -> {
-            int compare;
+            final int compare;
             animator.setRunning();
             delta.set(scrollEvent.getDeltaY() < 0);
             if (delta.get()) {
+                userTime = userTime.minusSeconds(1);
                 if (first) {
-                    userTime = userTime.minusSeconds(2);
-                    time = userTime;
+                    time = userTime.minusSeconds(1);
                 } else {
-                    userTime = userTime.minusSeconds(2);
                     time = time.minusSeconds(1);
                 }
                 compare = 0;
             } else {
                 userTime = userTime.plusSeconds(1);
-                time = userTime;
+                if (first) {
+                    time = userTime.plusSeconds(1);
+                } else {
+                    time = time.plusSeconds(1);
+                }
                 compare = 240;
             }
             clock.set(time.getSecond());
@@ -133,7 +133,8 @@ public class ClockPresenter implements Initializable {
         });
 
         buttonClicks.subscribe(click -> {
-            time = time.minusSeconds(4);
+            userTime = userTime.minusSeconds(1);
+            time = userTime.minusSeconds(1);
             clock.set(time.getSecond());
 
             this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
@@ -144,7 +145,8 @@ public class ClockPresenter implements Initializable {
 
             animator.animate(this.animationMetadatas, 0);
             this.subscribe  = ticks.subscribe((something) -> {
-                    time = time.minusSeconds(1);
+                    userTime = userTime.minusSeconds(1);
+                    time = userTime.minusSeconds(1);
                     clock.set(time.getSecond());
                     List<AnimationMetadata> l = this.rectangles.stream().map(r -> new AnimationMetadata((Rectangle) r)).collect(Collectors.toList());
                     this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
@@ -167,7 +169,7 @@ public class ClockPresenter implements Initializable {
     private void populateSeconds() {
         Random random = new Random();
         userTime = LocalTime.of(0, 12, 12);
-        time = userTime.plusSeconds(2);
+
         IntStream.range(0, blockCount).mapToObj(i -> {
             Rectangle rectangle = new Rectangle(cellsize, 0, cellsize, cellsize);
             rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
@@ -178,7 +180,7 @@ public class ClockPresenter implements Initializable {
             AnimationMetadata animationMetadata = new AnimationMetadata(rectangle);
             animationMetadatas.add(animationMetadata);
 
-            Text t = new Text(time.getSecond() - i + "");
+            Text t = new Text(userTime.getSecond() - i + 2 + "");
             t.setFont(Font.font(20));
 
             t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
