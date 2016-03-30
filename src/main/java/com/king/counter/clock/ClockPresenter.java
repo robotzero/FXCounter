@@ -23,9 +23,11 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import org.reactfx.EventSource;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
+import org.reactfx.util.Tuple2;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -55,6 +57,12 @@ public class ClockPresenter implements Initializable {
     @FXML
     Group group;
 
+    @FXML
+    Group minutesgroup;
+
+    @FXML
+    Pane minutes;
+
     private final List<AnimationMetadata> animationMetadatas = new ArrayList<>();
 
     @Inject
@@ -73,6 +81,7 @@ public class ClockPresenter implements Initializable {
     private List<Node> labels;
     private LocalTime userTime;
     private boolean first = true;
+
     private BooleanProperty delta = new SimpleBooleanProperty(true);
 
     @Override
@@ -80,13 +89,15 @@ public class ClockPresenter implements Initializable {
 
         this.populateSeconds();
 
+
         delta.addListener((observable, oldValue, newValue) -> {
             first = true;
         });
 
         EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
-        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
+        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isSecondsRunning());
+        EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isMinutesRunning());
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
         scroll.subscribe(scrollEvent -> {
@@ -193,4 +204,42 @@ public class ClockPresenter implements Initializable {
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
     }
+
+    public void populateMinutes() {
+        Random random = new Random();
+        userTime = LocalTime.of(0, 12, 12);
+
+        IntStream.range(0, blockCount).mapToObj(i -> {
+            Rectangle rectangle = new Rectangle(cellsize, 0, cellsize, cellsize);
+            rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
+            rectangle.setStrokeType(StrokeType.INSIDE);
+            rectangle.setStroke(Color.BLACK);
+            rectangle.setTranslateY(cellsize * i);
+
+            AnimationMetadata animationMetadata = new AnimationMetadata(rectangle);
+            animationMetadatas.add(animationMetadata);
+
+            Text t = new Text(userTime.getMinute() - i + 2 + "");
+            t.setFont(Font.font(20));
+
+            t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
+
+            t.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
+            t.setTextAlignment(TextAlignment.CENTER);
+            t.setTextOrigin(VPos.CENTER);
+
+            List<Node> array = new ArrayList<>();
+            array.add(rectangle);
+            array.add(t);
+            String id = (random.nextInt(100) + "");
+            t.setId(id);
+            rectangle.setId(id);
+            return array;
+
+        }).map(arr -> arr).forEach(a -> group.getChildren().addAll(a));
+
+        this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
+        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
+    }
+
 }

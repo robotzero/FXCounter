@@ -24,6 +24,11 @@
             <Group id="group" fx:id="group" />
          </children>
       </Pane>
+       <Pane id="minutes" fx:id="minutes" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+           <children>
+               <Group id="minutesgroup" fx:id="minutesgroup" />
+           </children>
+       </Pane>
       <Button id="start" fx:id="start" mnemonicParsing="false" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
       <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
    </children>
