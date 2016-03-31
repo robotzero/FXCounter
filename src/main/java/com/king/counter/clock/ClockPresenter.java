@@ -4,6 +4,7 @@ import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
 import com.king.counter.domain.AnimationMetadata;
 import com.king.counter.service.Populator;
+import com.king.counter.service.Scroller;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -66,17 +67,20 @@ public class ClockPresenter implements Initializable {
     @Inject
     private Populator populator;
 
+    @Inject
+    private Scroller scroller;
+
     private Subscription subscribe;
 
     private List<Node> rectangles;
     private List<Node> minutesRectangles;
 
     private IntegerProperty clock = new SimpleIntegerProperty();
-    private LocalTime time;
+    public static LocalTime time;
 
     private List<Node> labels;
     private List<Node> minuteslabels;
-    private LocalTime userTime;
+    public static LocalTime userTime;
     private boolean first = true;
 
     private BooleanProperty delta = new SimpleBooleanProperty(true);
@@ -84,9 +88,9 @@ public class ClockPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        userTime = LocalTime.of(0, 12, 12);
+        userTime = LocalTime.of(0, 16, 12);
         this.animationMetadatas = populator.populateSeconds(userTime, group, "seconds");
-        this.minutesAnimationMetadatas = populator.populateSeconds(userTime, group, "minutes");
+        this.minutesAnimationMetadatas = populator.populateSeconds(userTime, minutesgroup, "minutes");
         this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.minutesRectangles = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
@@ -103,38 +107,15 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
         EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isMinutesRunning());
+
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
         scroll.subscribe(scrollEvent -> {
-            final int compare;
-            animator.setRunning();
-            delta.set(scrollEvent.getDeltaY() < 0);
-            if (delta.get()) {
-                userTime = userTime.minusSeconds(1);
-                if (first) {
-                    time = userTime.minusSeconds(1);
-                } else {
-                    time = time.minusSeconds(1);
-                }
-                compare = 0;
-            } else {
-                userTime = userTime.plusSeconds(1);
-                if (first) {
-                    time = userTime.plusSeconds(1);
-                } else {
-                    time = time.plusSeconds(1);
-                }
-                compare = 240;
-            }
-            clock.set(time.getSecond());
-            List<AnimationMetadata> l = this.rectangles.stream().map(n -> new AnimationMetadata((Rectangle) n)).collect(Collectors.toList());
-            this.rectangles.stream().filter(r -> r.getTranslateY() == compare).forEach(r -> {
-                String id = r.getId();
-                Text t = (Text) this.labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-                t.setText(clock.get() + "");
-            });
-            animator.animate(l, scrollEvent.getDeltaY());
-            first = false;
+            scroller.scroll(this.rectangles, this.labels, scrollEvent.getDeltaY());
+        });
+
+        minutesscroll.subscribe(scrollEvent -> {
+            scroller.scroll(this.minutesRectangles, this.minuteslabels, scrollEvent.getDeltaY());
         });
 
         buttonClicks.subscribe(click -> {

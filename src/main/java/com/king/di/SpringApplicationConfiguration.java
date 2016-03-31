@@ -4,11 +4,14 @@ import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
 import com.king.counter.clock.ClockPresenter;
 import com.king.counter.service.Populator;
+import com.king.counter.service.Scroller;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SpringApplicationConfiguration {
+
+    private Animator animator = new Animator();
 
     @Bean
     public ClockPresenter clockPresenter() {
@@ -22,11 +25,16 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Animator animator() {
-        return new Animator();
+        return animator;
     }
 
     @Bean
     public Populator populator() {
         return new Populator();
+    }
+
+    @Bean
+    public Scroller scroller() {
+        return new Scroller(animator);
     }
 }
