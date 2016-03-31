@@ -16,6 +16,7 @@ public class Animator {
     private TranslateTransition currentTransition;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     private BooleanProperty isMinutesRunning = new SimpleBooleanProperty(false);
+    private String currentLabel;
 
     public void animate(List<AnimationMetadata> l, double delta) {
         l.stream().map(ll -> {
@@ -29,11 +30,16 @@ public class Animator {
             t.setToY(ll.getTo(delta).getY());
             t.setInterpolator(Interpolator.EASE_IN);
             currentTransition = t;
+            currentLabel = ll.getRectangle().getId();
             return t;
         }).forEach(Animation::play);
 
         currentTransition.setOnFinished(event -> {
-            isRunning.set(false);
+            if (currentLabel.contains("seconds")) {
+                isRunning.set(false);
+            } else {
+                isMinutesRunning.set(false);
+            }
         });
     }
 

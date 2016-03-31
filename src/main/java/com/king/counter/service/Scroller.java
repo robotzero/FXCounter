@@ -31,7 +31,11 @@ public class Scroller {
 
     public void scroll(final List<Node> rectangles, final List<Node> labels, double deltaY) {
         final int compare;
-        animator.setRunning();
+        if (rectangles.get(0).getId().contains("seconds")) {
+            animator.setRunning();
+        } else {
+            animator.setMinutesRunning();
+        }
         delta.set(deltaY < 0);
         if (delta.get()) {
             ClockPresenter.userTime = ClockPresenter.userTime.minusSeconds(1);
