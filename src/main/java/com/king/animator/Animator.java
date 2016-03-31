@@ -6,6 +6,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -14,10 +15,15 @@ public class Animator {
 
     private TranslateTransition currentTransition;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    private BooleanProperty isMinutesRunning = new SimpleBooleanProperty(false);
 
     public void animate(List<AnimationMetadata> l, double delta) {
         l.stream().map(ll -> {
-            isRunning.set(true);
+            if (ll.getRectangle().getId().contains("seconds")) {
+                isRunning.set(true);
+            } else {
+                isMinutesRunning.set(true);
+            }
             TranslateTransition t = new TranslateTransition(Duration.millis(600), ll.getRectangle());
             t.setFromY(ll.getFrom(delta).getY());
             t.setToY(ll.getTo(delta).getY());
@@ -37,5 +43,12 @@ public class Animator {
 
     public void setRunning() {
         isRunning.set(true);
+    }
+
+    public void setMinutesRunning() {
+        isMinutesRunning.set(true);
+    }
+    public BooleanProperty isMinutesRunning() {
+        return isMinutesRunning;
     }
 }

@@ -3,13 +3,13 @@ package com.king.counter.clock;
 import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
 import com.king.counter.domain.AnimationMetadata;
+import com.king.counter.service.Populator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -17,33 +17,24 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import org.reactfx.EventSource;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
-import org.reactfx.util.Tuple2;
 
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
 
-    private final static int cellsize = 60;
-    private final static int blockCount = 4;
+    public final static int cellsize = 60;
+    public final static int blockCount = 4;
 
     @FXML
     GridPane gridPane;
@@ -63,7 +54,8 @@ public class ClockPresenter implements Initializable {
     @FXML
     Pane minutes;
 
-    private final List<AnimationMetadata> animationMetadatas = new ArrayList<>();
+    private List<AnimationMetadata> animationMetadatas;
+    private List<AnimationMetadata> minutesAnimationMetadatas;
 
     @Inject
     private SceneConfiguration sceneConfiguration;
@@ -71,14 +63,19 @@ public class ClockPresenter implements Initializable {
     @Inject
     private Animator animator;
 
+    @Inject
+    private Populator populator;
+
     private Subscription subscribe;
 
     private List<Node> rectangles;
+    private List<Node> minutesRectangles;
 
     private IntegerProperty clock = new SimpleIntegerProperty();
     private LocalTime time;
 
     private List<Node> labels;
+    private List<Node> minuteslabels;
     private LocalTime userTime;
     private boolean first = true;
 
@@ -87,8 +84,16 @@ public class ClockPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        this.populateSeconds();
+        userTime = LocalTime.of(0, 12, 12);
+        this.animationMetadatas = populator.populateSeconds(userTime, group, "seconds");
+        this.minutesAnimationMetadatas = populator.populateSeconds(userTime, group, "minutes");
+        this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
+        this.minutesRectangles = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
+        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
+        this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).collect(Collectors.toList());
 
+        seconds.setStyle("-fx-background-color: #FFFFFF;");
+        minutes.setStyle("-fx-background-color: #FFFFFF;");
 
         delta.addListener((observable, oldValue, newValue) -> {
             first = true;
@@ -96,7 +101,7 @@ public class ClockPresenter implements Initializable {
 
         EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
-        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isSecondsRunning());
+        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
         EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isMinutesRunning());
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
@@ -165,81 +170,4 @@ public class ClockPresenter implements Initializable {
             this.subscribe.unsubscribe();
         });
     }
-
-    private void populateSeconds() {
-        Random random = new Random();
-        userTime = LocalTime.of(0, 12, 12);
-
-        IntStream.range(0, blockCount).mapToObj(i -> {
-            Rectangle rectangle = new Rectangle(cellsize, 0, cellsize, cellsize);
-            rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
-            rectangle.setStrokeType(StrokeType.INSIDE);
-            rectangle.setStroke(Color.BLACK);
-            rectangle.setTranslateY(cellsize * i);
-
-            AnimationMetadata animationMetadata = new AnimationMetadata(rectangle);
-            animationMetadatas.add(animationMetadata);
-
-            Text t = new Text(userTime.getSecond() - i + 2 + "");
-            t.setFont(Font.font(20));
-
-            t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
-
-            t.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
-            t.setTextAlignment(TextAlignment.CENTER);
-            t.setTextOrigin(VPos.CENTER);
-
-            List<Node> array = new ArrayList<>();
-            array.add(rectangle);
-            array.add(t);
-            String id = (random.nextInt(100) + "");
-            t.setId(id);
-            rectangle.setId(id);
-            return array;
-
-        }).map(arr -> arr).forEach(a -> group.getChildren().addAll(a));
-
-        this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
-        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
-
-        seconds.setStyle("-fx-background-color: #FFFFFF;");
-    }
-
-    public void populateMinutes() {
-        Random random = new Random();
-        userTime = LocalTime.of(0, 12, 12);
-
-        IntStream.range(0, blockCount).mapToObj(i -> {
-            Rectangle rectangle = new Rectangle(cellsize, 0, cellsize, cellsize);
-            rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
-            rectangle.setStrokeType(StrokeType.INSIDE);
-            rectangle.setStroke(Color.BLACK);
-            rectangle.setTranslateY(cellsize * i);
-
-            AnimationMetadata animationMetadata = new AnimationMetadata(rectangle);
-            animationMetadatas.add(animationMetadata);
-
-            Text t = new Text(userTime.getMinute() - i + 2 + "");
-            t.setFont(Font.font(20));
-
-            t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
-
-            t.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
-            t.setTextAlignment(TextAlignment.CENTER);
-            t.setTextOrigin(VPos.CENTER);
-
-            List<Node> array = new ArrayList<>();
-            array.add(rectangle);
-            array.add(t);
-            String id = (random.nextInt(100) + "");
-            t.setId(id);
-            rectangle.setId(id);
-            return array;
-
-        }).map(arr -> arr).forEach(a -> group.getChildren().addAll(a));
-
-        this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
-        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
-    }
-
 }
