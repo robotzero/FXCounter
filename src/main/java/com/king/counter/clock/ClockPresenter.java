@@ -77,6 +77,8 @@ public class ClockPresenter implements Initializable {
 
     private IntegerProperty clock = new SimpleIntegerProperty();
     public static LocalTime userTime;
+    public static LocalTime userTimeMinutes;
+    public static LocalTime userTimeSeconds;
     public static LocalTime time;
     public static LocalTime minutesTime;
 
@@ -90,6 +92,8 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         userTime = LocalTime.of(0, 16, 12);
+        userTimeMinutes = LocalTime.of(0, 16, 12);;
+        userTimeSeconds = LocalTime.of(0, 16, 12);;
         this.animationMetadatas = populator.populateSeconds(userTime, group, "seconds");
         this.minutesAnimationMetadatas = populator.populateSeconds(userTime, minutesgroup, "minutes");
         this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());

@@ -18,6 +18,8 @@ public class Scroller {
 
     private final Animator animator;
     private BooleanProperty delta = new SimpleBooleanProperty(true);
+    private BooleanProperty label = new SimpleBooleanProperty(true);
+
     private boolean first = true;
     private IntegerProperty seconds = new SimpleIntegerProperty();
     private IntegerProperty minutes = new SimpleIntegerProperty();
@@ -28,11 +30,16 @@ public class Scroller {
         delta.addListener((observable, oldValue, newValue) -> {
             first = true;
         });
+
+        label.addListener((observable, oldValue, newValue) -> {
+            first = true;
+        });
     }
 
     public void scroll(final List<Node> rectangles, final List<Node> labels, double deltaY) {
         final int compare;
         final boolean label = rectangles.get(0).getId().contains("seconds");
+        this.label.set(label);
         if (label) {
             animator.setRunning();
         } else {
@@ -40,16 +47,17 @@ public class Scroller {
         }
         delta.set(deltaY < 0);
         if (delta.get()) {
+
             if (label) {
-                ClockPresenter.userTime = ClockPresenter.userTime.minusSeconds(1);
+                ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.minusSeconds(1);
             } else {
-                ClockPresenter.userTime = ClockPresenter.userTime.minusMinutes(1);
+                ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.minusMinutes(1);
             }
             if (first) {
                 if (label) {
-                    ClockPresenter.time = ClockPresenter.userTime.minusSeconds(1);
+                    ClockPresenter.time = ClockPresenter.userTimeSeconds.minusSeconds(1);
                 } else {
-                    ClockPresenter.minutesTime = ClockPresenter.userTime.minusMinutes(1);
+                    ClockPresenter.minutesTime = ClockPresenter.userTimeMinutes.minusMinutes(1);
                 }
             } else {
                 if (label) {
@@ -61,15 +69,15 @@ public class Scroller {
             compare = 0;
         } else {
             if (label) {
-                ClockPresenter.userTime = ClockPresenter.userTime.plusSeconds(1);
+                ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.plusSeconds(1);
             } else {
-                ClockPresenter.userTime = ClockPresenter.userTime.plusMinutes(1);
+                ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.plusMinutes(1);
             }
             if (first) {
                 if (label) {
-                    ClockPresenter.time = ClockPresenter.userTime.plusSeconds(1);
+                    ClockPresenter.time = ClockPresenter.userTimeSeconds.plusSeconds(1);
                 } else {
-                    ClockPresenter.minutesTime = ClockPresenter.userTime.plusMinutes(1);
+                    ClockPresenter.minutesTime = ClockPresenter.userTimeMinutes.plusMinutes(1);
                 }
             } else {
                 if (label) {
