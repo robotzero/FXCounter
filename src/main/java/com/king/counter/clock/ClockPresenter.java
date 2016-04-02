@@ -110,10 +110,9 @@ public class ClockPresenter implements Initializable {
 
         EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
-        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
         EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isMinutesRunning());
-
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
+        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
 
         scroll.subscribe(scrollEvent -> {
             scroller.scroll(this.rectangles, this.labels, scrollEvent.getDeltaY());
@@ -124,6 +123,8 @@ public class ClockPresenter implements Initializable {
         });
 
         buttonClicks.subscribe(click -> {
+            animator.setRunning(true);
+            animator.setMinutesRunning(true);
             userTime = userTime.minusSeconds(1);
             time = userTime.minusSeconds(1);
             clock.set(time.getSecond());
@@ -136,8 +137,19 @@ public class ClockPresenter implements Initializable {
 
             animator.animate(this.animationMetadatas, 0);
             this.subscribe  = ticks.subscribe((something) -> {
+                    animator.setRunning(true);
+                    animator.setMinutesRunning(true);
                     userTime = userTime.minusSeconds(1);
                     time = userTime.minusSeconds(1);
+                    if (userTime.getSecond() == 0) {
+                        List<AnimationMetadata> l = this.minutesRectangles.stream().map(r -> new AnimationMetadata((Rectangle) r)).collect(Collectors.toList());
+                        this.minutesRectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
+                            String id = r.getId();
+                            Text t = (Text) this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
+                            t.setText(userTime.getMinute() - 2 + "");
+                        });
+                        animator.animate(l, 0);
+                    }
                     clock.set(time.getSecond());
                     List<AnimationMetadata> l = this.rectangles.stream().map(r -> new AnimationMetadata((Rectangle) r)).collect(Collectors.toList());
                     this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
@@ -152,7 +164,8 @@ public class ClockPresenter implements Initializable {
         });
 
         stopClicks.subscribe(click -> {
-            System.out.println("UNSUBSCRIBED");
+            this.animator.setMinutesRunning(false);
+            this.animator.setRunning(false);
             this.subscribe.unsubscribe();
         });
     }

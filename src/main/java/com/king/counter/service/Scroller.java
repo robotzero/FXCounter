@@ -41,9 +41,9 @@ public class Scroller {
         final boolean label = rectangles.get(0).getId().contains("seconds");
         this.label.set(label);
         if (label) {
-            animator.setRunning();
+            animator.setRunning(true);
         } else {
-            animator.setMinutesRunning();
+            animator.setMinutesRunning(true);
         }
         delta.set(deltaY < 0);
         if (delta.get()) {

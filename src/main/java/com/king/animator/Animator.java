@@ -47,12 +47,12 @@ public class Animator {
         return isRunning;
     }
 
-    public void setRunning() {
-        isRunning.set(true);
+    public void setRunning(boolean running) {
+        isRunning.set(running);
     }
 
-    public void setMinutesRunning() {
-        isMinutesRunning.set(true);
+    public void setMinutesRunning(boolean running) {
+        isMinutesRunning.set(running);
     }
     public BooleanProperty isMinutesRunning() {
         return isMinutesRunning;
