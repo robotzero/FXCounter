@@ -76,11 +76,12 @@ public class ClockPresenter implements Initializable {
     private List<Node> minutesRectangles;
 
     private IntegerProperty clock = new SimpleIntegerProperty();
+    public static LocalTime userTime;
     public static LocalTime time;
+    public static LocalTime minutesTime;
 
     private List<Node> labels;
     private List<Node> minuteslabels;
-    public static LocalTime userTime;
     private boolean first = true;
 
     private BooleanProperty delta = new SimpleBooleanProperty(true);
