@@ -29,7 +29,7 @@ public class InMemoryCachedServiceLocator implements ServiceLocator {
 
             AnimationMetadata metadata = new AnimationMetadata((Rectangle) reference);
             objectReferences.add(metadata);
-            return new AnimationMetadata((Rectangle) reference);
+            return metadata;
         }
 
         throw new ServiceConfigurationError("Class does not exists.");
