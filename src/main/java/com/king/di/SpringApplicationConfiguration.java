@@ -2,9 +2,11 @@ package com.king.di;
 
 import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
+import com.king.counter.cache.InMemoryCachedServiceLocator;
 import com.king.counter.clock.ClockPresenter;
 import com.king.counter.service.Populator;
 import com.king.counter.service.Scroller;
+import com.king.counter.cache.InMemoryCachedServiceLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,5 +38,10 @@ public class SpringApplicationConfiguration {
     @Bean
     public Scroller scroller() {
         return new Scroller(animator);
+    }
+
+    @Bean
+    public InMemoryCachedServiceLocator serviceLocator() {
+        return new InMemoryCachedServiceLocator();
     }
 }

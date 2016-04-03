@@ -2,6 +2,7 @@ package com.king.counter.clock;
 
 import com.king.animator.Animator;
 import com.king.configuration.SceneConfiguration;
+import com.king.counter.cache.InMemoryCachedServiceLocator;
 import com.king.counter.domain.AnimationMetadata;
 import com.king.counter.service.Populator;
 import com.king.counter.service.Scroller;
@@ -69,6 +70,9 @@ public class ClockPresenter implements Initializable {
 
     @Inject
     private Scroller scroller;
+
+    @Inject
+    private InMemoryCachedServiceLocator locator;
 
     private Subscription subscribe;
 
@@ -142,7 +146,10 @@ public class ClockPresenter implements Initializable {
                     userTime = userTime.minusSeconds(1);
                     time = userTime.minusSeconds(1);
                     if (userTime.getSecond() == 0) {
-                        List<AnimationMetadata> l = this.minutesRectangles.stream().map(r -> new AnimationMetadata((Rectangle) r)).collect(Collectors.toList());
+                        List<AnimationMetadata> l = this.minutesRectangles.stream()
+                                                        .map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r))
+                                                        .collect(Collectors.toList());
+
                         this.minutesRectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
                             String id = r.getId();
                             Text t = (Text) this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
@@ -151,7 +158,11 @@ public class ClockPresenter implements Initializable {
                         animator.animate(l, 0);
                     }
                     clock.set(time.getSecond());
-                    List<AnimationMetadata> l = this.rectangles.stream().map(r -> new AnimationMetadata((Rectangle) r)).collect(Collectors.toList());
+
+                    List<AnimationMetadata> l = this.rectangles.stream()
+                        .map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r))
+                        .collect(Collectors.toList());
+
                     this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
                         String id = r.getId();
                         Text t = (Text) this.labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
