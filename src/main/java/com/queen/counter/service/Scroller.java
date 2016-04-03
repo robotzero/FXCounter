@@ -1,8 +1,8 @@
-package com.king.counter.service;
+package com.queen.counter.service;
 
-import com.king.animator.Animator;
-import com.king.counter.clock.ClockPresenter;
-import com.king.counter.domain.AnimationMetadata;
+import com.queen.animator.Animator;
+import com.queen.counter.clock.ClockPresenter;
+import com.queen.counter.domain.AnimationMetadata;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;

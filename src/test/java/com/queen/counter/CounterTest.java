@@ -1,8 +1,6 @@
-package com.king.counter;
+package com.queen.counter;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class CounterTest {
 

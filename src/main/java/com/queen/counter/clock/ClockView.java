@@ -1,4 +1,4 @@
-package com.king.counter.clock;
+package com.queen.counter.clock;
 
 import com.airhacks.afterburner.views.FXMLView;
 

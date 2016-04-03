@@ -1,9 +1,6 @@
-package com.king.counter.cache;
+package com.queen.counter.cache;
 
-import com.googlecode.totallylazy.Sets;
-import com.googlecode.totallylazy.collections.PersistentSet;
-import com.googlecode.totallylazy.collections.PersistentSortedSet;
-import com.king.counter.domain.AnimationMetadata;
+import com.queen.counter.domain.AnimationMetadata;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Optional;

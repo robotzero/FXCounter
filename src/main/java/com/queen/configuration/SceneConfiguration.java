@@ -1,4 +1,4 @@
-package com.king.configuration;
+package com.queen.configuration;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

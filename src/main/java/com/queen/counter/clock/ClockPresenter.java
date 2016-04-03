@@ -1,11 +1,11 @@
-package com.king.counter.clock;
+package com.queen.counter.clock;
 
-import com.king.animator.Animator;
-import com.king.configuration.SceneConfiguration;
-import com.king.counter.cache.InMemoryCachedServiceLocator;
-import com.king.counter.domain.AnimationMetadata;
-import com.king.counter.service.Populator;
-import com.king.counter.service.Scroller;
+import com.queen.animator.Animator;
+import com.queen.configuration.SceneConfiguration;
+import com.queen.counter.cache.InMemoryCachedServiceLocator;
+import com.queen.counter.domain.AnimationMetadata;
+import com.queen.counter.service.Populator;
+import com.queen.counter.service.Scroller;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;

@@ -1,4 +1,4 @@
-package com.king.counter.domain;
+package com.queen.counter.domain;
 
 import javafx.geometry.Point2D;
 

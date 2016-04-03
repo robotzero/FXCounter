@@ -1,9 +1,9 @@
-package com.king.counter;
+package com.queen.counter;
 
 import com.airhacks.afterburner.injection.Injector;
-import com.king.configuration.SceneConfiguration;
-import com.king.counter.clock.ClockView;
-import com.king.di.SpringApplicationConfiguration;
+import com.queen.configuration.SceneConfiguration;
+import com.queen.counter.clock.ClockView;
+import com.queen.di.SpringApplicationConfiguration;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

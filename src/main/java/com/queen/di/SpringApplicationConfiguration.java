@@ -1,12 +1,11 @@
-package com.king.di;
+package com.queen.di;
 
-import com.king.animator.Animator;
-import com.king.configuration.SceneConfiguration;
-import com.king.counter.cache.InMemoryCachedServiceLocator;
-import com.king.counter.clock.ClockPresenter;
-import com.king.counter.service.Populator;
-import com.king.counter.service.Scroller;
-import com.king.counter.cache.InMemoryCachedServiceLocator;
+import com.queen.animator.Animator;
+import com.queen.configuration.SceneConfiguration;
+import com.queen.counter.cache.InMemoryCachedServiceLocator;
+import com.queen.counter.clock.ClockPresenter;
+import com.queen.counter.service.Populator;
+import com.queen.counter.service.Scroller;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

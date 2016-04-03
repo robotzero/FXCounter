@@ -1,7 +1,7 @@
-package com.king.counter.service;
+package com.queen.counter.service;
 
-import com.king.counter.clock.ClockPresenter;
-import com.king.counter.domain.AnimationMetadata;
+import com.queen.counter.clock.ClockPresenter;
+import com.queen.counter.domain.AnimationMetadata;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;

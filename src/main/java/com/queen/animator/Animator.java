@@ -1,12 +1,11 @@
-package com.king.animator;
+package com.queen.animator;
 
-import com.king.counter.domain.AnimationMetadata;
+import com.queen.counter.domain.AnimationMetadata;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.util.Duration;
 
 import java.util.List;

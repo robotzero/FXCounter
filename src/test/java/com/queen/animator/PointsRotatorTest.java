@@ -1,4 +1,4 @@
-package com.king.animator;
+package com.queen.animator;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
