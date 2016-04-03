@@ -47,7 +47,6 @@ public class Scroller {
         }
         delta.set(deltaY < 0);
         if (delta.get()) {
-
             if (label) {
                 ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.minusSeconds(1);
             } else {
@@ -95,15 +94,14 @@ public class Scroller {
         }
 
         List<AnimationMetadata> l = rectangles.stream().map(n -> new AnimationMetadata((Rectangle) n)).collect(Collectors.toList());
-        rectangles.stream().filter(r -> r.getTranslateY() == compare).forEach(r -> {
-            String id = r.getId();
-            Text t = (Text) labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-            if (label) {
-                t.setText(seconds.get() + "");
-            } else {
-                t.setText(minutes.get() + "");
-            }
-        });
+        String id = rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny().get().getId();
+        Text t = (Text) labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
+        if (label) {
+           t.setText(seconds.get() + "");
+        } else {
+           t.setText(minutes.get() + "");
+        }
+
         animator.animate(l, deltaY);
         first = false;
     }
