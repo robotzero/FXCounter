@@ -1,5 +1,6 @@
 package com.queen.animator;
 
+import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.AnimationMetadata;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -17,14 +18,15 @@ public class Animator {
     private BooleanProperty isMinutesRunning = new SimpleBooleanProperty(false);
     private String currentLabel;
 
-    public void animate(List<AnimationMetadata> l, double delta) {
+    public void animate(List<AnimationMetadata> l, double delta, InMemoryCachedServiceLocator cache) {
         l.stream().map(ll -> {
             if (ll.getRectangle().getId().contains("seconds")) {
                 isRunning.set(true);
             } else {
                 isMinutesRunning.set(true);
             }
-            TranslateTransition t = new TranslateTransition(Duration.millis(600), ll.getRectangle());
+            TranslateTransition t = (TranslateTransition) cache.get(TranslateTransition.class, ll.getRectangle());
+            //TranslateTransition t = new TranslateTransition(Duration.millis(600), ll.getRectangle());
             t.setFromY(ll.getFrom(delta).getY());
             t.setToY(ll.getTo(delta).getY());
             t.setInterpolator(Interpolator.EASE_IN);

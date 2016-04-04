@@ -1,6 +1,7 @@
 package com.queen.counter.service;
 
 import com.queen.animator.Animator;
+import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.domain.AnimationMetadata;
 import javafx.beans.property.BooleanProperty;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class Scroller {
 
     private final Animator animator;
+    private final InMemoryCachedServiceLocator cache;
     private BooleanProperty delta = new SimpleBooleanProperty(true);
     private BooleanProperty label = new SimpleBooleanProperty(true);
 
@@ -24,8 +26,9 @@ public class Scroller {
     private IntegerProperty seconds = new SimpleIntegerProperty();
     private IntegerProperty minutes = new SimpleIntegerProperty();
 
-    public Scroller(final Animator animator) {
+    public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache) {
         this.animator = animator;
+        this.cache = cache;
 
         delta.addListener((observable, oldValue, newValue) -> {
             first = true;
@@ -102,7 +105,7 @@ public class Scroller {
            t.setText(minutes.get() + "");
         }
 
-        animator.animate(l, deltaY);
+        animator.animate(l, deltaY, cache);
         first = false;
     }
 }

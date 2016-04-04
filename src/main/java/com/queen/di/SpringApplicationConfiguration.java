@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SpringApplicationConfiguration {
 
     private Animator animator = new Animator();
+    private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
 
     @Bean
     public ClockPresenter clockPresenter() {
@@ -36,11 +37,11 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Scroller scroller() {
-        return new Scroller(animator);
+        return new Scroller(animator, cache);
     }
 
     @Bean
     public InMemoryCachedServiceLocator serviceLocator() {
-        return new InMemoryCachedServiceLocator();
+        return cache;
     }
 }

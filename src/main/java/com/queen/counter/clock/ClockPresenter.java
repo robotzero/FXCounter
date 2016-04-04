@@ -139,7 +139,7 @@ public class ClockPresenter implements Initializable {
                 t.setText(clock.get() + "");
             });
 
-            animator.animate(this.animationMetadatas, 0);
+            animator.animate(this.animationMetadatas, 0, locator);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
@@ -155,7 +155,7 @@ public class ClockPresenter implements Initializable {
                             Text t = (Text) this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
                             t.setText(userTime.getMinute() - 2 + "");
                         });
-                        animator.animate(l, 0);
+                        animator.animate(l, 0, locator);
                     }
                     clock.set(time.getSecond());
 
@@ -168,7 +168,7 @@ public class ClockPresenter implements Initializable {
                         Text t = (Text) this.labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
                         t.setText(clock.get() + "");
                     });
-                    animator.animate(l, 0);
+                    animator.animate(l, 0, locator);
                 }
             );
 
