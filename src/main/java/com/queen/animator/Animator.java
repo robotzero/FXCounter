@@ -16,6 +16,7 @@ public class Animator {
     private TranslateTransition currentTransition;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     private BooleanProperty isMinutesRunning = new SimpleBooleanProperty(false);
+    private BooleanProperty ticking = new SimpleBooleanProperty(false);
     private String currentLabel;
 
     public void animate(List<AnimationMetadata> l, double delta, InMemoryCachedServiceLocator cache) {
@@ -26,7 +27,6 @@ public class Animator {
                 isMinutesRunning.set(true);
             }
             TranslateTransition t = (TranslateTransition) cache.get(TranslateTransition.class, ll.getRectangle());
-            //TranslateTransition t = new TranslateTransition(Duration.millis(600), ll.getRectangle());
             t.setFromY(ll.getFrom(delta).getY());
             t.setToY(ll.getTo(delta).getY());
             t.setInterpolator(Interpolator.EASE_IN);
@@ -36,10 +36,12 @@ public class Animator {
         }).forEach(Animation::play);
 
         currentTransition.setOnFinished(event -> {
-            if (currentLabel.contains("seconds")) {
-                isRunning.set(false);
-            } else {
-                isMinutesRunning.set(false);
+            if (!ticking.get()) {
+                if (currentLabel.contains("seconds")) {
+                    isRunning.set(false);
+                } else {
+                    isMinutesRunning.set(false);
+                }
             }
         });
     }
@@ -57,5 +59,9 @@ public class Animator {
     }
     public BooleanProperty isMinutesRunning() {
         return isMinutesRunning;
+    }
+
+    public void setTicking(boolean ticking) {
+        this.ticking.set(ticking);
     }
 }

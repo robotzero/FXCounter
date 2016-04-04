@@ -95,8 +95,9 @@ public class Scroller {
         } else {
             minutes.set(ClockPresenter.minutesTime.getMinute());
         }
+        
+        List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
-        List<AnimationMetadata> l = rectangles.stream().map(n -> new AnimationMetadata((Rectangle) n)).collect(Collectors.toList());
         String id = rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny().get().getId();
         Text t = (Text) labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
         if (label) {

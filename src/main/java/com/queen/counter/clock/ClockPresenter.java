@@ -129,6 +129,7 @@ public class ClockPresenter implements Initializable {
         buttonClicks.subscribe(click -> {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
+            animator.setTicking(true);
             userTime = userTime.minusSeconds(1);
             time = userTime.minusSeconds(1);
             clock.set(time.getSecond());
@@ -143,6 +144,7 @@ public class ClockPresenter implements Initializable {
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
+                    animator.setTicking(true);
                     userTime = userTime.minusSeconds(1);
                     time = userTime.minusSeconds(1);
                     if (userTime.getSecond() == 0) {
