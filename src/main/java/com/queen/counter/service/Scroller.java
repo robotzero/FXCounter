@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Scroller {
@@ -95,15 +96,24 @@ public class Scroller {
         } else {
             minutes.set(ClockPresenter.minutesTime.getMinute());
         }
-        
+
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
-        String id = rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny().get().getId();
-        Text t = (Text) labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-        if (label) {
-           t.setText(seconds.get() + "");
-        } else {
-           t.setText(minutes.get() + "");
+        System.out.println("compare" + compare);
+        rectangles.stream().map(r -> {
+            System.out.println(r.getTranslateY());
+            return r;
+        }).count();
+        
+        Optional op = rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny();
+        if (op.isPresent()) {
+            String id = ((Rectangle) op.get()).getId();
+            Text t = (Text) labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
+            if (label) {
+                t.setText(seconds.get() + "");
+            } else {
+                t.setText(minutes.get() + "");
+            }
         }
 
         animator.animate(l, deltaY, cache);
