@@ -171,6 +171,8 @@ public class ClockPresenter implements Initializable {
                         t.setText(clock.get() + "");
                     });
                     animator.animate(l, 0, locator);
+//                    ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getSecond());
+//                    ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.withSecond(ClockPresenter.userTime.getMinute());
                 }
             );
 
@@ -178,9 +180,12 @@ public class ClockPresenter implements Initializable {
 
         stopClicks.subscribe(click -> {
             ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getSecond());
-            ClockPresenter.userTimeMinutes = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getMinute());
+            ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.withSecond(ClockPresenter.userTime.getMinute());
+
+            scroller.setFirst();
             this.animator.setMinutesRunning(false);
             this.animator.setRunning(false);
+            this.animator.setTicking(false);
             this.subscribe.unsubscribe();
         });
     }

@@ -97,8 +97,7 @@ public class Scroller {
             minutes.set(ClockPresenter.minutesTime.getMinute());
         }
 
-        ClockPresenter.userTime = ClockPresenter.userTime.withSecond(ClockPresenter.userTimeSeconds.getSecond());
-        ClockPresenter.userTime = ClockPresenter.userTime.withMinute(ClockPresenter.userTimeMinutes.getMinute());
+        ClockPresenter.userTime = ClockPresenter.userTime.withSecond(ClockPresenter.userTimeSeconds.getSecond()).withMinute(ClockPresenter.userTimeMinutes.getMinute());
 
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
@@ -115,5 +114,9 @@ public class Scroller {
 
         animator.animate(l, deltaY, cache);
         first = false;
+    }
+
+    public void setFirst() {
+        first = true;
     }
 }
