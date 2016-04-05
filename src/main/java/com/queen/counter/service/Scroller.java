@@ -97,14 +97,11 @@ public class Scroller {
             minutes.set(ClockPresenter.minutesTime.getMinute());
         }
 
+        ClockPresenter.userTime = ClockPresenter.userTime.withSecond(ClockPresenter.userTimeSeconds.getSecond());
+        ClockPresenter.userTime = ClockPresenter.userTime.withMinute(ClockPresenter.userTimeMinutes.getMinute());
+
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
-        System.out.println("compare" + compare);
-        rectangles.stream().map(r -> {
-            System.out.println(r.getTranslateY());
-            return r;
-        }).count();
-        
         Optional op = rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny();
         if (op.isPresent()) {
             String id = ((Rectangle) op.get()).getId();
