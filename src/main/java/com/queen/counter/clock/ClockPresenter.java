@@ -177,6 +177,8 @@ public class ClockPresenter implements Initializable {
         });
 
         stopClicks.subscribe(click -> {
+            ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getSecond());
+            ClockPresenter.userTimeMinutes = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getMinute());
             this.animator.setMinutesRunning(false);
             this.animator.setRunning(false);
             this.subscribe.unsubscribe();
