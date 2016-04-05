@@ -112,8 +112,8 @@ public class ClockPresenter implements Initializable {
             first = true;
         });
 
-        EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
-        EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
+        EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressible().suppressWhen(animator.isTicking());
+        EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressible().suspendWhen(animator.isTicking().not());
         EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isMinutesRunning());
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
@@ -157,6 +157,7 @@ public class ClockPresenter implements Initializable {
                             Text t = (Text) this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
                             t.setText(userTime.getMinute() - 2 + "");
                         });
+                        userTimeMinutes = userTime.minusMinutes(1);
                         animator.animate(l, 0, locator);
                     }
                     clock.set(time.getSecond());
@@ -171,8 +172,6 @@ public class ClockPresenter implements Initializable {
                         t.setText(clock.get() + "");
                     });
                     animator.animate(l, 0, locator);
-//                    ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getSecond());
-//                    ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.withSecond(ClockPresenter.userTime.getMinute());
                 }
             );
 
@@ -181,7 +180,7 @@ public class ClockPresenter implements Initializable {
         stopClicks.subscribe(click -> {
             ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getSecond());
             ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.withSecond(ClockPresenter.userTime.getMinute());
-
+            
             scroller.setFirst();
             this.animator.setMinutesRunning(false);
             this.animator.setRunning(false);

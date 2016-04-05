@@ -64,4 +64,8 @@ public class Animator {
     public void setTicking(boolean ticking) {
         this.ticking.set(ticking);
     }
+
+    public BooleanProperty isTicking() {
+        return this.ticking;
+    }
 }
