@@ -1,7 +1,6 @@
 package com.queen.counter.service;
 
 import com.queen.counter.clock.ClockPresenter;
-import com.queen.counter.domain.AnimationMetadata;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -20,8 +19,7 @@ import java.util.stream.IntStream;
 
 public class Populator {
 
-    public List<AnimationMetadata> populateSeconds(LocalTime userTime, Group group, String label) {
-         List<AnimationMetadata> animationMetadatas = new ArrayList<>();
+    public void populateSeconds(LocalTime userTime, Group group, String label) {
          Random random = new Random();
 
          IntStream.range(0, ClockPresenter.blockCount).mapToObj(i -> {
@@ -30,9 +28,6 @@ public class Populator {
          rectangle.setStrokeType(StrokeType.INSIDE);
          rectangle.setStroke(Color.BLACK);
          rectangle.setTranslateY(ClockPresenter.cellsize * i);
-
-         AnimationMetadata animationMetadata = new AnimationMetadata(rectangle);
-         animationMetadatas.add(animationMetadata);
 
          Text t;
 
@@ -58,7 +53,5 @@ public class Populator {
          rectangle.setId(id);
          return array;
          }).map(arr -> arr).forEach(a -> group.getChildren().addAll(a));
-
-         return animationMetadatas;
     }
 }

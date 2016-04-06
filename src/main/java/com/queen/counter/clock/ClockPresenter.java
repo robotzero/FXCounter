@@ -21,9 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
-import org.reactfx.Subscription;
+import org.reactfx.*;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -32,6 +30,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
 
@@ -55,9 +54,6 @@ public class ClockPresenter implements Initializable {
 
     @FXML
     Pane minutes;
-
-    private List<AnimationMetadata> animationMetadatas;
-    private List<AnimationMetadata> minutesAnimationMetadatas;
 
     @Inject
     private SceneConfiguration sceneConfiguration;
@@ -98,8 +94,8 @@ public class ClockPresenter implements Initializable {
         userTime = LocalTime.of(0, 16, 12);
         userTimeMinutes = LocalTime.of(0, 16, 12);;
         userTimeSeconds = LocalTime.of(0, 16, 12);;
-        this.animationMetadatas = populator.populateSeconds(userTime, group, "seconds");
-        this.minutesAnimationMetadatas = populator.populateSeconds(userTime, minutesgroup, "minutes");
+        populator.populateSeconds(userTime, group, "seconds");
+        populator.populateSeconds(userTime, minutesgroup, "minutes");
         this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.minutesRectangles = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
@@ -112,11 +108,11 @@ public class ClockPresenter implements Initializable {
             first = true;
         });
 
-        EventStream<MouseEvent>buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressible().suppressWhen(animator.isTicking());
-        EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressible().suspendWhen(animator.isTicking().not());
-        EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isMinutesRunning());
+        EventStream<MouseEvent> buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking());
+        EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking().not());
+        EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressWhen(animator.isMinutesRunning());
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
-        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressible().suspendWhen(animator.isRunning());
+        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking()));
 
         scroll.subscribe(scrollEvent -> {
             scroller.scroll(this.rectangles, this.labels, scrollEvent.getDeltaY());
@@ -140,7 +136,8 @@ public class ClockPresenter implements Initializable {
                 t.setText(clock.get() + "");
             });
 
-            animator.animate(this.animationMetadatas, 0, locator);
+            List<AnimationMetadata> l1 = this.rectangles.stream().map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r)).collect(Collectors.toList());
+            animator.animate(l1, 0, locator);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
