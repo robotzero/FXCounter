@@ -6,6 +6,7 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
+import com.queen.counter.service.Ticker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,6 +39,11 @@ public class SpringApplicationConfiguration {
     @Bean
     public Scroller scroller() {
         return new Scroller(animator, cache);
+    }
+
+    @Bean
+    public Ticker ticker() {
+        return new Ticker(animator, cache);
     }
 
     @Bean

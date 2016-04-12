@@ -30,7 +30,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
 
@@ -131,9 +130,7 @@ public class ClockPresenter implements Initializable {
             clock.set(time.getSecond());
 
             this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
-                String id = r.getId();
-                Text t = (Text) this.labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-                t.setText(clock.get() + "");
+                this.labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(l -> l.setText(clock.get() + ""));
             });
 
             List<AnimationMetadata> l1 = this.rectangles.stream().map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r)).collect(Collectors.toList());
@@ -150,9 +147,7 @@ public class ClockPresenter implements Initializable {
                                                         .collect(Collectors.toList());
 
                         this.minutesRectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
-                            String id = r.getId();
-                            Text t = (Text) this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-                            t.setText(userTime.getMinute() - 2 + "");
+                            this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> lbl.setText(userTime.getMinute() -  2 + ""));
                         });
                         userTimeMinutes = userTime.minusMinutes(1);
                         animator.animate(l, 0, locator);
@@ -164,9 +159,7 @@ public class ClockPresenter implements Initializable {
                         .collect(Collectors.toList());
 
                     this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
-                        String id = r.getId();
-                        Text t = (Text) this.labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-                        t.setText(clock.get() + "");
+                        this.labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> lbl.setText(clock.get() + ""));
                     });
                     animator.animate(l, 0, locator);
                 }

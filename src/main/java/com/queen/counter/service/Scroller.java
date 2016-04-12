@@ -100,8 +100,7 @@ public class Scroller {
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
         rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny().ifPresent(r -> {
-            String id = r.getId();
-            labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().ifPresent(lbl -> {
+            labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> {
                 if (label) {
                     lbl.setText(seconds.get() + "");
                 } else {
