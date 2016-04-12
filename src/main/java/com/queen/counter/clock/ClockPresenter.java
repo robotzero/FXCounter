@@ -82,8 +82,8 @@ public class ClockPresenter implements Initializable {
     public static LocalTime time;
     public static LocalTime minutesTime;
 
-    private List<Node> labels;
-    private List<Node> minuteslabels;
+    private List<Text> labels;
+    private List<Text> minuteslabels;
     private boolean first = true;
 
     private BooleanProperty delta = new SimpleBooleanProperty(true);
@@ -98,8 +98,8 @@ public class ClockPresenter implements Initializable {
         populator.populateSeconds(userTime, minutesgroup, "minutes");
         this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.minutesRectangles = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
-        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).collect(Collectors.toList());
-        this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).collect(Collectors.toList());
+        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
+        this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
         minutes.setStyle("-fx-background-color: #FFFFFF;");

@@ -9,11 +9,9 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Scroller {
@@ -40,7 +38,7 @@ public class Scroller {
         });
     }
 
-    public void scroll(final List<Node> rectangles, final List<Node> labels, double deltaY) {
+    public void scroll(final List<Node> rectangles, final List<Text> labels, double deltaY) {
         final int compare;
         final boolean label = rectangles.get(0).getId().contains("seconds");
         this.label.set(label);
@@ -101,16 +99,16 @@ public class Scroller {
 
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
-        Optional op = rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny();
-        if (op.isPresent()) {
-            String id = ((Rectangle) op.get()).getId();
-            Text t = (Text) labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().get();
-            if (label) {
-                t.setText(seconds.get() + "");
-            } else {
-                t.setText(minutes.get() + "");
-            }
-        }
+        rectangles.stream().filter(r -> r.getTranslateY() == compare).findAny().ifPresent(r -> {
+            String id = r.getId();
+            labels.stream().filter(lbl -> lbl.getId().equals(id)).findFirst().ifPresent(lbl -> {
+                if (label) {
+                    lbl.setText(seconds.get() + "");
+                } else {
+                    lbl.setText(minutes.get() + "");
+                }
+            });
+        });
 
         animator.animate(l, deltaY, cache);
         first = false;
