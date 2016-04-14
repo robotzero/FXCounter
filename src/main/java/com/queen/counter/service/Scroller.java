@@ -11,7 +11,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
 
+import java.time.LocalTime;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Scroller {
@@ -24,6 +26,7 @@ public class Scroller {
     private boolean first = true;
     private IntegerProperty seconds = new SimpleIntegerProperty();
     private IntegerProperty minutes = new SimpleIntegerProperty();
+    private LocalTime mainClock = LocalTime.of(0, 12, 12);
 
     public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache) {
         this.animator = animator;
@@ -49,6 +52,7 @@ public class Scroller {
         }
         delta.set(deltaY < 0);
         if (delta.get()) {
+            mainClock = clockTick(mainClock, clock -> clock.minusSeconds(1));
             if (label) {
                 ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.minusSeconds(1);
             } else {
@@ -69,6 +73,7 @@ public class Scroller {
             }
             compare = 0;
         } else {
+            mainClock = clockTick(mainClock, clock -> clock.plusSeconds(1));
             if (label) {
                 ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.plusSeconds(1);
             } else {
@@ -94,7 +99,7 @@ public class Scroller {
         } else {
             minutes.set(ClockPresenter.minutesTime.getMinute());
         }
-
+        System.out.println(mainClock);
         ClockPresenter.userTime = ClockPresenter.userTime.withSecond(ClockPresenter.userTimeSeconds.getSecond()).withMinute(ClockPresenter.userTimeMinutes.getMinute());
 
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
@@ -103,6 +108,8 @@ public class Scroller {
             labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> {
                 if (label) {
                     lbl.setText(seconds.get() + "");
+                    System.out.println(seconds.get());
+                    System.out.println(mainClock.minusSeconds(2));
                 } else {
                     lbl.setText(minutes.get() + "");
                 }
@@ -111,6 +118,10 @@ public class Scroller {
 
         animator.animate(l, deltaY, cache);
         first = false;
+    }
+
+    private LocalTime clockTick(LocalTime current, Function<LocalTime, LocalTime> tick) {
+        return tick.apply(current);
     }
 
     public void setFirst() {
