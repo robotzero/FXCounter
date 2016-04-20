@@ -15,8 +15,11 @@ import org.reactfx.*;
 import java.time.LocalTime;
 import java.util.List;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static javafx.scene.input.KeyCode.T;
 
 public class Scroller {
 
@@ -36,32 +39,57 @@ public class Scroller {
         this.animator = animator;
         this.cache = cache;
 
-
         EventStream lab = EventStreams.changesOf(label);
         EventStream del = EventStreams.changesOf(delta);
 
-        EventStreams.combine(lab, foundNode).map(change -> {
-            return 3;
-        }).feedTo(offset);
-        EventStreams.changesOf(delta).or(lab).map(change -> {
+//        SuspendableEventStream ehlo = EventStreams.changesOf(delta).suppressible();
+//
+//        foundNode.suspenderOf(ehlo).map(change -> {
+//            System.out.println("BLAH");
+//            return 3;
+//        }).feedTo(offset);
+//
+//        ehlo.map(change -> {
+//            System.out.println("BLAH2");
+//            return 2;
+//        }).feedTo(offset);
+
+        EventStream cc = EventStreams.combine(del, foundNode);
+
+        EventStream<?> combined = StateMachine.init(false)
+             .on(cc).transition((wasMuted, i) -> true)
+             .on(del).emit((muted, t) -> Optional.of(2))
+             .toEventStream();
+
+        combined.map(change -> {
             return 2;
         }).feedTo(offset);
-         EventStreams.combine(del, foundNode).map(change -> {
+
+        cc.map(change -> {
             return 3;
         }).feedTo(offset);
+//        EventStreams.combine(lab, foundNode).map(change -> {
+//            System.out.println("1. one");
+//            return 3;
+//        }).feedTo(offset);
+//        EventStreams.changesOf(delta).or(lab).map(change -> {
+//            System.out.println("2. two");
+//            return 2;
+//        }).feedTo(offset);
+
     }
+
 
     public void scroll(final List<Node> rectangles, final List<Text> labels, double deltaY) {
 
         final int found = deltaY > 0 ? 0 : 240;
         final int compare = deltaY < 0 ? 0 : 240;
-        delta.set(deltaY < 0);
-
-        this.label.set(rectangles.get(0).getId().contains("seconds"));
         rectangles.stream().filter(r -> r.getTranslateY() == found).findAny().ifPresent(r -> foundNode.push(true));
+        delta.set(deltaY < 0);
+        this.label.set(rectangles.get(0).getId().contains("seconds"));
 
         int offsetNumber = offset.getValue();
-
+        System.out.println(offsetNumber);
         if (label.get()) {
             animator.setRunning(true);
         } else {
