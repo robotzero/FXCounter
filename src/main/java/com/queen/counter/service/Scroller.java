@@ -55,6 +55,7 @@ public class Scroller {
 
     public void scroll(final List<Node> rectangles, final List<Text> labels, double deltaY) {
 
+        int normalizedDelta = (int) deltaY / (int) Math.abs(deltaY);
         final int found = deltaY > 0 ? 0 : 240;
         final int compare = deltaY < 0 ? 0 : 240;
         rectangles.stream().filter(r -> r.getTranslateY() == found).findAny().ifPresent(r -> f.set(true));
@@ -62,32 +63,24 @@ public class Scroller {
 
         this.label.set(rectangles.get(0).getId().contains("seconds"));
         int offsetNumber = offset.getValue();
-        
+
         if (label.get()) {
             animator.setRunning(true);
         } else {
             animator.setMinutesRunning(true);
         }
 
-        if (delta.get()) {
-            if (label.get()) {
-                ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.minusSeconds(1);
-
-            } else {
-                ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.minusMinutes(1);
-            }
-        } else {
-            if (label.get()) {
-                ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.plusSeconds(1);
-            } else {
-                ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.plusMinutes(1);
-            }
-        }
         if (label.get()) {
-            LocalTime l = LocalTime.of(23, 12, ClockPresenter.userTimeSeconds.plusSeconds(offsetNumber *  (int) deltaY/ (int) Math.abs(deltaY)).getSecond());
+            ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.plusSeconds(normalizedDelta);
+        } else {
+            ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.plusMinutes(normalizedDelta);
+        }
+
+        if (label.get()) {
+            LocalTime l = LocalTime.of(23, 12, ClockPresenter.userTimeSeconds.plusSeconds(offsetNumber *  normalizedDelta).getSecond());
             seconds.set(l.getSecond());
         } else {
-            LocalTime l = LocalTime.of(23, ClockPresenter.userTimeMinutes.plusMinutes(offsetNumber *  (int) deltaY/ (int) Math.abs(deltaY)).getMinute(), 59);
+            LocalTime l = LocalTime.of(23, ClockPresenter.userTimeMinutes.plusMinutes(offsetNumber *  normalizedDelta).getMinute(), 59);
             minutes.set(l.getMinute());
         }
 
