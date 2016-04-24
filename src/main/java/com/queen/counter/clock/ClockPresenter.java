@@ -6,9 +6,7 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.AnimationMetadata;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,7 +19,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import org.reactfx.*;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
+import org.reactfx.Subscription;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -79,13 +79,9 @@ public class ClockPresenter implements Initializable {
     public static LocalTime userTimeMinutes;
     public static LocalTime userTimeSeconds;
     public static LocalTime time;
-    public static LocalTime minutesTime;
 
     private List<Text> labels;
     private List<Text> minuteslabels;
-    private boolean first = true;
-
-    private BooleanProperty delta = new SimpleBooleanProperty(true);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -102,10 +98,6 @@ public class ClockPresenter implements Initializable {
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
         minutes.setStyle("-fx-background-color: #FFFFFF;");
-
-        delta.addListener((observable, oldValue, newValue) -> {
-            first = true;
-        });
 
         EventStream<MouseEvent> buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking());
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking().not());
