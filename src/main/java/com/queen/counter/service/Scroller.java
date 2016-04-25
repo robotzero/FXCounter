@@ -30,6 +30,9 @@ public class Scroller {
     private IntegerProperty offset = new SimpleIntegerProperty(1);
     private IntegerProperty seconds = new SimpleIntegerProperty();
     private IntegerProperty minutes = new SimpleIntegerProperty();
+    private LocalTime userTimeSeconds = LocalTime.of(0, 0, 0);
+    private LocalTime userTimeMinutes = LocalTime.of(0, 0, 0);
+
 
     public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache) {
         this.animator = animator;
@@ -71,20 +74,20 @@ public class Scroller {
         }
 
         if (label.get()) {
-            ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.plusSeconds(normalizedDelta);
+            userTimeSeconds = userTimeSeconds.plusSeconds(normalizedDelta);
         } else {
-            ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.plusMinutes(normalizedDelta);
+            userTimeMinutes = userTimeMinutes.plusMinutes(normalizedDelta);
         }
 
         if (label.get()) {
-            LocalTime l = LocalTime.of(23, 12, ClockPresenter.userTimeSeconds.plusSeconds(offsetNumber *  normalizedDelta).getSecond());
+            LocalTime l = LocalTime.of(23, 12, userTimeSeconds.plusSeconds(offsetNumber *  normalizedDelta).getSecond());
             seconds.set(l.getSecond());
         } else {
-            LocalTime l = LocalTime.of(23, ClockPresenter.userTimeMinutes.plusMinutes(offsetNumber *  normalizedDelta).getMinute(), 59);
+            LocalTime l = LocalTime.of(23, userTimeMinutes.plusMinutes(offsetNumber *  normalizedDelta).getMinute(), 59);
             minutes.set(l.getMinute());
         }
 
-        ClockPresenter.userTime = ClockPresenter.userTime.withSecond(ClockPresenter.userTimeSeconds.getSecond()).withMinute(ClockPresenter.userTimeMinutes.getMinute());
+        ClockPresenter.userTime = ClockPresenter.userTime.withSecond(userTimeSeconds.getSecond()).withMinute(userTimeMinutes.getMinute());
 
         List<AnimationMetadata> l = rectangles.stream().map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
 
@@ -101,6 +104,14 @@ public class Scroller {
         animator.animate(l, deltaY, cache);
         offset.set(1);
         f.set(false);
+    }
+
+    public void setUserTimeSeconds(int second) {
+        this.userTimeSeconds = userTimeSeconds.withSecond(second);
+    }
+
+    public void setUserTimeMinutes(int minute) {
+        this.userTimeMinutes = userTimeMinutes.withMinute(minute);
     }
 
     private LocalTime clockTick(LocalTime current, Function<LocalTime, LocalTime> tick) {

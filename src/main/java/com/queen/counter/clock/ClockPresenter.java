@@ -76,8 +76,7 @@ public class ClockPresenter implements Initializable {
 
     private IntegerProperty clock = new SimpleIntegerProperty();
     public static LocalTime userTime;
-    public static LocalTime userTimeMinutes;
-    public static LocalTime userTimeSeconds;
+
     public static LocalTime time;
 
     private List<Text> labels;
@@ -87,8 +86,9 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         userTime = LocalTime.of(0, 16, 12);
-        userTimeMinutes = LocalTime.of(0, 16, 12);;
-        userTimeSeconds = LocalTime.of(0, 16, 12);;
+        this.scroller.setUserTimeSeconds(userTime.getSecond());
+        this.scroller.setUserTimeMinutes(userTime.getMinute());
+
         populator.populateSeconds(userTime, group, "seconds");
         populator.populateSeconds(userTime, minutesgroup, "minutes");
         this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class ClockPresenter implements Initializable {
                         this.minutesRectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
                             this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> lbl.setText(userTime.getMinute() -  2 + ""));
                         });
-                        userTimeMinutes = userTime.minusMinutes(1);
+                        this.scroller.setUserTimeMinutes(userTime.minusMinutes(1).getMinute());
                         animator.animate(l, 0, locator);
                     }
                     clock.set(time.getSecond());
@@ -160,9 +160,8 @@ public class ClockPresenter implements Initializable {
         });
 
         stopClicks.subscribe(click -> {
-            ClockPresenter.userTimeSeconds = ClockPresenter.userTimeSeconds.withSecond(ClockPresenter.userTime.getSecond());
-            ClockPresenter.userTimeMinutes = ClockPresenter.userTimeMinutes.withSecond(ClockPresenter.userTime.getMinute());
-
+            this.scroller.setUserTimeSeconds(userTime.getSecond());
+            this.scroller.setUserTimeMinutes(userTime.getMinute());
             this.animator.setMinutesRunning(false);
             this.animator.setRunning(false);
             this.animator.setTicking(false);
