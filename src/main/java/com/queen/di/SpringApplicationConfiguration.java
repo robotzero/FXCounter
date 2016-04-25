@@ -4,6 +4,7 @@ import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
+import com.queen.counter.domain.Clocks;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import com.queen.counter.service.Ticker;
@@ -15,6 +16,7 @@ public class SpringApplicationConfiguration {
 
     private Animator animator = new Animator();
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
+    private Clocks clocks = new Clocks();
 
     @Bean
     public ClockPresenter clockPresenter() {
@@ -38,7 +40,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Scroller scroller() {
-        return new Scroller(animator, cache);
+        return new Scroller(animator, cache, clocks);
     }
 
     @Bean
@@ -49,5 +51,10 @@ public class SpringApplicationConfiguration {
     @Bean
     public InMemoryCachedServiceLocator serviceLocator() {
         return cache;
+    }
+
+    @Bean
+    public Clocks clocks() {
+        return clocks;
     }
 }
