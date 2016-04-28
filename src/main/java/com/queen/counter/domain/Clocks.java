@@ -25,6 +25,24 @@ public class Clocks {
         this.scrollSecondsClock = LocalTime.of(HR, MIN, mainClock.getSecond());
     }
 
+    public LocalTime setScrollSecondsClock(int seconds) {
+        this.scrollSecondsClock = scrollSecondsClock.plusSeconds(seconds);
+        this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond());
+        return this.scrollSecondsClock;
+    }
+
+    public LocalTime setScrollMinutesClock(int minutes) {
+        this.scrollMinutesClock = scrollMinutesClock.plusMinutes(minutes);
+        this.mainClock = mainClock.withMinute(scrollMinutesClock.getMinute());
+        return this.scrollMinutesClock;
+    }
+
+    public LocalTime setScrollHoursClock(int hours) {
+        this.scrollHoursClock = scrollHoursClock.plusHours(hours);
+        this.mainClock = mainClock.withHour(scrollHoursClock.getHour());
+        return this.scrollHoursClock;
+    }
+
     public void clockTick(final String label, final double delta) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
 

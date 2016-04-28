@@ -78,10 +78,7 @@ public class ClockPresenter implements Initializable {
     private List<Node> rectangles;
     private List<Node> minutesRectangles;
 
-    private IntegerProperty clock = new SimpleIntegerProperty();
     public static LocalTime userTime;
-
-    public static LocalTime time;
 
     private List<Text> labels;
     private List<Text> minuteslabels;
@@ -94,6 +91,7 @@ public class ClockPresenter implements Initializable {
 
         populator.populateSeconds(userTime, group, "seconds");
         populator.populateSeconds(userTime, minutesgroup, "minutes");
+
         this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.minutesRectangles = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
         this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
@@ -120,51 +118,21 @@ public class ClockPresenter implements Initializable {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
-            userTime = userTime.minusSeconds(1);
-            time = userTime.minusSeconds(1);
-            clock.set(time.getSecond());
-
-            this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
-                this.labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(l -> l.setText(clock.get() + ""));
-            });
-
-            List<AnimationMetadata> l1 = this.rectangles.stream().map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r)).collect(Collectors.toList());
-            animator.animate(l1, 0, locator);
+            scroller.scroll(this.rectangles, this.labels, -40);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
                     animator.setTicking(true);
-                    userTime = userTime.minusSeconds(1);
-                    time = userTime.minusSeconds(1);
-                    if (userTime.getSecond() == 0) {
-                        List<AnimationMetadata> l = this.minutesRectangles.stream()
-                                                        .map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r))
-                                                        .collect(Collectors.toList());
 
-                        this.minutesRectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
-                            this.minuteslabels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> lbl.setText(userTime.getMinute() -  2 + ""));
-                        });
-                        //this.scroller.setUserTimeMinutes(userTime.minusMinutes(1).getMinute());
-                        animator.animate(l, 0, locator);
+                    this.scroller.scroll(this.rectangles, this.labels, -40);
+                    if (clocks.getTimeShift("seconds", 1, -40) == 59) {
+                        this.scroller.scroll(this.minutesRectangles, this.minuteslabels, -40);
                     }
-                    clock.set(time.getSecond());
-
-                    List<AnimationMetadata> l = this.rectangles.stream()
-                        .map(r -> (AnimationMetadata) locator.get(AnimationMetadata.class, r))
-                        .collect(Collectors.toList());
-
-                    this.rectangles.stream().filter(r -> r.getTranslateY() == 0).forEach(r -> {
-                        this.labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> lbl.setText(clock.get() + ""));
-                    });
-                    animator.animate(l, 0, locator);
                 }
             );
-
         });
 
         stopClicks.subscribe(click -> {
-//            this.scroller.setUserTimeSeconds(userTime.getSecond());
-//            this.scroller.setUserTimeMinutes(userTime.getMinute());
             this.animator.setMinutesRunning(false);
             this.animator.setRunning(false);
             this.animator.setTicking(false);
