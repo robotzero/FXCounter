@@ -43,35 +43,31 @@ public class Clocks {
         return this.scrollHoursClock;
     }
 
-    public void clockTick(final String label, final double delta) {
+    public LocalTime getScrollSecondsClock() {
+        return this.scrollSecondsClock;
+    }
+
+    public int clockTick(final String label, final double delta, int timeOffset) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
 
         if (label.contains("seconds")) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
-        }
-
-        if (label.contains("minutes")) {
-            this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
-        }
-
-        if (label.contains("hours")) {
-            this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
-        }
-
-        this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-    }
-
-    public int getTimeShift(final String label, final int timeOffset, final double delta) {
-        int normalizedDelta = (int) delta / (int) Math.abs(delta);
-
-        if (label.contains("seconds")) {
+            this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond();
         }
 
         if (label.contains("minutes")) {
+            this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
+            this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute();
         }
 
-        throw new IllegalArgumentException();
+        if (label.contains("hours")) {
+            this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
+            this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+            return scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour();
+        }
+
+        return 0;
     }
 }

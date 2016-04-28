@@ -125,7 +125,7 @@ public class ClockPresenter implements Initializable {
                     animator.setTicking(true);
 
                     this.scroller.scroll(this.rectangles, this.labels, -40);
-                    if (clocks.getTimeShift("seconds", 1, -40) == 59) {
+                    if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
                         this.scroller.scroll(this.minutesRectangles, this.minuteslabels, -40);
                     }
                 }

@@ -10,7 +10,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
-import org.reactfx.EventSource;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple3;
@@ -70,8 +69,7 @@ public class Scroller {
             animator.setMinutesRunning(true);
         }
 
-        this.clocks.clockTick(rectangles.get(0).getId(), deltaY);
-        int timeShift = this.clocks.getTimeShift(rectangles.get(0).getId(), offsetNumber, deltaY);
+        int timeShift = this.clocks.clockTick(rectangles.get(0).getId(), deltaY, offsetNumber);
 
         if (label.get()) {
             seconds.set(timeShift);
