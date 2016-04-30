@@ -43,6 +43,10 @@ public class Clocks {
         return this.scrollHoursClock;
     }
 
+    public LocalTime getMainClock() {
+        return this.mainClock;
+    }
+
     public LocalTime getScrollSecondsClock() {
         return this.scrollSecondsClock;
     }

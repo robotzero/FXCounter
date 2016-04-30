@@ -14,8 +14,11 @@ import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple3;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Scroller {
 
@@ -59,8 +62,8 @@ public class Scroller {
         final int compare = deltaY < 0 ? 0 : 240;
         rectangles.stream().filter(r -> r.getTranslateY() == found).findAny().ifPresent(r -> f.set(true));
         delta.set(deltaY < 0);
+        this.label.set(rectangles.stream().findFirst().get().getId().contains("seconds"));
 
-        this.label.set(rectangles.get(0).getId().contains("seconds"));
         int offsetNumber = offset.getValue();
 
         if (label.get()) {
@@ -69,7 +72,7 @@ public class Scroller {
             animator.setMinutesRunning(true);
         }
 
-        int timeShift = this.clocks.clockTick(rectangles.get(0).getId(), deltaY, offsetNumber);
+        int timeShift = this.clocks.clockTick(rectangles.stream().findFirst().get().getId(), deltaY, offsetNumber);
 
         if (label.get()) {
             seconds.set(timeShift);

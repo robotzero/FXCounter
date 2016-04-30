@@ -7,8 +7,12 @@ import com.queen.counter.domain.AnimationMetadata;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
+import javafx.beans.binding.Binding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -28,9 +32,10 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ClockPresenter implements Initializable {
 
@@ -75,10 +80,7 @@ public class ClockPresenter implements Initializable {
 
     private Subscription subscribe;
 
-    private List<Node> rectangles;
-    private List<Node> minutesRectangles;
-
-    public static LocalTime userTime;
+    private Supplier<Stream<Node>> rectanglesSupplier;
 
     private List<Text> labels;
     private List<Text> minuteslabels;
@@ -86,19 +88,23 @@ public class ClockPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        userTime = LocalTime.of(0, 16, 12);
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
 
-        populator.populateSeconds(userTime, group, "seconds");
-        populator.populateSeconds(userTime, minutesgroup, "minutes");
+        populator.populateSeconds(this.clocks.getMainClock(), group, "seconds");
+        populator.populateSeconds(this.clocks.getMainClock(), minutesgroup, "minutes");
 
-        this.rectangles = group.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
-        this.minutesRectangles = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Rectangle.class)).collect(Collectors.toList());
+        this.rectanglesSupplier =
+                () -> Stream.of(group.getChildren(), minutesgroup.getChildren())
+                            .flatMap(Collection::stream)
+                            .filter(r -> r.getClass().equals(Rectangle.class));
+        
         this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
         this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
         minutes.setStyle("-fx-background-color: #FFFFFF;");
+
+        Binding b = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).toBinding(null);
 
         EventStream<MouseEvent> buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking());
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking().not());
@@ -106,27 +112,22 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking()));
 
-        scroll.subscribe(scrollEvent -> {
-            scroller.scroll(this.rectangles, this.labels, scrollEvent.getDeltaY());
-        });
-
-        minutesscroll.subscribe(scrollEvent -> {
-            scroller.scroll(this.minutesRectangles, this.minuteslabels, scrollEvent.getDeltaY());
-        });
+        scroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll(this.rectanglesSupplier.get().filter(r -> r.getId().contains("seconds")).collect(Collectors.toList()), this.labels, delta));
+        minutesscroll.map(ScrollEvent::getDeltaY).addObserver((delta -> scroller.scroll(this.rectanglesSupplier.get().filter(r -> r.getId().contains("minutes")).collect(Collectors.toList()), this.minuteslabels, delta)));
 
         buttonClicks.subscribe(click -> {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
-            scroller.scroll(this.rectangles, this.labels, -40);
+            scroller.scroll(this.rectanglesSupplier.get().filter(r -> r.getId().contains("seconds")).collect(Collectors.toList()), this.labels, -40);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
                     animator.setTicking(true);
 
-                    this.scroller.scroll(this.rectangles, this.labels, -40);
+                    this.scroller.scroll(this.rectanglesSupplier.get().filter(r -> r.getId().contains("seconds")).collect(Collectors.toList()), this.labels, -40);
                     if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                        this.scroller.scroll(this.minutesRectangles, this.minuteslabels, -40);
+                        this.scroller.scroll(this.rectanglesSupplier.get().filter(r -> r.getId().contains("minutes")).collect(Collectors.toList()), this.minuteslabels, -40);
                     }
                 }
             );
