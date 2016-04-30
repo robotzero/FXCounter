@@ -3,16 +3,10 @@ package com.queen.counter.clock;
 import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.cache.InMemoryCachedServiceLocator;
-import com.queen.counter.domain.AnimationMetadata;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import javafx.beans.binding.Binding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -32,15 +26,14 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClockPresenter implements Initializable {
-
-    public final static int cellsize = 60;
-    public final static int blockCount = 4;
 
     @FXML
     GridPane gridPane;
