@@ -1,5 +1,8 @@
 package com.queen.counter.domain;
 
+import org.reactfx.EventSink;
+import org.reactfx.EventSource;
+
 import java.time.LocalTime;
 
 public class Clocks {
@@ -8,9 +11,14 @@ public class Clocks {
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
+    private EventSource<Boolean> eventSource;
 
     private final int MIN = 59;
     private final int HR  = 23;
+
+    public Clocks(EventSource<Boolean> eventSource) {
+        this.eventSource = eventSource;
+    }
 
     //@TODO change to spring onCreate or similar.
     public void initializeClocks(final LocalTime mainClock) {
@@ -70,6 +78,10 @@ public class Clocks {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour();
+        }
+
+        if (scrollSecondsClock.minusSeconds(1).getSecond() == 59) {
+            EventSource e = new EventSource();
         }
 
         return 0;

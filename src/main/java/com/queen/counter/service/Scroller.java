@@ -10,21 +10,20 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
+import org.reactfx.EventSource;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple3;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Scroller {
 
     private final Animator animator;
     private final InMemoryCachedServiceLocator cache;
     private final Clocks clocks;
+    private final EventSource eventSource;
     private BooleanProperty delta = new SimpleBooleanProperty(false);
     private BooleanProperty label = new SimpleBooleanProperty(false);
     private BooleanProperty f = new SimpleBooleanProperty(false);
@@ -33,16 +32,18 @@ public class Scroller {
     private IntegerProperty seconds = new SimpleIntegerProperty();
     private IntegerProperty minutes = new SimpleIntegerProperty();
 
-    public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks) {
+    public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks, final EventSource eventSource) {
         this.animator = animator;
         this.cache = cache;
         this.clocks = clocks;
+        this.eventSource = eventSource;
 
         EventStream lab = EventStreams.valuesOf(label);
         EventStream del = EventStreams.valuesOf(delta);
         EventStream ff = EventStreams.valuesOf(f);
 
         EventStream<Tuple3<Boolean, Boolean, Boolean>> combo = EventStreams.combine(del, ff, lab);
+        //eventSource.subscribe(c -> this.scroll());
 
         combo.map(change -> {
             Boolean delta = change.get1();
