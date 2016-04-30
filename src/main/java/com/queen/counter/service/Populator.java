@@ -12,46 +12,50 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Populator {
 
-    public void populateSeconds(LocalTime userTime, Group group, String label) {
-         Random random = new Random();
+    public void populate(LocalTime userTime, Stream<Group> groups) {
+        final Random random = new Random();
 
-         IntStream.range(0, ClockPresenter.blockCount).mapToObj(i -> {
-         Rectangle rectangle = new Rectangle(ClockPresenter.cellsize, 0, ClockPresenter.cellsize, ClockPresenter.cellsize);
-         rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
-         rectangle.setStrokeType(StrokeType.INSIDE);
-         rectangle.setStroke(Color.BLACK);
-         rectangle.setTranslateY(ClockPresenter.cellsize * i);
+            groups.forEach(g -> {
+                IntStream.range(0, ClockPresenter.blockCount).mapToObj(i -> {
+                    Rectangle rectangle = new Rectangle(ClockPresenter.cellsize, 0, ClockPresenter.cellsize, ClockPresenter.cellsize);
+                    rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
+                    rectangle.setStrokeType(StrokeType.INSIDE);
+                    rectangle.setStroke(Color.BLACK);
+                    rectangle.setTranslateY(ClockPresenter.cellsize * i);
 
-         Text t;
+                    final Text t = new Text();
 
-         if (label.equals("seconds")) {
-             t = new Text(userTime.getSecond() - i + 2 + "");
-         } else {
-             t = new Text(userTime.getMinute() - i + 2 + "");
-         }
+                    String id = "";
+                    if (g.getId().equals("group")) {
+                        t.setText(userTime.getSecond() - i + 2 + "");
+                        id = (random.nextInt(100) + "seconds");
+                    }
 
-         t.setFont(Font.font(20));
+                    if (g.getId().equals("minutesgroup")) {
+                        t.setText(userTime.getMinute() - i + 2 + "");
+                        id = (random.nextInt(100) + "minutes");
+                    }
 
-         t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
+                    t.setFont(Font.font(20));
 
-         t.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
-         t.setTextAlignment(TextAlignment.CENTER);
-         t.setTextOrigin(VPos.CENTER);
+                    t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
 
-         List<Node> array = new ArrayList<>();
-         array.add(rectangle);
-         array.add(t);
-         String id = (random.nextInt(100) + label);
-         t.setId(id);
-         rectangle.setId(id);
-         return array;
-         }).map(arr -> arr).forEach(a -> group.getChildren().addAll(a));
+                    t.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
+                    t.setTextAlignment(TextAlignment.CENTER);
+                    t.setTextOrigin(VPos.CENTER);
+
+                    t.setId(id);
+                    rectangle.setId(id);
+
+                    g.getChildren().addAll(rectangle, t);
+                    return 0;
+                }).count();
+            });
     }
 }

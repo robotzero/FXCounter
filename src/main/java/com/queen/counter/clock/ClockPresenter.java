@@ -90,14 +90,13 @@ public class ClockPresenter implements Initializable {
 
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
 
-        populator.populateSeconds(this.clocks.getMainClock(), group, "seconds");
-        populator.populateSeconds(this.clocks.getMainClock(), minutesgroup, "minutes");
+        populator.populate(this.clocks.getMainClock(), Stream.of(group, minutesgroup));
 
         this.rectanglesSupplier =
                 () -> Stream.of(group.getChildren(), minutesgroup.getChildren())
                             .flatMap(Collection::stream)
                             .filter(r -> r.getClass().equals(Rectangle.class));
-        
+
         this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
         this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
 
