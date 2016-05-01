@@ -1,6 +1,7 @@
 package com.queen.counter.service;
 
 import com.airhacks.afterburner.views.FXMLView;
+import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -15,20 +16,21 @@ import javafx.scene.text.TextAlignment;
 import java.time.LocalTime;
 import java.util.Random;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Populator {
 
     private final int cellsize = 60;
     private final int blockCount = 4;
     private final UIService uiService;
+    private final Clocks clocks;
 
 
-    public Populator(final UIService uiService) {
+    public Populator(final UIService uiService, final Clocks clocks) {
         this.uiService = uiService;
+        this.clocks = clocks;
     }
 
-    public void populate(LocalTime userTime) {
+    public void populate() {
 
         final Random random = new Random();
 
@@ -43,12 +45,12 @@ public class Populator {
 
                 String id = "";
                 if (g.getId().equals("group")) {
-                    t.setText(userTime.getSecond() - i + 2 + "");
+                    t.setText(this.clocks.getMainClock().getSecond() - i + 2 + "");
                     id = (random.nextInt(100) + "seconds");
                 }
 
                 if (g.getId().equals("minutesgroup")) {
-                    t.setText(userTime.getMinute() - i + 2 + "");
+                    t.setText(this.clocks.getMainClock().getMinute() - i + 2 + "");
                     id = (random.nextInt(100) + "minutes");
                 }
 
