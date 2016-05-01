@@ -1,6 +1,7 @@
 package com.queen.counter.service;
 
 import com.airhacks.afterburner.views.FXMLView;
+import com.queen.counter.domain.UIService;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -20,22 +21,18 @@ public class Populator {
 
     private final int cellsize = 60;
     private final int blockCount = 4;
-    private Parent view;
-    //private final Stream<Group> groups;
+    private final UIService uiService;
 
-//    public Populator(final Stream<Group> groups) {
-//        this.groups = groups;
-//    }
 
-    public void setView(Parent view) {
-        this.view = view;
-        System.out.println("setting");
+    public Populator(final UIService uiService) {
+        this.uiService = uiService;
     }
-    public void populate(LocalTime userTime, Stream<Group> groups) {
-        System.out.println(this.view);
+
+    public void populate(LocalTime userTime) {
+
         final Random random = new Random();
 
-            groups.forEach(g -> IntStream.range(0, blockCount).mapToObj(i -> {
+        this.uiService.getRectanglesGroups().forEach(g -> IntStream.range(0, blockCount).mapToObj(i -> {
                 Rectangle rectangle = new Rectangle(cellsize, 0, cellsize, cellsize);
                 rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
                 rectangle.setStrokeType(StrokeType.INSIDE);

@@ -4,6 +4,7 @@ import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.Clocks;
+import com.queen.counter.domain.UIService;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import javafx.beans.binding.Binding;
@@ -71,6 +72,9 @@ public class ClockPresenter implements Initializable {
     @Inject
     private Clocks clocks;
 
+    @Inject
+    private UIService uiService;
+
     private Subscription subscribe;
 
     private Supplier<Stream<Node>> rectanglesSupplier;
@@ -83,12 +87,14 @@ public class ClockPresenter implements Initializable {
 
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
 
-        populator.populate(this.clocks.getMainClock(), Stream.of(group, minutesgroup));
-
         this.rectanglesSupplier =
                 () -> Stream.of(group.getChildren(), minutesgroup.getChildren())
                             .flatMap(Collection::stream)
                             .filter(r -> r.getClass().equals(Rectangle.class));
+
+
+        this.uiService.setRectanglesGroups(Stream.of(group, minutesgroup));
+        populator.populate(this.clocks.getMainClock());
 
         this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
         this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());

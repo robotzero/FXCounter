@@ -6,12 +6,9 @@ import com.queen.counter.clock.ClockView;
 import com.queen.di.SpringApplicationConfiguration;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.stream.Collectors;
 
 public class Counter extends Application {
 

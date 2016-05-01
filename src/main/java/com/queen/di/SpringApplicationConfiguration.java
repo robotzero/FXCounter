@@ -7,6 +7,7 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.domain.Clocks;
+import com.queen.counter.domain.UIService;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import com.queen.counter.service.Ticker;
@@ -26,6 +27,7 @@ public class SpringApplicationConfiguration {
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
     private EventSource eventSource = new EventSource();
     private FXMLView clockView = new ClockView();
+    private UIService uiService = new UIService();
 
     private Clocks clocks = new Clocks(eventSource);
 
@@ -55,9 +57,8 @@ public class SpringApplicationConfiguration {
         //System.out.println(this.clockView.getViewWithoutRootContainer());
 //        Pane minutesPane = (Pane) clockView.getView().getChildrenUnmodifiable().stream().filter(p -> p.getId().contains("minutes")).findFirst().get();
 //        System.out.println(secondsPane);
-        Populator populator = new Populator();
-        clockView.getViewAsync();
-        clockView.getView(populator::setView);
+        Populator populator = new Populator(uiService);
+
         return populator;
         //return new Populator(Stream.of((Group)secondsPane.getChildren().get(0), (Group)minutesPane.getChildren().get(0)));
     }
@@ -80,5 +81,10 @@ public class SpringApplicationConfiguration {
     @Bean
     public Clocks clocks() {
         return clocks;
+    }
+
+    @Bean
+    public UIService uiService() {
+        return uiService;
     }
 }
