@@ -65,7 +65,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Scroller scroller() {
-        return new Scroller(animator, cache, clocks, eventSource);
+        return new Scroller(animator, cache, clocks, uiService, eventSource);
     }
 
     @Bean

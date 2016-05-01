@@ -61,27 +61,26 @@ public class Clocks {
 
     public int clockTick(final String label, final double delta, int timeOffset) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
-
-        if (label.contains("seconds")) {
+        if (label.equals("group")) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond();
         }
 
-        if (label.contains("minutes")) {
+        if (label.equals("minutesgroup")) {
             this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute();
         }
 
-        if (label.contains("hours")) {
+        if (label.equals("hoursgroup")) {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour();
         }
 
         if (scrollSecondsClock.minusSeconds(1).getSecond() == 59) {
-            EventSource e = new EventSource();
+            this.eventSource.push(true);
         }
 
         return 0;

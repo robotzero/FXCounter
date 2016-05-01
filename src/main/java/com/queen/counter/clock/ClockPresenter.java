@@ -104,23 +104,22 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking()));
 
-        scroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll(this.uiService.getRectangles("group", Rectangle.class).collect(Collectors.toList()), this.labels, delta));
-        minutesscroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll(this.uiService.getRectangles("minutesgroup", Rectangle.class).collect(Collectors.toList()), this.labels, delta));
-
+        scroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("group", this.labels, delta));
+        minutesscroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("minutesgroup", this.minuteslabels, delta));
 
         buttonClicks.subscribe(click -> {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
-            scroller.scroll(this.uiService.getRectangles("group", Rectangle.class).collect(Collectors.toList()), this.labels, -40);
+            scroller.scroll("group", this.labels, -40);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
                     animator.setTicking(true);
 
-                    this.scroller.scroll(this.uiService.getRectangles("group", Rectangle.class).collect(Collectors.toList()), this.labels, -40);
+                    this.scroller.scroll("group", this.labels, -40);
                     if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                        this.scroller.scroll(this.uiService.getRectangles("minutesgroup", Rectangle.class).collect(Collectors.toList()), this.minuteslabels, -40);
+                        this.scroller.scroll("minutesgroup", this.minuteslabels, -40);
                     }
                 }
             );
