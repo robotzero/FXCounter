@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,11 +88,12 @@ public class ClockPresenter implements Initializable {
 
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
 
-        this.uiService.setRectanglesGroups(() -> Stream.of(group, minutesgroup));
+        this.uiService.setGroups(() -> Stream.of(group, minutesgroup));
+
         populator.populate();
 
-        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
-        this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
+//        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
+//        this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
         minutes.setStyle("-fx-background-color: #FFFFFF;");
@@ -104,22 +106,22 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking()));
 
-        scroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("group", this.labels, delta));
-        minutesscroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("minutesgroup", this.minuteslabels, delta));
+        scroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("group", "seconds", delta));
+        minutesscroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("minutesgroup", "minutes", delta));
 
         buttonClicks.subscribe(click -> {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
-            scroller.scroll("group", this.labels, -40);
+            scroller.scroll("group", "seconds", -40);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
                     animator.setTicking(true);
 
-                    this.scroller.scroll("group", this.labels, -40);
+                    this.scroller.scroll("group", "seconds", -40);
                     if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                        this.scroller.scroll("minutesgroup", this.minuteslabels, -40);
+                        this.scroller.scroll("minutesgroup", "minutes", -40);
                     }
                 }
             );

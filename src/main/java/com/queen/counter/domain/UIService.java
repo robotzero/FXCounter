@@ -9,9 +9,8 @@ import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class UIService {
@@ -20,14 +19,8 @@ public class UIService {
     //private final ObservableList<Node> rectanglesSupplier;
     private Supplier<Stream<Group>> groups;
 
+    private Supplier<Stream<Node>> labels;
     public UIService() {
-
-        //System.out.println(this.groups.map(Group::getChildren).filter(r -> r.getClass().equals(Rectangle.class)).collect(Collectors.toList()));
-//        this.rectanglesSupplier =
-//                () -> this.groups.map(r -> {
-//
-//                    return null;
-//                });
 
 //        this.rectanglesSupplier =
 //                () -> Stream.of(group.getChildren(), minutesgroup.getChildren())
@@ -35,7 +28,7 @@ public class UIService {
 //                        .filter(r -> r.getClass().equals(Rectangle.class));
     }
 
-    public void setRectanglesGroups(Supplier<Stream<Group>> groups) {
+    public void setGroups(Supplier<Stream<Group>> groups) {
         this.groups = groups;
     }
 
@@ -43,23 +36,11 @@ public class UIService {
         return this.groups.get();
     }
 
-    public Stream<Rectangle> getRectangles(final String groupId, final Class nodeType) {
-        return this.groups.get().filter(g -> g.getId().equals(groupId)).map(Group::getChildren).map(node -> {
-            List<Rectangle> tmparr = new ArrayList<>();
-            node.forEach(r -> {
-               if (r.getClass().equals(nodeType)) {
-                    tmparr.add((Rectangle) r);
-               }
-            });
-            return tmparr;
-        }).flatMap(Collection::stream);
+    public Stream<Node> getLabelsGroups() {
+        return this.labels.get();
     }
-//    public Stream<Group> getRectanglesGroups() {
-//        return this.groups;
-//    }
 
-//    public void getRectanglesStream() {
-//        System.out.println(this.groups.map(Group::getChildren).filter(r -> r.getClass().equals(Rectangle.class)).collect(Collectors.toList()));
-//        //return this.rectanglesSupplier;
-//    }
+    public Supplier<Stream<Node>> getStream(Predicate<Node> group, Predicate<Node> predicate) {
+        return () -> groups.get().flatMap(g -> g.getChildren().stream()).filter(group.and(predicate));
+    }
 }

@@ -18,6 +18,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple3;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Scroller {
@@ -35,6 +36,8 @@ public class Scroller {
     private IntegerProperty offset = new SimpleIntegerProperty(1);
     private IntegerProperty seconds = new SimpleIntegerProperty();
     private IntegerProperty minutes = new SimpleIntegerProperty();
+    private Predicate<Node> rectanglePredicate = r -> r.getClass().equals(Rectangle.class);
+    private Predicate<Node> labelPredicate = l -> l.getClass().equals(Text.class);
 
     public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks, final UIService uiService, final EventSource eventSource) {
         this.animator = animator;
@@ -48,12 +51,6 @@ public class Scroller {
         EventStream ff = EventStreams.valuesOf(f);
 
         EventStream<Tuple3<Boolean, Boolean, Boolean>> combo = EventStreams.combine(del, ff, lab);
-        //eventSource.subscribe(c -> this.scroll());
-
-//        eventSource.subscribe(event -> {
-//            System.out.println("MINUTES HAPPENED");
-//           //this.scroll("minutesgroup", null, -40);
-//        });
 
         combo.map(change -> {
             Boolean delta = change.get1();
@@ -67,11 +64,18 @@ public class Scroller {
         }).feedTo(offset);
     }
 
-    public void scroll(final String columnName, final List<Text> labels, double deltaY) {
+    public void scroll(final String columnName, final String rectangleId, double deltaY) {
 
         final int found = deltaY > 0 ? 0 : 240;
         final int compare = deltaY < 0 ? 0 : 240;
-        this.uiService.getRectangles(columnName, Rectangle.class).filter(r -> r.getTranslateY() == found).findAny().ifPresent(r -> f.set(true));
+
+        this.uiService.getStream(g -> g.getId()
+                .contains(rectangleId), rectanglePredicate)
+                .get()
+                .filter(r -> r.getTranslateY() == found)
+                .findAny()
+                .ifPresent(r -> f.set(true));
+
         delta.set(deltaY < 0);
 
         this.label.set(columnName.equals("group"));
@@ -92,17 +96,26 @@ public class Scroller {
             minutes.set(timeShift);
         }
 
-        List<AnimationMetadata> l = this.uiService.getRectangles(columnName, Rectangle.class).map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n)).collect(Collectors.toList());
+        List<AnimationMetadata> l = this.uiService.getStream(g -> g.getId()
+                .contains(rectangleId), rectanglePredicate)
+                .get()
+                .map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n))
+                .collect(Collectors.toList());
 
-        this.uiService.getRectangles(columnName, Rectangle.class).filter(r -> r.getTranslateY() == compare).findAny().ifPresent(r -> {
-            labels.stream().filter(lbl -> lbl.getId().equals(r.getId())).findFirst().ifPresent(lbl -> {
-                if (label.get()) {
-                    lbl.setText(seconds.get() + "");
-                } else {
-                    lbl.setText(minutes.get() + "");
-                }
-            });
-        });
+        this.uiService.getStream(g -> g.getId().contains(rectangleId), rectanglePredicate).get()
+                .filter(r -> r.getTranslateY() == compare)
+                .findAny()
+                .ifPresent(r -> this.uiService.getStream(g -> g.getId().contains(rectangleId), labelPredicate)
+                        .get().filter(lbl -> lbl.getId()
+                        .equals(r.getId()))
+                        .findFirst()
+                        .ifPresent(lbl -> {
+                            if (label.get()) {
+                                ((Text) lbl).setText(seconds.get() + "");
+                            } else {
+                                ((Text) lbl).setText(minutes.get() + "");
+                            }
+                        }));
 
         animator.animate(l, deltaY, cache);
         offset.set(1);
