@@ -87,13 +87,8 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
-
         this.uiService.setGroups(() -> Stream.of(group, minutesgroup));
-
         populator.populate();
-
-//        this.labels = group.getChildren().stream().filter(t -> t.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
-//        this.minuteslabels = minutesgroup.getChildren().stream().filter(n -> n.getClass().equals(Text.class)).map(m -> (Text) m).collect(Collectors.toList());
 
         seconds.setStyle("-fx-background-color: #FFFFFF;");
         minutes.setStyle("-fx-background-color: #FFFFFF;");
