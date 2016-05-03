@@ -5,6 +5,8 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.AnimationMetadata;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -29,7 +31,7 @@ public class Scroller {
     private final UIService uiService;
     private final EventSource eventSource;
 
-    private BooleanProperty delta = new SimpleBooleanProperty(false);
+    private BooleanProperty deltaB = new SimpleBooleanProperty(false);
     private BooleanProperty label = new SimpleBooleanProperty(false);
     private BooleanProperty f = new SimpleBooleanProperty(false);
 
@@ -38,6 +40,9 @@ public class Scroller {
     private IntegerProperty minutes = new SimpleIntegerProperty();
     private Predicate<Node> rectanglePredicate = r -> r.getClass().equals(Rectangle.class);
     private Predicate<Node> labelPredicate = l -> l.getClass().equals(Text.class);
+    private IntegerProperty delta = new SimpleIntegerProperty();
+    private NumberBinding changeRectangle = Bindings.createIntegerBinding(() -> delta.getValue() > 0 ? 0 : 240);
+    private NumberBinding compareRectangle = Bindings.createIntegerBinding(() -> delta.getValue() < 0 ? 0 : 240);
 
     public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks, final UIService uiService, final EventSource eventSource) {
         this.animator = animator;
@@ -47,14 +52,16 @@ public class Scroller {
         this.eventSource = eventSource;
 
         EventStream lab = EventStreams.valuesOf(label);
-        EventStream del = EventStreams.valuesOf(delta);
+        EventStream del = EventStreams.valuesOf(deltaB);
         EventStream ff = EventStreams.valuesOf(f);
 
         EventStream<Tuple3<Boolean, Boolean, Boolean>> combo = EventStreams.combine(del, ff, lab);
 
         combo.map(change -> {
             Boolean delta = change.get1();
+            //System.out.println(delta);
             Boolean found = change.get2();
+            //System.out.println(found);
             Boolean labl = change.get3();
             if ((delta && found) || (labl && found)) {
                 return 2;
@@ -66,18 +73,18 @@ public class Scroller {
 
     public void scroll(final String columnName, final String rectangleId, double deltaY) {
 
-        final int found = deltaY > 0 ? 0 : 240;
-        final int compare = deltaY < 0 ? 0 : 240;
-
+        delta.setValue((int)deltaY);
+//        final int found = deltaY > 0 ? 0 : 240;
+//        final int compare = deltaY < 0 ? 0 : 240;
+        System.out.println(changeRectangle);
         this.uiService.getStream(g -> g.getId()
                 .contains(rectangleId), rectanglePredicate)
                 .get()
-                .filter(r -> r.getTranslateY() == found)
+                .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
                 .findAny()
                 .ifPresent(r -> f.set(true));
 
-        delta.set(deltaY < 0);
-
+        deltaB.set(deltaY < 0);
         this.label.set(columnName.equals("group"));
 
         int offsetNumber = offset.getValue();
@@ -103,7 +110,7 @@ public class Scroller {
                 .collect(Collectors.toList());
 
         this.uiService.getStream(g -> g.getId().contains(rectangleId), rectanglePredicate).get()
-                .filter(r -> r.getTranslateY() == compare)
+                .filter(r -> r.getTranslateY() == compareRectangle.getValue().intValue())
                 .findAny()
                 .ifPresent(r -> this.uiService.getStream(g -> g.getId().contains(rectangleId), labelPredicate)
                         .get().filter(lbl -> lbl.getId()

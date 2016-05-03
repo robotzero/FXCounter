@@ -96,7 +96,7 @@ public class ClockPresenter implements Initializable {
                 EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking())),
                 EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressWhen(animator.isMinutesRunning())
         );
-        
+
         merged.subscribe(event -> {
             String id = ((Group) event.getSource()).getId();
             src.set(id);
