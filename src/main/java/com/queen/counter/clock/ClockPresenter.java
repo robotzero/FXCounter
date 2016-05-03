@@ -8,17 +8,17 @@ import com.queen.counter.domain.UIService;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
@@ -27,12 +27,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.Collection;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClockPresenter implements Initializable {
@@ -78,10 +73,8 @@ public class ClockPresenter implements Initializable {
 
     private Subscription subscribe;
 
-    private Supplier<Stream<Node>> rectanglesSupplier;
-
-    private List<Text> labels;
-    private List<Text> minuteslabels;
+    private StringProperty src = new SimpleStringProperty();
+    private Binding stringBinding = Bindings.createStringBinding(() -> src.getValue().equals("group") ? "seconds" : "minutes", src);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -97,12 +90,18 @@ public class ClockPresenter implements Initializable {
 
         EventStream<MouseEvent> buttonClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking());
         EventStream<MouseEvent>stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(animator.isTicking().not());
-        EventStream<ScrollEvent> minutesscroll = EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressWhen(animator.isMinutesRunning());
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
-        EventStream<ScrollEvent> scroll = EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking()));
 
-        scroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("group", "seconds", delta));
-        minutesscroll.map(ScrollEvent::getDeltaY).addObserver((delta) -> scroller.scroll("minutesgroup", "minutes", delta));
+        EventStream<ScrollEvent> merged = EventStreams.merge(
+                EventStreams.eventsOf(group, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking())),
+                EventStreams.eventsOf(minutesgroup, ScrollEvent.SCROLL).suppressWhen(animator.isMinutesRunning())
+        );
+        
+        merged.subscribe(event -> {
+            String id = ((Group) event.getSource()).getId();
+            src.set(id);
+            scroller.scroll(id, stringBinding.getValue().toString(), event.getDeltaY());
+        });
 
         buttonClicks.subscribe(click -> {
             animator.setRunning(true);

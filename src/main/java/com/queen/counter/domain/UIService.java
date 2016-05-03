@@ -19,7 +19,6 @@ public class UIService {
     //private final ObservableList<Node> rectanglesSupplier;
     private Supplier<Stream<Group>> groups;
 
-    private Supplier<Stream<Node>> labels;
     public UIService() {
 
 //        this.rectanglesSupplier =
@@ -34,10 +33,6 @@ public class UIService {
 
     public Stream<Group> getRectanglesGroups() {
         return this.groups.get();
-    }
-
-    public Stream<Node> getLabelsGroups() {
-        return this.labels.get();
     }
 
     public Supplier<Stream<Node>> getStream(Predicate<Node> group, Predicate<Node> predicate) {
