@@ -1,14 +1,8 @@
 package com.queen.counter.domain;
 
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;

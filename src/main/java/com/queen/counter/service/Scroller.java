@@ -40,9 +40,9 @@ public class Scroller {
     private IntegerProperty minutes = new SimpleIntegerProperty();
     private Predicate<Node> rectanglePredicate = r -> r.getClass().equals(Rectangle.class);
     private Predicate<Node> labelPredicate = l -> l.getClass().equals(Text.class);
-    private IntegerProperty delta = new SimpleIntegerProperty();
-    private NumberBinding changeRectangle = Bindings.createIntegerBinding(() -> delta.getValue() > 0 ? 0 : 240);
-    private NumberBinding compareRectangle = Bindings.createIntegerBinding(() -> delta.getValue() < 0 ? 0 : 240);
+    private IntegerProperty delta = new SimpleIntegerProperty(0);
+    private NumberBinding changeRectangle = Bindings.createIntegerBinding(() -> delta.getValue() > 0 ? 0 : 240, delta);
+    private NumberBinding compareRectangle = Bindings.createIntegerBinding(() -> delta.getValue() < 0 ? 0 : 240, delta);
 
     public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks, final UIService uiService, final EventSource eventSource) {
         this.animator = animator;
@@ -52,18 +52,18 @@ public class Scroller {
         this.eventSource = eventSource;
 
         EventStream lab = EventStreams.valuesOf(label);
-        EventStream del = EventStreams.valuesOf(deltaB);
+        EventStream del = EventStreams.valuesOf(delta);
         EventStream ff = EventStreams.valuesOf(f);
 
-        EventStream<Tuple3<Boolean, Boolean, Boolean>> combo = EventStreams.combine(del, ff, lab);
+        EventStream<Tuple3<Integer, Boolean, Boolean>> combo = EventStreams.combine(del, ff, lab);
 
         combo.map(change -> {
-            Boolean delta = change.get1();
+            Integer delta = change.get1();
             //System.out.println(delta);
             Boolean found = change.get2();
             //System.out.println(found);
             Boolean labl = change.get3();
-            if ((delta && found) || (labl && found)) {
+            if ((delta < 0 && found) || (labl && found)) {
                 return 2;
             }
 
@@ -73,18 +73,14 @@ public class Scroller {
 
     public void scroll(final String columnName, final String rectangleId, double deltaY) {
 
-        delta.setValue((int)deltaY);
-//        final int found = deltaY > 0 ? 0 : 240;
-//        final int compare = deltaY < 0 ? 0 : 240;
-        System.out.println(changeRectangle);
+        delta.set((int)deltaY);
         this.uiService.getStream(g -> g.getId()
-                .contains(rectangleId), rectanglePredicate)
-                .get()
-                .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
-                .findAny()
-                .ifPresent(r -> f.set(true));
+                 .contains(rectangleId), rectanglePredicate)
+                 .get()
+                 .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
+                 .findAny()
+                 .ifPresent(r -> f.set(true));
 
-        deltaB.set(deltaY < 0);
         this.label.set(columnName.equals("group"));
 
         int offsetNumber = offset.getValue();
@@ -109,12 +105,13 @@ public class Scroller {
                 .map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n))
                 .collect(Collectors.toList());
 
+
         this.uiService.getStream(g -> g.getId().contains(rectangleId), rectanglePredicate).get()
                 .filter(r -> r.getTranslateY() == compareRectangle.getValue().intValue())
                 .findAny()
                 .ifPresent(r -> this.uiService.getStream(g -> g.getId().contains(rectangleId), labelPredicate)
                         .get().filter(lbl -> lbl.getId()
-                        .equals(r.getId()))
+                                .equals(r.getId()))
                         .findFirst()
                         .ifPresent(lbl -> {
                             if (label.get()) {
@@ -123,7 +120,7 @@ public class Scroller {
                                 ((Text) lbl).setText(minutes.get() + "");
                             }
                         }));
-
+        
         animator.animate(l, deltaY, cache);
         offset.set(1);
         f.set(false);
