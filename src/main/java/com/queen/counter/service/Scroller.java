@@ -9,6 +9,7 @@ import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
+import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;

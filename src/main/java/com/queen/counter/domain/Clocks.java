@@ -1,9 +1,12 @@
 package com.queen.counter.domain;
 
+import javafx.event.EventType;
 import org.reactfx.EventSink;
 import org.reactfx.EventSource;
 
 import java.time.LocalTime;
+
+import static java.awt.event.MouseEvent.MOUSE_CLICKED;
 
 public class Clocks {
 
@@ -61,6 +64,7 @@ public class Clocks {
 
     public int clockTick(final String label, final double delta, int timeOffset) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
+
         if (label.equals("group")) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
@@ -77,10 +81,6 @@ public class Clocks {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour();
-        }
-
-        if (scrollSecondsClock.minusSeconds(1).getSecond() == 59) {
-            this.eventSource.push(true);
         }
 
         return 0;
