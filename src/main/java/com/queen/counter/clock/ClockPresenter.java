@@ -99,23 +99,22 @@ public class ClockPresenter implements Initializable {
 
         merged.subscribe(event -> {
             String id = ((Group) event.getSource()).getId();
-            src.set(id);
-            scroller.scroll(id, stringBinding.getValue().toString(), event.getDeltaY());
+            scroller.scroll(id, event.getDeltaY());
         });
 
         buttonClicks.subscribe(click -> {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
-            scroller.scroll("group", "seconds", -40);
+            scroller.scroll("group", -40);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
                     animator.setTicking(true);
 
-                    this.scroller.scroll("group", "seconds", -40);
+                    this.scroller.scroll("group", -40);
                     if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                        this.scroller.scroll("minutesgroup", "minutes", -40);
+                        this.scroller.scroll("minutesgroup",  -40);
                     }
                 }
             );
