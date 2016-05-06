@@ -35,14 +35,11 @@ public class Scroller {
 
     private IntegerProperty offset = new SimpleIntegerProperty(1);
 
-    private Predicate<Node> rectanglePredicate = r -> r.getClass().equals(Rectangle.class);
-    private Predicate<Node> labelPredicate = l -> l.getClass().equals(Text.class);
     private IntegerProperty delta = new SimpleIntegerProperty(0);
     private NumberBinding changeRectangle = Bindings.createIntegerBinding(() -> delta.getValue() > 0 ? 0 : 240, delta);
     private NumberBinding compareRectangle = Bindings.createIntegerBinding(() -> delta.getValue() < 0 ? 0 : 240, delta);
     private StringProperty src = new SimpleStringProperty();
-    private Binding stringBinding = Bindings.createStringBinding(() -> src.getValue().equals("group") ? "seconds" : "minutes", src);
-
+    
     public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks, final UIService uiService, final EventSource eventSource) {
         this.animator = animator;
         this.cache = cache;
@@ -71,12 +68,12 @@ public class Scroller {
 
         delta.set((int)deltaY);
         src.set(columnName);
-        this.uiService.getStream(g -> g.getId()
-                 .contains(stringBinding.getValue().toString()), rectanglePredicate)
-                 .get()
-                 .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
-                 .findAny()
-                 .ifPresent(r -> f.set(true));
+        this.uiService.setCurrentGroupName(columnName);
+        this.uiService.getCurrentRectanglesStream()
+                .get()
+                .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
+                .findAny()
+                .ifPresent(r -> f.set(true));
 
         this.label.set(columnName.equals("group"));
 
@@ -88,21 +85,17 @@ public class Scroller {
 
         int timeShift = this.clocks.clockTick(columnName, deltaY, offset.getValue());
 
-        List<AnimationMetadata> l = this.uiService.getStream(g -> g.getId()
-                .contains(stringBinding.getValue().toString()), rectanglePredicate)
-                .get()
+        List<AnimationMetadata> l = this.uiService.getCurrentRectanglesStream().get()
                 .map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n))
                 .collect(Collectors.toList());
 
 
-        this.uiService.getStream(g -> g.getId().contains(stringBinding.getValue().toString()), rectanglePredicate).get()
-                .filter(r -> r.getTranslateY() == compareRectangle.getValue().intValue())
-                .findAny()
-                .ifPresent(r -> this.uiService.getStream(g -> g.getId().contains(stringBinding.getValue().toString()), labelPredicate)
-                        .get().filter(lbl -> lbl.getId()
-                                .equals(r.getId()))
-                                .findFirst()
-                                .ifPresent(lbl -> ((Text) lbl).setText(timeShift + "")));
+        if (this.uiService.getEdgeRectangleId(compareRectangle.getValue().intValue()) != null) {
+            this.uiService.getCurrentLabelsStream().get().filter(lbl -> lbl.getId()
+                    .equals(this.uiService.getEdgeRectangleId(compareRectangle.getValue().intValue())))
+                    .findFirst()
+                    .ifPresent(lbl -> ((Text) lbl).setText(timeShift + ""));
+        }
 
         animator.animate(l, deltaY, cache);
         offset.set(1);
