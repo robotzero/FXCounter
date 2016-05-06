@@ -2,22 +2,17 @@ package com.queen.counter.clock;
 
 import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
-import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import javafx.beans.binding.Binding;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
@@ -31,9 +26,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 public class ClockPresenter implements Initializable {
-
-    @FXML
-    GridPane gridPane;
 
     @FXML
     Pane seconds;
@@ -63,18 +55,12 @@ public class ClockPresenter implements Initializable {
     private Scroller scroller;
 
     @Inject
-    private InMemoryCachedServiceLocator locator;
-
-    @Inject
     private Clocks clocks;
 
     @Inject
     private UIService uiService;
 
     private Subscription subscribe;
-
-    private StringProperty src = new SimpleStringProperty();
-    private Binding stringBinding = Bindings.createStringBinding(() -> src.getValue().equals("group") ? "seconds" : "minutes", src);
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

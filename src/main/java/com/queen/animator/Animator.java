@@ -12,13 +12,18 @@ import java.util.List;
 
 public class Animator {
 
+    private final InMemoryCachedServiceLocator cache;
     private TranslateTransition currentTransition;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     private BooleanProperty isMinutesRunning = new SimpleBooleanProperty(false);
     private BooleanProperty ticking = new SimpleBooleanProperty(false);
     private String currentLabel;
 
-    public void animate(List<AnimationMetadata> l, double delta, InMemoryCachedServiceLocator cache) {
+    public Animator(InMemoryCachedServiceLocator cache) {
+        this.cache = cache;
+    }
+
+    public void animate(List<AnimationMetadata> l, double delta) {
         l.stream().map(ll -> {
             if (ll.getRectangle().getId().contains("seconds")) {
                 isRunning.set(true);
