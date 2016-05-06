@@ -5,21 +5,13 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.AnimationMetadata;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
-import javafx.event.EventType;
-import javafx.scene.Node;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
-import org.reactfx.util.Tuple3;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Scroller {
@@ -29,39 +21,29 @@ public class Scroller {
     private final Clocks clocks;
     private final UIService uiService;
     private final EventSource eventSource;
+    private final OffsetCalculator offsetCalculator;
 
     private BooleanProperty label = new SimpleBooleanProperty(false);
-    private BooleanProperty f = new SimpleBooleanProperty(false);
-
-    private IntegerProperty offset = new SimpleIntegerProperty(1);
 
     private IntegerProperty delta = new SimpleIntegerProperty(0);
     private NumberBinding changeRectangle = Bindings.createIntegerBinding(() -> delta.getValue() > 0 ? 0 : 240, delta);
     private NumberBinding compareRectangle = Bindings.createIntegerBinding(() -> delta.getValue() < 0 ? 0 : 240, delta);
     private StringProperty src = new SimpleStringProperty();
-    
-    public Scroller(final Animator animator, final InMemoryCachedServiceLocator cache, final Clocks clocks, final UIService uiService, final EventSource eventSource) {
+
+    public Scroller(
+            final Animator animator,
+            final InMemoryCachedServiceLocator cache,
+            final Clocks clocks,
+            final UIService uiService,
+            final EventSource eventSource,
+            final OffsetCalculator offsetCalculator
+    ) {
         this.animator = animator;
         this.cache = cache;
         this.clocks = clocks;
         this.uiService = uiService;
         this.eventSource = eventSource;
-
-        EventStream lab = EventStreams.valuesOf(label);
-        EventStream del = EventStreams.valuesOf(delta);
-        EventStream ff = EventStreams.valuesOf(f);
-
-        EventStream<Tuple3<Integer, Boolean, Boolean>> combo = EventStreams.combine(del, ff, lab);
-
-        combo.map(change -> {
-            Integer delta = change.get1();
-            Boolean found = change.get2();
-            Boolean labl = change.get3();
-            if ((delta < 0 && found) || (labl && found)) {
-                return 2;
-            }
-            return 1;
-        }).feedTo(offset);
+        this.offsetCalculator = offsetCalculator;
     }
 
     public void scroll(final String columnName, double deltaY) {
@@ -73,7 +55,7 @@ public class Scroller {
                 .get()
                 .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
                 .findAny()
-                .ifPresent(r -> f.set(true));
+                .ifPresent(r -> offsetCalculator.setFoundEndgeRectangle(true));
 
         this.label.set(columnName.equals("group"));
 
@@ -83,7 +65,7 @@ public class Scroller {
             animator.setMinutesRunning(true);
         }
 
-        int timeShift = this.clocks.clockTick(columnName, deltaY, offset.getValue());
+        int timeShift = this.clocks.clockTick(columnName, deltaY, this.offsetCalculator.getCurrentOffset());
 
         List<AnimationMetadata> l = this.uiService.getCurrentRectanglesStream().get()
                 .map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n))
@@ -98,7 +80,6 @@ public class Scroller {
         }
 
         animator.animate(l, deltaY, cache);
-        offset.set(1);
-        f.set(false);
+        this.offsetCalculator.setFoundEndgeRectangle(false);
     }
 }

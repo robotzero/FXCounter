@@ -8,9 +8,11 @@ import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
+import com.queen.counter.service.OffsetCalculator;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import com.queen.counter.service.Ticker;
+import com.sun.scenario.effect.Offset;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -28,6 +30,7 @@ public class SpringApplicationConfiguration {
     private EventSource eventSource = new EventSource();
     private FXMLView clockView = new ClockView();
     private UIService uiService = new UIService();
+    private OffsetCalculator offsetCalculator = new OffsetCalculator(uiService);
 
     private Clocks clocks = new Clocks(eventSource);
 
@@ -65,7 +68,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Scroller scroller() {
-        return new Scroller(animator, cache, clocks, uiService, eventSource);
+        return new Scroller(animator, cache, clocks, uiService, eventSource, offsetCalculator);
     }
 
     @Bean
@@ -86,5 +89,10 @@ public class SpringApplicationConfiguration {
     @Bean
     public UIService uiService() {
         return uiService;
+    }
+
+    @Bean
+    public OffsetCalculator offsetCalculator() {
+        return offsetCalculator;
     }
 }
