@@ -58,27 +58,17 @@ public class OffsetCalculator {
         }).feedTo(offset);
     }
 
-    public int getCurrentOffset() {
-        return this.offset.getValue();
-    }
-
-    public void setFoundEdgeRectangle() {
+    public int getCurrentOffset(double delta, boolean label) {
+        this.currentDelta.set((int) delta);
+        this.currentLabel.set(label);
         this.uiService.getCurrentRectanglesStream()
                 .get()
                 .filter(r -> r.getTranslateY() == changeRectangle.getValue().intValue())
                 .findAny()
                 .ifPresent(r -> this.foundEdgeRectangle.set(true));
-    }
 
-    public void setCurrentDelta(double delta) {
-        this.currentDelta.set((int)delta);
-    }
-
-    public void setCurrentLabel(boolean label) {
-        this.currentLabel.set(label);
-    }
-
-    public void resetFoundRectangle() {
+        int offset = this.offset.getValue();
         this.foundEdgeRectangle.set(false);
+        return offset;
     }
 }

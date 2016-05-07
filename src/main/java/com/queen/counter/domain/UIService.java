@@ -43,10 +43,6 @@ public class UIService {
         this.groups = groups;
     }
 
-    public void setDelta(double delta) {
-        this.delta.set((int)delta);
-    }
-
     public Stream<Group> getRectanglesGroups() {
         return this.groups.get();
     }
@@ -59,7 +55,8 @@ public class UIService {
 
     }
 
-    public String getEdgeRectangleId() {
+    public String getEdgeRectangleId(double delta) {
+        this.delta.set((int) delta);
         Optional<Node> optional = this.getCurrentRectanglesStream().get().filter(r -> r.getTranslateY() == compareRectangle.getValue().intValue()).findAny();
         if (optional.isPresent()) {
             return optional.get().getId();
@@ -83,5 +80,14 @@ public class UIService {
         return getCurrentRectanglesStream().get()
                 .map(r -> (AnimationMetadata) cache.get(AnimationMetadata.class, r))
                 .collect(Collectors.toList());
+    }
+
+    public void updateLabelText(double deltaY, int timeShift) {
+        if (getEdgeRectangleId(deltaY) != null) {
+            getCurrentLabelsStream().get().filter(lbl -> lbl.getId()
+                    .equals(getEdgeRectangleId(deltaY)))
+                    .findFirst()
+                    .ifPresent(lbl -> ((Text) lbl).setText(timeShift + ""));
+        }
     }
 }

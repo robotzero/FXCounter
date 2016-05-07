@@ -3,7 +3,6 @@ package com.queen.counter.service;
 import com.queen.animator.Animator;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
-import javafx.scene.text.Text;
 
 public class Scroller {
 
@@ -26,23 +25,17 @@ public class Scroller {
 
     public void scroll(final String columnName, double deltaY) {
 
-        this.offsetCalculator.setCurrentDelta((int) deltaY);
-        this.offsetCalculator.setCurrentLabel(columnName.equals("group"));
-
-        this.uiService.setDelta(deltaY);
-        this.uiService.setCurrentGroupName(columnName);
-        this.offsetCalculator.setFoundEdgeRectangle();
-
-        int timeShift = this.clocks.clockTick(columnName, deltaY, this.offsetCalculator.getCurrentOffset());
-
-        if (this.uiService.getEdgeRectangleId() != null) {
-            this.uiService.getCurrentLabelsStream().get().filter(lbl -> lbl.getId()
-                    .equals(this.uiService.getEdgeRectangleId()))
-                    .findFirst()
-                    .ifPresent(lbl -> ((Text) lbl).setText(timeShift + ""));
+        if (columnName.equals("group")) {
+            animator.setRunning(true);
+        } else {
+            animator.setMinutesRunning(true);
         }
+        this.uiService.setCurrentGroupName(columnName);
+
+        int timeShift = this.clocks.clockTick(columnName, deltaY, this.offsetCalculator.getCurrentOffset(deltaY, columnName.equals("group")));
+
+        this.uiService.updateLabelText(deltaY, timeShift);
 
         animator.animate(this.uiService.getCurrentAnimations(), deltaY);
-        this.offsetCalculator.resetFoundRectangle();
     }
 }
