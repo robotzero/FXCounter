@@ -7,6 +7,7 @@ import com.queen.counter.clock.ClockView;
 import com.queen.di.SpringApplicationConfiguration;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -16,6 +17,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -51,7 +54,8 @@ public class CounterAppIT extends ApplicationTest {
         });
 
         ClockView clockView = new ClockView();
-        Scene scene = new Scene(clockView.getView());
+        Scene scene = new Scene(clockView.getView(), 800, 600);
+
         stage.setScene(scene);
         stage.show();
     }
@@ -60,8 +64,10 @@ public class CounterAppIT extends ApplicationTest {
     public void scroll_dramatic_test() {
 
         Group gs = assertContext().getNodeFinder().lookup("#group").queryFirst();
-        gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).collect(Collectors.toList());
-        gs.getChildren().stream().filter(l -> l.getClass().equals(Text.class)).collect(Collectors.toList());
+
+        String id = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == 0).findAny().get().getId();
+        Text l = (Text) gs.getChildren().stream().filter(lbl -> lbl.getClass().equals(Text.class)).filter(lbl1 -> lbl1.getId().equals(id)).findAny().get();
+        String t = l.getText();
 
 //        verifyThat("#group", (Group g) -> {
 //            g.getChildren().forEach(r -> {
@@ -78,26 +84,38 @@ public class CounterAppIT extends ApplicationTest {
                 @Override
                 public boolean isSatisfied() {
                     scroll(VerticalDirection.DOWN);
+
+                    String lb =  gs.getChildren().stream().filter(r -> r.getClass().equals(Text.class)).filter(t -> t.getId().equals(id)).map(t -> ((Text) t).getText()).findAny().get();
+                    return false;
+//                    Optional<Node> opt = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == 0).findAny();
+//                    System.out.println(lb);
+//                    System.out.println(opt);
+//                    if (opt.isPresent()) {
+////                        String id = opt.get().getId();
+////                        Text l = (Text) gs.getChildren().stream().filter(lbl -> lbl.getClass().equals(Text.class)).filter(lbl1 -> lbl1.getId().equals(id)).findAny().get();
+////                        String t = l.getText();
+////                        System.out.println(t);
+//                    }
 //                    Group r = assertContext().getNodeFinder().lookup("#group").queryFirst();
 //                    Rectangle r1 = (Rectangle) r.getChildren().stream().filter(rt -> rt.getClass().equals(Rectangle.class)).findAny().get();
-                    return false;
+
                     //return false;
                 }
-            }, timeout(millis(600)));
+            }, timeout(millis(144600)));
         } catch (InterruptedException e) {
             //e.printStackTrace();
         } catch (TimeoutException e) {
             //e.printStackTrace();
         }
 
-        verifyThat("#group", (Group g) -> {
-            System.out.println("after");
-            g.getChildren().forEach(r -> {
-                if (r.getClass().equals(Rectangle.class)) {
-                    System.out.printf("rect " + r.getTranslateY() + "\n");
-                }
-            });
-            return true;
-        });
+//        verifyThat("#group", (Group g) -> {
+//            System.out.println("after");
+//            g.getChildren().forEach(r -> {
+//                if (r.getClass().equals(Rectangle.class)) {
+//                    //System.out.printf("rect " + r.getTranslateY() + "\n");
+//                }
+//            });
+//            return true;
+//        });
     }
 }
