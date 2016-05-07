@@ -32,10 +32,17 @@ public class Scroller {
         }
         this.uiService.setCurrentGroupName(columnName);
 
-        int timeShift = this.clocks.clockTick(columnName, deltaY, this.offsetCalculator.getCurrentOffset(deltaY, columnName.equals("group")));
+        int timeShift = this.clocks.clockTick(
+                columnName,
+                deltaY,
+                this.offsetCalculator.getCurrentOffset(deltaY, columnName.equals("group"))
+        );
 
         this.uiService.updateLabelText(deltaY, timeShift);
 
         animator.animate(this.uiService.getCurrentAnimations(), deltaY);
+        animator.setMinutesRunning(false);
+        animator.setRunning(false);
+        this.offsetCalculator.reset();
     }
 }

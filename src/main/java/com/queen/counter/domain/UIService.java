@@ -73,7 +73,7 @@ public class UIService {
     }
 
     public void setCurrentGroupName(String groupName) {
-        this.currentGroupName.setValue(groupName);
+        this.currentGroupName.set(groupName);
     }
 
     public List<AnimationMetadata> getCurrentAnimations() {

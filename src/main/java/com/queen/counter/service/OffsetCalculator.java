@@ -38,15 +38,6 @@ public class OffsetCalculator {
 
         EventStream<Tuple3<Integer, Boolean, Boolean>> combo = EventStreams.combine(deltaStream, labelStream, edgeRectangleStream);
 
-        labelStream.subscribe(label -> {
-            System.out.println(label);
-            if ((Boolean)label) {
-                animator.setRunning(true);
-            } else {
-                animator.setMinutesRunning(true);
-            }
-        });
-
         combo.map(change -> {
             Integer delta = change.get1();
             Boolean label = change.get2();
@@ -67,8 +58,12 @@ public class OffsetCalculator {
                 .findAny()
                 .ifPresent(r -> this.foundEdgeRectangle.set(true));
 
-        int offset = this.offset.getValue();
+        return this.offset.getValue();
+//        this.foundEdgeRectangle.set(false);
+//        return offset;
+    }
+
+    public void reset() {
         this.foundEdgeRectangle.set(false);
-        return offset;
     }
 }
