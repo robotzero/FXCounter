@@ -12,19 +12,25 @@ import com.queen.counter.service.OffsetCalculator;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import com.queen.counter.service.Ticker;
+import com.sun.scenario.effect.Offset;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.stream.Stream;
+
 @Configuration
 public class SpringApplicationConfiguration {
 
+    private Animator animator = new Animator();
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
-    private Animator animator = new Animator(cache);
     private EventSource eventSource = new EventSource();
     private FXMLView clockView = new ClockView();
-    private UIService uiService = new UIService(cache);
-    private OffsetCalculator offsetCalculator = new OffsetCalculator(uiService, animator);
+    private UIService uiService = new UIService();
+    private OffsetCalculator offsetCalculator = new OffsetCalculator(uiService);
 
     private Clocks clocks = new Clocks(eventSource);
 
@@ -50,15 +56,19 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Populator populator() {
-
+//        Pane secondsPane = (Pane) clockView.getView().getChildrenUnmodifiable().stream().filter(p -> p.getId().contains("seconds")).findFirst().get();
+        //System.out.println(this.clockView.getViewWithoutRootContainer());
+//        Pane minutesPane = (Pane) clockView.getView().getChildrenUnmodifiable().stream().filter(p -> p.getId().contains("minutes")).findFirst().get();
+//        System.out.println(secondsPane);
         Populator populator = new Populator(uiService, clocks);
 
         return populator;
+        //return new Populator(Stream.of((Group)secondsPane.getChildren().get(0), (Group)minutesPane.getChildren().get(0)));
     }
 
     @Bean
     public Scroller scroller() {
-        return new Scroller(animator, clocks, uiService, offsetCalculator);
+        return new Scroller(animator, cache, clocks, uiService, eventSource, offsetCalculator);
     }
 
     @Bean
