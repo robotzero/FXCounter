@@ -80,6 +80,7 @@ public class Scroller {
         }
 
         animator.animate(l, deltaY, cache);
+        this.uiService.getCurrentRectanglesStream().get().forEach(r -> System.out.println(r.getTranslateY() + "\n"));
         this.offsetCalculator.setFoundEndgeRectangle(false);
     }
 }
