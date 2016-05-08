@@ -1,7 +1,6 @@
 package com.queen.acceptance;
 
 import com.airhacks.afterburner.injection.Injector;
-import com.google.code.tempusfugit.temporal.Condition;
 import com.google.code.tempusfugit.temporal.WaitFor;
 import com.queen.counter.clock.ClockView;
 import com.queen.di.SpringApplicationConfiguration;
@@ -17,11 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testfx.framework.junit.ApplicationTest;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;
 import static com.google.code.tempusfugit.temporal.Timeout.timeout;
@@ -61,7 +56,7 @@ public class CounterAppIT extends ApplicationTest {
     }
 
     @Test
-    public void scroll_dramatic_test() {
+    public void scroll_dramatic_test() throws InterruptedException {
 
         Group gs = assertContext().getNodeFinder().lookup("#group").queryFirst();
 
@@ -69,53 +64,21 @@ public class CounterAppIT extends ApplicationTest {
         Text l = (Text) gs.getChildren().stream().filter(lbl -> lbl.getClass().equals(Text.class)).filter(lbl1 -> lbl1.getId().equals(id)).findAny().get();
         String t = l.getText();
 
-//        verifyThat("#group", (Group g) -> {
-//            g.getChildren().forEach(r -> {
-//                if (r.getClass().equals(Rectangle.class)) {
-//                    System.out.printf("rect " + r.getTranslateY() + "\n");
-//                }
-//            });
-//            return true;
-//        });
         moveTo("#group");
+        scroll(VerticalDirection.DOWN);
 
-        try {
-            WaitFor.waitOrTimeout(new Condition() {
-                @Override
-                public boolean isSatisfied() {
-                    scroll(VerticalDirection.DOWN);
+        WaitFor.waitUntil(timeout(millis(650)));
 
-                    String lb =  gs.getChildren().stream().filter(r -> r.getClass().equals(Text.class)).filter(t -> t.getId().equals(id)).map(t -> ((Text) t).getText()).findAny().get();
-                    return false;
-//                    Optional<Node> opt = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == 0).findAny();
-//                    System.out.println(lb);
-//                    System.out.println(opt);
-//                    if (opt.isPresent()) {
-////                        String id = opt.get().getId();
-////                        Text l = (Text) gs.getChildren().stream().filter(lbl -> lbl.getClass().equals(Text.class)).filter(lbl1 -> lbl1.getId().equals(id)).findAny().get();
-////                        String t = l.getText();
-////                        System.out.println(t);
-//                    }
-//                    Group r = assertContext().getNodeFinder().lookup("#group").queryFirst();
-//                    Rectangle r1 = (Rectangle) r.getChildren().stream().filter(rt -> rt.getClass().equals(Rectangle.class)).findAny().get();
+        verifyThat("#group", (Group g) -> {
+            Optional<Node> r = gs.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(id)).findAny();
+            if (r.isPresent()) {
+                String lb =  gs.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(id)).map(tt -> ((Text) tt).getText()).findAny().get();
+                int ints = new Integer(lb);
+                int intb = new Integer(t);
 
-                    //return false;
-                }
-            }, timeout(millis(144600)));
-        } catch (InterruptedException e) {
-            //e.printStackTrace();
-        } catch (TimeoutException e) {
-            //e.printStackTrace();
-        }
-
-//        verifyThat("#group", (Group g) -> {
-//            System.out.println("after");
-//            g.getChildren().forEach(r -> {
-//                if (r.getClass().equals(Rectangle.class)) {
-//                    //System.out.printf("rect " + r.getTranslateY() + "\n");
-//                }
-//            });
-//            return true;
-//        });
+                return r.get().getTranslateY() == 180 && ints == intb - 4;
+            }
+            return false;
+        });
     }
 }
