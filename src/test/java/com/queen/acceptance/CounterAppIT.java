@@ -65,13 +65,17 @@ public class CounterAppIT extends ApplicationTest {
     public static Object[][] scrollsSetup() {
 
         return new Object[][] {
-                { 1, VerticalDirection.DOWN, "#group", 650 },
+                { 1, VerticalDirection.DOWN, "#group", 650, 180, "10" },
+                { 2, VerticalDirection.DOWN, "#group", 650, 120, "10" },
+                { 3, VerticalDirection.DOWN, "#group", 650, 60, "10" },
+                { 4, VerticalDirection.DOWN, "#group", 650, 0, "10" },
+                { 5, VerticalDirection.DOWN, "#group", 650, 180, "6" },
         };
     }
 
     @Test
     @UseDataProvider("scrollsSetup")
-    public void scroll_dramatic_test(int scrollsNumber, VerticalDirection direction, String node, int waitTime) {
+    public void scroll_dramatic_test(int scrollsNumber, VerticalDirection direction, String node, int waitTime, int newTranslate, String label) {
 
         Group gs = assertContext().getNodeFinder().lookup(node).queryFirst();
 
@@ -95,13 +99,13 @@ public class CounterAppIT extends ApplicationTest {
             Optional<Node> r = gs.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(id)).findAny();
             if (r.isPresent()) {
                 String lb =  gs.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(id)).map(tt -> ((Text) tt).getText()).findAny().get();
-                int ints = new Integer(lb);
-                int intb = new Integer(t);
-                System.out.println(r.get().getTranslateY());
-                System.out.println(ints);
-                System.out.println(intb);
+//                int ints = new Integer(lb);
+//                int intb = new Integer(t);
+//                System.out.println(r.get().getTranslateY());
+//                System.out.println(ints);
+//                System.out.println(intb);
 
-                return r.get().getTranslateY() == 180 && ints == intb - 4;
+                return r.get().getTranslateY() == newTranslate && lb.equals(label);
             }
             return false;
         });
