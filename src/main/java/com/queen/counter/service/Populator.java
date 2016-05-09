@@ -46,12 +46,12 @@ public class Populator {
                 String id = "";
                 if (g.getId().equals("group")) {
                     t.setText(this.clocks.getMainClock().getSecond() - i + 2 + "");
-                    id = (random.nextInt(100) + "seconds");
+                    id = i + "seconds";
                 }
 
                 if (g.getId().equals("minutesgroup")) {
                     t.setText(this.clocks.getMainClock().getMinute() - i + 2 + "");
-                    id = (random.nextInt(100) + "minutes");
+                    id = i + "minutes";
                 }
 
                 t.setFont(Font.font(20));
