@@ -13,14 +13,14 @@
     <RowConstraints maxHeight="300.0" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Pane id="seconds" fx:id="seconds" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Pane id="paneSeconds" fx:id="paneSeconds" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <children>
-            <Group id="group" fx:id="group" />
+            <Group id="seconds" fx:id="seconds" />
          </children>
       </Pane>
-       <Pane id="minutes" fx:id="minutes" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+       <Pane id="paneMinutes" fx:id="paneMinutes" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
            <children>
-               <Group id="minutesgroup" fx:id="minutesgroup" />
+               <Group id="minutes" fx:id="minutes" />
            </children>
        </Pane>
       <Button id="start" fx:id="start" mnemonicParsing="false" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP" />

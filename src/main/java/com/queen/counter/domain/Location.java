@@ -4,16 +4,20 @@ import javafx.geometry.Point2D;
 
 public class Location {
 
-    private final Point2D point;
+    private final Point2D current;
 
-    public Location(Point2D point)
+    public Location(Point2D current)
     {
-        this.point = point;
+        this.current = current;
     }
 
     public Location move(Direction direction)
     {
-        Point2D point = new Point2D(this.point.getX() + direction.getxOffset(), this.point.getY() + direction.getyOffset());
+        Point2D point = new Point2D(this.current.getX() + direction.getxOffset(), this.current.getY() + direction.getyOffset());
         return new Location(point);
+    }
+
+    public Point2D getCurrent() {
+        return this.current;
     }
 }

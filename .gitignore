@@ -4,3 +4,5 @@ target/
 igniter-app.jar
 bubbles.iml
 TODO.txt
+.idea
+zero.iml
