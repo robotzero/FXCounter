@@ -17,6 +17,8 @@ public class Column {
     }
 
     public void shift(double delta, String name) {
+        this.offsetCalculator.setLabel(name);
+        this.offsetCalculator.setDelta(delta);
         this.columnList.stream().filter(cell -> cell.hasEdgeRectangle(delta))
                                 .findAny()
                                 .ifPresent(cell -> this.offsetCalculator.setFoundEndgeRectangle(true));
@@ -27,6 +29,7 @@ public class Column {
                                 .findAny()
                                 .ifPresent(cell -> cell.setLabel(Integer.toString(timeShift)));
         this.columnList.forEach(cell -> cell.setUpTransition(delta));
+        this.offsetCalculator.setFoundEndgeRectangle(false);
     }
 
     public void play() {
