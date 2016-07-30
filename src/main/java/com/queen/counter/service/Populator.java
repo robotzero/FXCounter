@@ -25,11 +25,13 @@ public class Populator {
     private final int blockCount = 4;
     private final UIService uiService;
     private final Clocks clocks;
+    private final OffsetCalculator offsetCalculator;
 
 
-    public Populator(final UIService uiService, final Clocks clocks) {
+    public Populator(final UIService uiService, final Clocks clocks, final OffsetCalculator offsetCalculator) {
         this.uiService = uiService;
         this.clocks = clocks;
+        this.offsetCalculator = offsetCalculator;
     }
 
     public void populate(Group... groups) {
@@ -117,6 +119,6 @@ public class Populator {
             return new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), label, translateTransition);
         }).collect(Collectors.toList());
 
-        return new Column(list);
+        return new Column(list, offsetCalculator, clocks);
     }
 }

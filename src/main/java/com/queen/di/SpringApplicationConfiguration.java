@@ -60,7 +60,7 @@ public class SpringApplicationConfiguration {
         //System.out.println(this.clockView.getViewWithoutRootContainer());
 //        Pane minutesPane = (Pane) clockView.getView().getChildrenUnmodifiable().stream().filter(p -> p.getId().contains("minutes")).findFirst().get();
 //        System.out.println(secondsPane);
-        Populator populator = new Populator(uiService, clocks);
+        Populator populator = new Populator(uiService, clocks, offsetCalculator);
 
         return populator;
         //return new Populator(Stream.of((Group)secondsPane.getChildren().get(0), (Group)minutesPane.getChildren().get(0)));

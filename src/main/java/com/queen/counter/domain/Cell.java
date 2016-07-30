@@ -44,4 +44,26 @@ public class Cell {
     public void animate() {
         translateTransition.play();
     }
+
+    public boolean hasEdgeRectangle(double delta) {
+        int translateY = delta > 0 ? 0 : 240;
+
+        return rectangle.getTranslateY() == translateY;
+    }
+
+    public boolean hasChangeTextRectangle(double delta) {
+        int translateY = delta < 0 ? 0 : 240;
+
+        return rectangle.getTranslateY() == translateY;
+    }
+
+    public String getId() {
+        return rectangle.getId();
+    }
+
+    public void setLabel(String newLabel) {
+        if (rectangle.getId().equals(label.getId())) {
+            this.label.setText(newLabel);
+        }
+    }
 }

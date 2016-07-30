@@ -22,7 +22,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
@@ -108,12 +107,12 @@ public class ClockPresenter implements Initializable {
         merged.subscribe(event -> {
             String id = ((Group) event.getSource()).getId();
             if (((Group) event.getSource()).getId().contains("seconds")) {
-                secondsColumn.shift(event.getDeltaY());
+                secondsColumn.shift(event.getDeltaY(), "seconds");
                 secondsColumn.play();
             }
 
             if (((Group) event.getSource()).getId().contains("minutes")) {
-                minutesColumn.shift(event.getDeltaY());
+                minutesColumn.shift(event.getDeltaY(), "minutes");
                 minutesColumn.play();
             }
             //scroller.scroll(id, event.getDeltaY());
@@ -123,15 +122,20 @@ public class ClockPresenter implements Initializable {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
-            scroller.scroll("group", -40);
+            secondsColumn.shift(-60, "seconds");
+            secondsColumn.play();
+            //scroller.scroll("group", -40);
             this.subscribe  = ticks.subscribe((something) -> {
                     animator.setRunning(true);
                     animator.setMinutesRunning(true);
                     animator.setTicking(true);
-
-                    this.scroller.scroll("group", -40);
+                    secondsColumn.shift(-60, "seconds");
+                    secondsColumn.play();
+                    //this.scroller.scroll("group", -40);
                     if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                        this.scroller.scroll("minutesgroup",  -40);
+                        //this.scroller.scroll("minutesgroup",  -40);
+                        minutesColumn.shift(-60, "minutes");
+                        minutesColumn.play();
                     }
                 }
             );

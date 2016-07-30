@@ -65,19 +65,19 @@ public class Clocks {
     public int clockTick(final String label, final double delta, int timeOffset) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
 
-        if (label.equals("group")) {
+        if (label.equals("seconds")) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond();
         }
 
-        if (label.equals("minutesgroup")) {
+        if (label.equals("minutes")) {
             this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute();
         }
 
-        if (label.equals("hoursgroup")) {
+        if (label.equals("hours")) {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             return scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour();
