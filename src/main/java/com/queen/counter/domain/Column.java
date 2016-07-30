@@ -9,4 +9,16 @@ public class Column {
     public Column(List<Cell> columnList) {
         this.columnList = columnList;
     }
+
+    public void shift(double delta) {
+        this.columnList.stream().forEach(cell -> {
+            cell.setUpTransition(delta);
+        });
+    }
+
+    public void play() {
+        this.columnList.stream().forEach(cell -> {
+            cell.animate();
+        });
+    }
 }

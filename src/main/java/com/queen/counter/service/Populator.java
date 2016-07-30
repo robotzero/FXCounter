@@ -113,6 +113,7 @@ public class Populator {
             group.getChildren().addAll(rectangle, label);
 
             TranslateTransition translateTransition = new TranslateTransition();
+            translateTransition.setNode(rectangle);
             return new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), label, translateTransition);
         }).collect(Collectors.toList());
 

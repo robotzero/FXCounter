@@ -1,7 +1,7 @@
 package com.queen.counter.domain;
 
+import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
-import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -19,18 +19,29 @@ public class Cell {
         this.translateTransition = translateTransition;
     }
 
-//    public void setUpTransition(double delta) {
-//        if (delta == 0 || delta < 0) {
-//            if (rectangle.getTranslateY() == 0) {
-//                translateTransition.re new Point2D(rectangle.getTranslateX(), 240);
-//            }
-//            return new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY());
-//        }
-//
-//        if (rectangle.getTranslateY() == 240) {
-//            return new Point2D(rectangle.getTranslateX(), 0);
-//        }
-//
-//        return new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY());
-//    }
+    public void setUpTransition(double delta) {
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        if (delta == 0 || delta < 0) {
+            if (this.rectangle.getTranslateY() == 0) {
+                translateTransition.setFromY(240);
+                translateTransition.setToY(180);
+            } else {
+                translateTransition.setFromY(rectangle.getTranslateY());
+                translateTransition.setToY(rectangle.getTranslateY() - 60);
+            }
+        } else {
+            if (rectangle.getTranslateY() == 240) {
+                translateTransition.setFromY(0);
+                translateTransition.setToY(60);
+            } else {
+                translateTransition.setFromY(rectangle.getTranslateY());
+                translateTransition.setToY(rectangle.getTranslateY() + 60);
+            }
+        }
+    }
+
+    public void animate() {
+        translateTransition.play();
+    }
 }

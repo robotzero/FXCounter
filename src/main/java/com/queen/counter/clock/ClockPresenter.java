@@ -80,15 +80,17 @@ public class ClockPresenter implements Initializable {
     private StringProperty src = new SimpleStringProperty();
     private Binding stringBinding = Bindings.createStringBinding(() -> src.getValue().equals("group") ? "seconds" : "minutes", src);
 
+    private Column secondsColumn;
+    private Column minutesColumn;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
         this.uiService.setGroups(() -> Stream.of(seconds, minutes));
         //populator.populate(seconds, minutes);
-        Column secondsColumn = populator.create(seconds.getId(), seconds);
-        Column minutesColumn = populator.create(minutes.getId(), minutes);
-
+        secondsColumn = populator.create(seconds.getId(), seconds);
+        minutesColumn = populator.create(minutes.getId(), minutes);
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
 
@@ -105,7 +107,16 @@ public class ClockPresenter implements Initializable {
 
         merged.subscribe(event -> {
             String id = ((Group) event.getSource()).getId();
-            scroller.scroll(id, event.getDeltaY());
+            if (((Group) event.getSource()).getId().contains("seconds")) {
+                secondsColumn.shift(event.getDeltaY());
+                secondsColumn.play();
+            }
+
+            if (((Group) event.getSource()).getId().contains("minutes")) {
+                minutesColumn.shift(event.getDeltaY());
+                minutesColumn.play();
+            }
+            //scroller.scroll(id, event.getDeltaY());
         });
 
         buttonClicks.subscribe(click -> {
