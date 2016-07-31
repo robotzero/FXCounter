@@ -11,12 +11,16 @@ public class Cell {
     private Location location;
     private Text label;
     private TranslateTransition translateTransition;
+    private boolean running = false;
 
     public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition) {
         this.rectangle = rectangle;
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
+        this.translateTransition.setOnFinished(event -> {
+            this.running = false;
+        });
     }
 
     public void setUpTransition(double delta) {
@@ -65,5 +69,13 @@ public class Cell {
         if (rectangle.getId().equals(label.getId())) {
             this.label.setText(newLabel);
         }
+    }
+
+    public boolean isRunning() {
+        return this.running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }

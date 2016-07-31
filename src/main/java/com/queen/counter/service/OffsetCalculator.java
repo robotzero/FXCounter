@@ -14,7 +14,7 @@ public class OffsetCalculator {
     private final UIService uiService;
 
     //private BooleanProperty currentLabel               = new SimpleBooleanProperty(false);
-    private StringProperty currentLabel         = new SimpleStringProperty("seconds");
+    private StringProperty currentLabel         = new SimpleStringProperty("");
     private BooleanProperty foundEndgeRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty offset              = new SimpleIntegerProperty(1);
     private IntegerProperty currentDelta               = new SimpleIntegerProperty(0);
@@ -25,21 +25,22 @@ public class OffsetCalculator {
 
     @PostConstruct
     public void init() {
-        EventStream changeLabel = EventStreams.changesOf(currentLabel);
-        //EventStream labelStream = EventStreams.valuesOf(currentLabel);
+        //EventStream changeLabel = EventStreams.invalidationsOf(currentLabel);
+        EventStream labelStream = EventStreams.changesOf(currentLabel);
         EventStream deltaStream = EventStreams.valuesOf(currentDelta);
         EventStream edgeRectangleStream = EventStreams.valuesOf(foundEndgeRectangle);
 
-        EventStream<Tuple3<Integer, Change, Boolean>> combo = EventStreams.combine(deltaStream, changeLabel, edgeRectangleStream);
+        EventStream<Tuple3<Integer, Change, Boolean>> combo = EventStreams.combine(deltaStream, labelStream, edgeRectangleStream);
 
         combo.map(change -> {
             Integer delta = change.get1();
             Change labelChanges = change.get2();
             Boolean edgeRectangle = change.get3();
-            if (!labelChanges.getOldValue().equals(labelChanges.getNewValue())) {
-                System.out.println("one");
-                return 2;
-            }
+            System.out.println("Some change");
+//            if (!labelChanges.getOldValue().equals(labelChanges.getNewValue())) {
+//                System.out.println("one");
+//                return 2;
+//            }
 
             if (delta < 0 && edgeRectangle) {
                 System.out.println("two");
@@ -64,6 +65,7 @@ public class OffsetCalculator {
     }
 
     public void setDelta(double delta) {
+        System.out.println(delta);
         this.currentDelta.set((int) delta);
     }
 

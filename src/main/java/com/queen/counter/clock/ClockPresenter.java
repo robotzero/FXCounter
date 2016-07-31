@@ -100,11 +100,14 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
         EventStream<ScrollEvent> merged = EventStreams.merge(
-                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking())),
+//                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking())),
+                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
                 EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(animator.isMinutesRunning())
         );
 
         merged.subscribe(event -> {
+//            animator.setRunning(true);
+//            animator.setTicking(true);
             String id = ((Group) event.getSource()).getId();
             if (((Group) event.getSource()).getId().contains("seconds")) {
                 secondsColumn.shift(event.getDeltaY(), "seconds");
