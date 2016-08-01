@@ -18,9 +18,7 @@ public class Cell {
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
-        this.translateTransition.setOnFinished(event -> {
-            this.running = false;
-        });
+        this.translateTransition.setOnFinished(event -> this.running = false);
     }
 
     public void setUpTransition(double delta) {
@@ -77,5 +75,9 @@ public class Cell {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public TranslateTransition getTranslateTransition() {
+        return this.translateTransition;
     }
 }

@@ -1,57 +1,34 @@
 package com.queen.counter.service;
 
-import com.queen.counter.domain.UIService;
 import javafx.beans.property.*;
-import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
-import org.reactfx.util.Tuple3;
+import org.reactfx.util.Tuple2;
 
 import javax.annotation.PostConstruct;
 
 public class OffsetCalculator {
 
-    private final UIService uiService;
-
-    //private BooleanProperty currentLabel               = new SimpleBooleanProperty(false);
-    private StringProperty currentLabel         = new SimpleStringProperty("");
     private BooleanProperty foundEndgeRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty offset              = new SimpleIntegerProperty(1);
-    private IntegerProperty currentDelta               = new SimpleIntegerProperty(0);
+    private IntegerProperty currentDelta        = new SimpleIntegerProperty(0);
 
-    public OffsetCalculator(UIService uiService) {
-        this.uiService = uiService;
-    }
 
     @PostConstruct
     public void init() {
-        //EventStream changeLabel = EventStreams.invalidationsOf(currentLabel);
-        EventStream labelStream = EventStreams.changesOf(currentLabel);
         EventStream deltaStream = EventStreams.valuesOf(currentDelta);
         EventStream edgeRectangleStream = EventStreams.valuesOf(foundEndgeRectangle);
 
-        EventStream<Tuple3<Integer, Change, Boolean>> combo = EventStreams.combine(deltaStream, labelStream, edgeRectangleStream);
+        EventStream<Tuple2<Integer, Boolean>> combo = EventStreams.combine(deltaStream, edgeRectangleStream);
 
         combo.map(change -> {
             Integer delta = change.get1();
-            Change labelChanges = change.get2();
-            Boolean edgeRectangle = change.get3();
-            System.out.println("Some change");
-//            if (!labelChanges.getOldValue().equals(labelChanges.getNewValue())) {
-//                System.out.println("one");
-//                return 2;
-//            }
+            Boolean edgeRectangle = change.get2();
 
             if (delta < 0 && edgeRectangle) {
-                System.out.println("two");
                 return 2;
             }
-            //Boolean edgeRectangle = change.get2();
-//            Boolean label = change.get3();
-//            if ((delta < 0 && edgeRectangle) || (label && edgeRectangle)) {
-//                return 2;
-//            }
-            System.out.println("three");
+
             return 1;
         }).feedTo(offset);
     }
@@ -65,11 +42,6 @@ public class OffsetCalculator {
     }
 
     public void setDelta(double delta) {
-        System.out.println(delta);
         this.currentDelta.set((int) delta);
-    }
-
-    public void setLabel(String label) {
-        this.currentLabel.set(label);
     }
 }

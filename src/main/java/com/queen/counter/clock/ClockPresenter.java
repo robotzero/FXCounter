@@ -3,7 +3,6 @@ package com.queen.counter.clock;
 import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.cache.InMemoryCachedServiceLocator;
-import com.queen.counter.domain.Cell;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
 import com.queen.counter.domain.UIService;
@@ -16,7 +15,6 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -102,7 +100,7 @@ public class ClockPresenter implements Initializable {
         EventStream<ScrollEvent> merged = EventStreams.merge(
 //                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(animator.isRunning().or(animator.isTicking())),
                 EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
-                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(animator.isMinutesRunning())
+                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
         );
 
         merged.subscribe(event -> {
@@ -110,11 +108,13 @@ public class ClockPresenter implements Initializable {
 //            animator.setTicking(true);
             String id = ((Group) event.getSource()).getId();
             if (((Group) event.getSource()).getId().contains("seconds")) {
+                secondsColumn.setRunning(true);
                 secondsColumn.shift(event.getDeltaY(), "seconds");
                 secondsColumn.play();
             }
 
             if (((Group) event.getSource()).getId().contains("minutes")) {
+                minutesColumn.setRunning(true);
                 minutesColumn.shift(event.getDeltaY(), "minutes");
                 minutesColumn.play();
             }
@@ -125,6 +125,8 @@ public class ClockPresenter implements Initializable {
             animator.setRunning(true);
             animator.setMinutesRunning(true);
             animator.setTicking(true);
+            secondsColumn.setRunning(true);
+            minutesColumn.setRunning(true);
             secondsColumn.shift(-60, "seconds");
             secondsColumn.play();
             //scroller.scroll("group", -40);
@@ -145,6 +147,8 @@ public class ClockPresenter implements Initializable {
         });
 
         stopClicks.subscribe(click -> {
+            secondsColumn.setRunning(false);
+            minutesColumn.setRunning(false);
             this.animator.setMinutesRunning(false);
             this.animator.setRunning(false);
             this.animator.setTicking(false);

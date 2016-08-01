@@ -12,15 +12,9 @@ import com.queen.counter.service.OffsetCalculator;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Scroller;
 import com.queen.counter.service.Ticker;
-import com.sun.scenario.effect.Offset;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.stream.Stream;
 
 @Configuration
 public class SpringApplicationConfiguration {
@@ -30,7 +24,7 @@ public class SpringApplicationConfiguration {
     private EventSource eventSource = new EventSource();
     private FXMLView clockView = new ClockView();
     private UIService uiService = new UIService();
-    private OffsetCalculator offsetCalculator = new OffsetCalculator(uiService);
+    private OffsetCalculator offsetCalculator = new OffsetCalculator();
 
     private Clocks clocks = new Clocks(eventSource);
 
