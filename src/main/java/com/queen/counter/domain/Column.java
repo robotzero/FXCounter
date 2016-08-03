@@ -1,12 +1,12 @@
 package com.queen.counter.domain;
 
 import com.queen.counter.service.OffsetCalculator;
-import javafx.animation.TranslateTransition;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Column {
 
@@ -14,16 +14,27 @@ public class Column {
     private OffsetCalculator offsetCalculator;
     private Clocks clocks;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
-    private List<TranslateTransition> translateTransitions;
 
     public Column(List<Cell> columnList, OffsetCalculator offsetCalculator, Clocks clocks) {
         this.columnList = columnList;
         this.offsetCalculator = offsetCalculator;
         this.clocks = clocks;
-        translateTransitions = this.columnList.stream().map(Cell::getTranslateTransition).collect(Collectors.toList());
-        translateTransitions.forEach(translateTransition -> translateTransition.setOnFinished(event -> {
-            this.isRunning().set(false);
-        }));
+
+        //this.columnList.stream().map(cell -> cell.getTranslateTransition().statusProperty().get();
+//        this.columnList.stream().map(Cell::isRunning).reduce((current, next) -> {
+//            BooleanBinding booleanBinding = current.or(next);
+//            System.out.println(booleanBinding.getDependencies());
+//            this.isRunning().bind(booleanBinding);
+//            return isRunning;
+//        });
+        BooleanBinding binding = columnList.get(0).isRunning().or(columnList.get(1).isRunning()).or(columnList.get(2).isRunning()).or(columnList.get(3).isRunning());
+        isRunning().bind(binding);
+    }
+
+    @PostConstruct
+    public void init() {
+        BooleanBinding binding = columnList.get(0).isRunning().or(columnList.get(1).isRunning()).or(columnList.get(2).isRunning()).or(columnList.get(3).isRunning());
+        isRunning().bind(binding);
     }
 
     public void shift(double delta, String name) {
@@ -46,13 +57,10 @@ public class Column {
     }
 
     public void setRunning(boolean running) {
-//        this.columnList.forEach(cell -> cell.setRunning(running));
-//        this.isRunning.set(columnList.stream().filter(Cell::isRunning).findAny().isPresent());
-        this.isRunning().set(true);
+        this.columnList.forEach(cell -> cell.setRunning(running));
     }
 
     public BooleanProperty isRunning() {
-        //isRunning.bindBidirectional(new SimpleBooleanProperty(columnList.stream().filter(Cell::isRunning).findAny().isPresent()));
         return isRunning;
     }
 }
