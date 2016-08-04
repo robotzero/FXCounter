@@ -78,8 +78,4 @@ public class Cell {
     public void setRunning(boolean running) {
         this.running.set(running);
     }
-
-    public TranslateTransition getTranslateTransition() {
-        return this.translateTransition;
-    }
 }

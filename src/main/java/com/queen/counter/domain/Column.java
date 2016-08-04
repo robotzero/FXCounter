@@ -5,7 +5,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 public class Column {
@@ -14,25 +13,19 @@ public class Column {
     private OffsetCalculator offsetCalculator;
     private Clocks clocks;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    private BooleanProperty isTicking = new SimpleBooleanProperty(false);
 
     public Column(List<Cell> columnList, OffsetCalculator offsetCalculator, Clocks clocks) {
         this.columnList = columnList;
         this.offsetCalculator = offsetCalculator;
         this.clocks = clocks;
 
-        //this.columnList.stream().map(cell -> cell.getTranslateTransition().statusProperty().get();
 //        this.columnList.stream().map(Cell::isRunning).reduce((current, next) -> {
 //            BooleanBinding booleanBinding = current.or(next);
-//            System.out.println(booleanBinding.getDependencies());
 //            this.isRunning().bind(booleanBinding);
 //            return isRunning;
 //        });
-        BooleanBinding binding = columnList.get(0).isRunning().or(columnList.get(1).isRunning()).or(columnList.get(2).isRunning()).or(columnList.get(3).isRunning());
-        isRunning().bind(binding);
-    }
 
-    @PostConstruct
-    public void init() {
         BooleanBinding binding = columnList.get(0).isRunning().or(columnList.get(1).isRunning()).or(columnList.get(2).isRunning()).or(columnList.get(3).isRunning());
         isRunning().bind(binding);
     }
@@ -60,7 +53,15 @@ public class Column {
         this.columnList.forEach(cell -> cell.setRunning(running));
     }
 
+    public void setTicking(boolean ticking) {
+        this.isTicking.set(ticking);
+    }
+
     public BooleanProperty isRunning() {
         return isRunning;
+    }
+
+    public BooleanProperty isTicking() {
+        return isTicking;
     }
 }
