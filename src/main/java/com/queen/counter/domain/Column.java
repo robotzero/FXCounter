@@ -4,6 +4,8 @@ import com.queen.counter.service.OffsetCalculator;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
 
 import java.util.List;
 
@@ -31,6 +33,11 @@ public class Column {
                                                .or(columnList.get(2).hasEdgeRectangle())
                                                .or(columnList.get(3).hasEdgeRectangle());
         this.offsetCalculator.getFoundEdgeRecangle().bind(edgeBinding);
+
+        this.columnList.forEach(cell -> {
+            EventStream changeText = EventStreams.changesOf(cell.hasChangeTextRectangle()).supply(cell);
+            changeText.filter(c -> ((Cell) c).hasChangeTextRectangle().get()).subscribe(event -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
+        });
     }
 
     public void shift(double delta, String name) {
@@ -38,9 +45,9 @@ public class Column {
         this.columnList.forEach(cell -> cell.setDelta(delta));
         this.clocks.clockTick(name, delta, this.offsetCalculator.getCurrentOffset());
 
-        this.columnList.stream().filter(cell -> cell.hasChangeTextRectangle().get())
-                                .findAny()
-                                .ifPresent(cell -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
+//        this.columnList.stream().filter(cell -> cell.hasChangeTextRectangle().get())
+//                                .findAny()
+//                                .ifPresent(cell -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
     }
 
     public void play() {
