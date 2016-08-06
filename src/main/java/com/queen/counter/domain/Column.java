@@ -42,7 +42,6 @@ public class Column {
         this.columnList.stream().filter(Cell::hasChangeTextRectangle)
                                 .findAny()
                                 .ifPresent(cell -> cell.setLabel(Integer.toString(timeShift)));
-        this.columnList.forEach(cell -> cell.setUpTransition(delta));
         this.offsetCalculator.setFoundEndgeRectangle(false);
     }
 
