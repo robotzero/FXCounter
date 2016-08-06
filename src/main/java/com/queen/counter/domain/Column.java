@@ -16,22 +16,23 @@ public class Column {
     private Clocks clocks;
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     private BooleanProperty isTicking = new SimpleBooleanProperty(false);
+    private BooleanBinding binding, edgeBinding;
 
     public Column(List<Cell> columnList, OffsetCalculator offsetCalculator, Clocks clocks) {
         this.columnList = columnList;
         this.offsetCalculator = offsetCalculator;
         this.clocks = clocks;
 
-        BooleanBinding binding = columnList.get(0).isRunning()
-                                           .or(columnList.get(1).isRunning())
-                                           .or(columnList.get(2).isRunning())
-                                           .or(columnList.get(3).isRunning());
+         binding = columnList.get(0).isRunning()
+                                    .or(columnList.get(1).isRunning())
+                                    .or(columnList.get(2).isRunning())
+                                    .or(columnList.get(3).isRunning());
         this.isRunning().bind(binding);
 
-        BooleanBinding edgeBinding = columnList.get(0).hasEdgeRectangle()
-                                               .or(columnList.get(1).hasEdgeRectangle())
-                                               .or(columnList.get(2).hasEdgeRectangle())
-                                               .or(columnList.get(3).hasEdgeRectangle());
+        edgeBinding = columnList.get(0).hasEdgeRectangle()
+                                       .or(columnList.get(1).hasEdgeRectangle())
+                                       .or(columnList.get(2).hasEdgeRectangle())
+                                       .or(columnList.get(3).hasEdgeRectangle());
         this.offsetCalculator.getFoundEdgeRecangle().bind(edgeBinding);
 
         this.columnList.forEach(cell -> {
