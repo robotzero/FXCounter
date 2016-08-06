@@ -65,19 +65,19 @@ public class Scroller {
             animator.setMinutesRunning(true);
         }
 
-        int timeShift = this.clocks.clockTick(columnName, deltaY, this.offsetCalculator.getCurrentOffset());
+        //int timeShift = this.clocks.clockTick(columnName, deltaY, this.offsetCalculator.getCurrentOffset());
 
         List<AnimationMetadata> l = this.uiService.getCurrentRectanglesStream().get()
                 .map(n -> (AnimationMetadata) cache.get(AnimationMetadata.class, n))
                 .collect(Collectors.toList());
 
 
-        if (this.uiService.getEdgeRectangleId(compareRectangle.getValue().intValue()) != null) {
-            this.uiService.getCurrentLabelsStream().get().filter(lbl -> lbl.getId()
-                    .equals(this.uiService.getEdgeRectangleId(compareRectangle.getValue().intValue())))
-                    .findFirst()
-                    .ifPresent(lbl -> ((Text) lbl).setText(timeShift + ""));
-        }
+//        if (this.uiService.getEdgeRectangleId(compareRectangle.getValue().intValue()) != null) {
+//            this.uiService.getCurrentLabelsStream().get().filter(lbl -> lbl.getId()
+//                    .equals(this.uiService.getEdgeRectangleId(compareRectangle.getValue().intValue())))
+//                    .findFirst()
+//                    .ifPresent(lbl -> ((Text) lbl).setText(timeShift + ""));
+//        }
 
         animator.animate(l, deltaY, cache);
         this.offsetCalculator.setFoundEndgeRectangle(false);

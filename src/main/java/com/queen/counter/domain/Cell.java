@@ -6,6 +6,7 @@ import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import org.reactfx.EventSource;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
@@ -84,12 +85,12 @@ public class Cell {
         translateTransition.play();
     }
 
-    public boolean hasEdgeRectangle() {
-        return this.hasEdgeRectangle.get();
+    public BooleanProperty hasEdgeRectangle() {
+        return this.hasEdgeRectangle;
     }
 
-    public boolean hasChangeTextRectangle() {
-        return this.hasChangeTextRecangle.get();
+    public BooleanProperty hasChangeTextRectangle() {
+        return this.hasChangeTextRecangle;
     }
 
     public void setLabel(String newLabel) {

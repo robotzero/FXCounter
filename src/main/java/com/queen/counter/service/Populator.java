@@ -12,6 +12,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import org.reactfx.EventSource;
 
 import java.util.List;
 import java.util.Random;

@@ -44,4 +44,8 @@ public class OffsetCalculator {
     public void setDelta(double delta) {
         this.currentDelta.set((int) delta);
     }
+
+    public BooleanProperty getFoundEdgeRecangle() {
+        return this.foundEndgeRectangle;
+    }
 }

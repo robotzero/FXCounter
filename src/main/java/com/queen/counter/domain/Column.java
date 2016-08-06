@@ -20,29 +20,27 @@ public class Column {
         this.offsetCalculator = offsetCalculator;
         this.clocks = clocks;
 
-//        this.columnList.stream().map(Cell::isRunning).reduce((current, next) -> {
-//            BooleanBinding booleanBinding = current.or(next);
-//            this.isRunning().bind(booleanBinding);
-//            return isRunning;
-//        });
+        BooleanBinding binding = columnList.get(0).isRunning()
+                                           .or(columnList.get(1).isRunning())
+                                           .or(columnList.get(2).isRunning())
+                                           .or(columnList.get(3).isRunning());
+        this.isRunning().bind(binding);
 
-        BooleanBinding binding = columnList.get(0).isRunning().or(columnList.get(1).isRunning()).or(columnList.get(2).isRunning()).or(columnList.get(3).isRunning());
-        isRunning().bind(binding);
+        BooleanBinding edgeBinding = columnList.get(0).hasEdgeRectangle()
+                                               .or(columnList.get(1).hasEdgeRectangle())
+                                               .or(columnList.get(2).hasEdgeRectangle())
+                                               .or(columnList.get(3).hasEdgeRectangle());
+        this.offsetCalculator.getFoundEdgeRecangle().bind(edgeBinding);
     }
 
     public void shift(double delta, String name) {
         this.offsetCalculator.setDelta(delta);
         this.columnList.forEach(cell -> cell.setDelta(delta));
-        this.columnList.stream().filter(Cell::hasEdgeRectangle)
-                                .findAny()
-                                .ifPresent(cell -> this.offsetCalculator.setFoundEndgeRectangle(true));
+        this.clocks.clockTick(name, delta, this.offsetCalculator.getCurrentOffset());
 
-        int timeShift = this.clocks.clockTick(name, delta, this.offsetCalculator.getCurrentOffset());
-
-        this.columnList.stream().filter(Cell::hasChangeTextRectangle)
+        this.columnList.stream().filter(cell -> cell.hasChangeTextRectangle().get())
                                 .findAny()
-                                .ifPresent(cell -> cell.setLabel(Integer.toString(timeShift)));
-        this.offsetCalculator.setFoundEndgeRectangle(false);
+                                .ifPresent(cell -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
     }
 
     public void play() {
