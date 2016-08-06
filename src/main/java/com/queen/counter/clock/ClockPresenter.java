@@ -102,7 +102,6 @@ public class ClockPresenter implements Initializable {
         );
 
         merged.subscribe(event -> {
-            event.getEventType();
             if (((Group) event.getSource()).getId().contains("seconds")) {
                 secondsColumn.setRunning(true);
                 secondsColumn.shift(event.getDeltaY(), "seconds");
@@ -117,7 +116,6 @@ public class ClockPresenter implements Initializable {
         });
 
         startClicks.subscribe(click -> {
-            click.getEventType();
             secondsColumn.setTicking(true);
             minutesColumn.setTicking(true);
             secondsColumn.shift(-60, "seconds");

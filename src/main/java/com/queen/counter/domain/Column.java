@@ -32,13 +32,14 @@ public class Column {
 
     public void shift(double delta, String name) {
         this.offsetCalculator.setDelta(delta);
-        this.columnList.stream().filter(cell -> cell.hasEdgeRectangle(delta))
+        this.columnList.forEach(cell -> cell.setDelta(delta));
+        this.columnList.stream().filter(Cell::hasEdgeRectangle)
                                 .findAny()
                                 .ifPresent(cell -> this.offsetCalculator.setFoundEndgeRectangle(true));
 
         int timeShift = this.clocks.clockTick(name, delta, this.offsetCalculator.getCurrentOffset());
 
-        this.columnList.stream().filter(cell -> cell.hasChangeTextRectangle(delta))
+        this.columnList.stream().filter(Cell::hasChangeTextRectangle)
                                 .findAny()
                                 .ifPresent(cell -> cell.setLabel(Integer.toString(timeShift)));
         this.columnList.forEach(cell -> cell.setUpTransition(delta));

@@ -1,12 +1,11 @@
 package com.queen.counter.service;
 
-import com.airhacks.afterburner.views.FXMLView;
 import com.queen.counter.domain.*;
+import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -72,6 +71,7 @@ public class Populator {
                 g.getChildren().addAll(rectangle, t);
 
                 TranslateTransition translateTransition = new TranslateTransition();
+                translateTransition.setInterpolator(Interpolator.EASE_IN);
                 Cell cell = new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), t, translateTransition);
                 return 0;
             }).count());

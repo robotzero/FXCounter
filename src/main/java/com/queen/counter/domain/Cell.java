@@ -2,6 +2,7 @@ package com.queen.counter.domain;
 
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
+import javafx.beans.binding.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.shape.Rectangle;
@@ -14,6 +15,10 @@ public class Cell {
     private Text label;
     private TranslateTransition translateTransition;
     private BooleanProperty running = new SimpleBooleanProperty(false);
+    private BooleanProperty greaterDelta = new SimpleBooleanProperty(false);
+    private BooleanProperty hasEdgeRectangle = new SimpleBooleanProperty(false);
+    private BooleanProperty hasChangeTextRecangle = new SimpleBooleanProperty(false);
+
 
     public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition) {
         this.rectangle = rectangle;
@@ -21,11 +26,14 @@ public class Cell {
         this.label = label;
         this.translateTransition = translateTransition;
         this.translateTransition.setOnFinished(event -> this.running.set(false));
+        final NumberBinding RectangleYEdge = new When(greaterDelta).then(0).otherwise(240);
+        final NumberBinding RectangleYText = new When(greaterDelta).then(240).otherwise(0);
+        this.hasEdgeRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYEdge)).then(true).otherwise(false));
+        this.hasChangeTextRecangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYText)).then(true).otherwise(false));
     }
 
     public void setUpTransition(double delta) {
-        translateTransition.setInterpolator(Interpolator.EASE_IN);
-
+        
         if (delta == 0 || delta < 0) {
             if (this.rectangle.getTranslateY() == 0) {
                 translateTransition.setFromY(240);
@@ -49,20 +57,12 @@ public class Cell {
         translateTransition.play();
     }
 
-    public boolean hasEdgeRectangle(double delta) {
-        int translateY = delta > 0 ? 0 : 240;
-
-        return rectangle.getTranslateY() == translateY;
+    public boolean hasEdgeRectangle() {
+        return this.hasEdgeRectangle.get();
     }
 
-    public boolean hasChangeTextRectangle(double delta) {
-        int translateY = delta < 0 ? 0 : 240;
-
-        return rectangle.getTranslateY() == translateY;
-    }
-
-    public String getId() {
-        return rectangle.getId();
+    public boolean hasChangeTextRectangle() {
+        return this.hasChangeTextRecangle.get();
     }
 
     public void setLabel(String newLabel) {
@@ -77,5 +77,9 @@ public class Cell {
 
     public void setRunning(boolean running) {
         this.running.set(running);
+    }
+
+    public void setDelta(double delta) {
+        this.greaterDelta.set(delta > 0);
     }
 }
