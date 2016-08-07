@@ -14,7 +14,7 @@ public class Column {
     private List<Cell> columnList;
     private OffsetCalculator offsetCalculator;
     private Clocks clocks;
-    private BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty isTicking = new SimpleBooleanProperty(false);
     private BooleanBinding binding, edgeBinding;
 
@@ -27,21 +27,23 @@ public class Column {
                                     .or(columnList.get(1).isRunning())
                                     .or(columnList.get(2).isRunning())
                                     .or(columnList.get(3).isRunning());
-        this.isRunning().bind(binding);
+        this.running.bind(binding);
 
         edgeBinding = columnList.get(0).hasEdgeRectangle()
                                        .or(columnList.get(1).hasEdgeRectangle())
                                        .or(columnList.get(2).hasEdgeRectangle())
                                        .or(columnList.get(3).hasEdgeRectangle());
+
         this.offsetCalculator.getFoundEdgeRecangle().bind(edgeBinding);
 
         this.columnList.forEach(cell -> {
-            EventStream changeText = EventStreams.changesOf(cell.hasChangeTextRectangle()).supply(cell);
-            changeText.filter(c -> ((Cell) c).hasChangeTextRectangle().get()).subscribe(event -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
+            EventStream changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle()).supply(cell);
+            changeText.filter(c -> ((Cell) c).hasEdgeRectangle().get()).subscribe(event -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
         });
     }
 
     public void shift(double delta, String name) {
+        System.out.println(edgeBinding.get());
         this.offsetCalculator.setDelta(delta);
         this.columnList.forEach(cell -> cell.setDelta(delta));
         this.clocks.clockTick(name, delta, this.offsetCalculator.getCurrentOffset());
@@ -64,7 +66,7 @@ public class Column {
     }
 
     public BooleanProperty isRunning() {
-        return isRunning;
+        return running;
     }
 
     public BooleanProperty isTicking() {

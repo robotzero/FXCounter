@@ -10,8 +10,6 @@ import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
-import java.util.ArrayList;
-
 public class Cell {
 
     private Rectangle rectangle;
@@ -20,11 +18,13 @@ public class Cell {
     private TranslateTransition translateTransition;
     private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty greaterDelta = new SimpleBooleanProperty(false);
-    private BooleanProperty hasEdgeRectangle = new SimpleBooleanProperty(false);
+    private BooleanProperty edgeRectangle = new SimpleBooleanProperty(false);
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
     EventStream delta = EventStreams.valuesOf(currentDelta);
     EventStream changeText = EventStreams.invalidationsOf(this.hasTextRectangle).supply(this);
+    NumberBinding RectangleYEdge = new When(greaterDelta).then(0).otherwise(240);
+    NumberBinding RectangleYText = new When(greaterDelta).then(240).otherwise(0);
 
     public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition) {
         this.rectangle = rectangle;
@@ -32,9 +32,7 @@ public class Cell {
         this.label = label;
         this.translateTransition = translateTransition;
         this.translateTransition.setOnFinished(event -> this.running.set(false));
-        final NumberBinding RectangleYEdge = new When(greaterDelta).then(0).otherwise(240);
-        final NumberBinding RectangleYText = new When(greaterDelta).then(240).otherwise(0);
-        this.hasEdgeRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYEdge)).then(true).otherwise(false));
+        this.edgeRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYEdge)).then(true).otherwise(false));
         this.hasTextRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYText)).then(true).otherwise(false));
 
         EventStream translateY = EventStreams.valuesOf(rectangle.translateYProperty());
@@ -42,7 +40,6 @@ public class Cell {
         EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
                 delta, translateY
         );
-
 
         combo.map(change -> {
             Integer currDelta = change.get1();
@@ -89,7 +86,7 @@ public class Cell {
     }
 
     public BooleanProperty hasEdgeRectangle() {
-        return this.hasEdgeRectangle;
+        return this.edgeRectangle;
     }
 
     public BooleanProperty hasChangeTextRectangle() {

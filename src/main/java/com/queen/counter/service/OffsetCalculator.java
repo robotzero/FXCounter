@@ -24,11 +24,17 @@ public class OffsetCalculator {
         combo.map(change -> {
             Integer delta = change.get1();
             Boolean edgeRectangle = change.get2();
-
+//            System.out.println(edgeRectangle);
             if (delta < 0 && edgeRectangle) {
+//                System.out.println("one");
                 return 2;
             }
 
+            if (delta > 0 && edgeRectangle) {
+//                System.out.println("two");
+                return 2;
+            }
+//            System.out.println("three");
             return 1;
         }).feedTo(offset);
     }
@@ -38,7 +44,7 @@ public class OffsetCalculator {
     }
 
     public void setFoundEndgeRectangle(boolean found) {
-        this.foundEndgeRectangle.setValue(found);
+        this.foundEndgeRectangle.set(found);
     }
 
     public void setDelta(double delta) {
