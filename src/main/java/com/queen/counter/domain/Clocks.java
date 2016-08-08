@@ -12,7 +12,9 @@ public class Clocks {
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
     private EventSource<Boolean> eventSource;
-    private IntegerProperty timeShift = new SimpleIntegerProperty(0);
+    private IntegerProperty timeShiftSeconds = new SimpleIntegerProperty(0);
+    private IntegerProperty timeShiftMinutes = new SimpleIntegerProperty(0);
+    private IntegerProperty timeShiftHours = new SimpleIntegerProperty(0);
 
     private final int MIN = 59;
     private final int HR  = 23;
@@ -32,6 +34,10 @@ public class Clocks {
         this.scrollHoursClock   = LocalTime.of(mainClock.getHour(), MIN, MIN);
         this.scrollMinutesClock = LocalTime.of(HR, mainClock.getMinute(), MIN);
         this.scrollSecondsClock = LocalTime.of(HR, MIN, mainClock.getSecond());
+
+        timeShiftSeconds.set(this.scrollSecondsClock.plusSeconds(2).getSecond());
+//        timeShiftMinutes.set(this.scrollMinutesClock.plusMinutes(2).getMinute());
+//        timeShiftHours.set(this.scrollHoursClock.plusHours(2).getHour());
     }
 
     public LocalTime setScrollSecondsClock(int seconds) {
@@ -66,23 +72,29 @@ public class Clocks {
         if (label.equals("seconds")) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShift.set(scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond());
+            timeShiftSeconds.set(scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond());
         }
 
         if (label.equals("minutes")) {
             this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShift.set(scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute());
+            timeShiftMinutes.set(scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute());
         }
 
         if (label.equals("hours")) {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShift.set(scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour());
+            timeShiftHours.set(scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour());
         }
     }
 
-    public IntegerProperty getTimeShift() {
-        return this.timeShift;
+    public IntegerProperty getTimeShift(ColumnType type) {
+        if (type.equals(ColumnType.SECONDS)) {
+            return this.timeShiftSeconds;
+        }
+        if (type.equals(ColumnType.MINUTES)) {
+            return this.timeShiftMinutes;
+        }
+        return this.timeShiftHours;
     }
 }

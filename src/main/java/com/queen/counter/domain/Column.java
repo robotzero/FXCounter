@@ -17,11 +17,13 @@ public class Column {
     private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty isTicking = new SimpleBooleanProperty(false);
     private BooleanBinding binding, edgeBinding;
+    private ColumnType columnType;
 
-    public Column(List<Cell> columnList, OffsetCalculator offsetCalculator, Clocks clocks) {
+    public Column(List<Cell> columnList, OffsetCalculator offsetCalculator, Clocks clocks, ColumnType columnType) {
         this.columnList = columnList;
         this.offsetCalculator = offsetCalculator;
         this.clocks = clocks;
+        this.columnType = columnType;
 
          binding = columnList.get(0).isRunning()
                                     .or(columnList.get(1).isRunning())
@@ -38,12 +40,11 @@ public class Column {
 
         this.columnList.forEach(cell -> {
             EventStream changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle()).supply(cell);
-            changeText.filter(c -> ((Cell) c).hasEdgeRectangle().get()).subscribe(event -> cell.setLabel(Integer.toString(this.clocks.getTimeShift().get())));
+            changeText.filter(c -> ((Cell) c).hasChangeTextRectangle().get()).subscribe(event -> cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get())));
         });
     }
 
     public void shift(double delta, String name) {
-        System.out.println(edgeBinding.get());
         this.offsetCalculator.setDelta(delta);
         this.columnList.forEach(cell -> cell.setDelta(delta));
         this.clocks.clockTick(name, delta, this.offsetCalculator.getCurrentOffset());

@@ -120,6 +120,14 @@ public class Populator {
             return new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), label, translateTransition);
         }).collect(Collectors.toList());
 
-        return new Column(list, offsetCalculator, clocks);
+        if (gid.equals("seconds")) {
+            return new Column(list, offsetCalculator, clocks, ColumnType.SECONDS);
+        }
+
+        if (gid.equals("minutes")) {
+            return new Column(list, offsetCalculator, clocks, ColumnType.MINUTES);
+        }
+
+        return new Column(list, offsetCalculator, clocks, ColumnType.HOURS);
     }
 }
