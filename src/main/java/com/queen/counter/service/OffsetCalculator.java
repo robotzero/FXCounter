@@ -6,6 +6,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import javax.annotation.PostConstruct;
+import java.util.Random;
 
 public class OffsetCalculator {
 
@@ -20,7 +21,7 @@ public class OffsetCalculator {
         EventStream edgeRectangleStream = EventStreams.valuesOf(foundEndgeRectangle);
 
         EventStream<Tuple2<Integer, Boolean>> combo = EventStreams.combine(deltaStream, edgeRectangleStream);
-
+        Random random = new Random();
         combo.map(change -> {
             Integer delta = change.get1();
             Boolean edgeRectangle = change.get2();
@@ -34,8 +35,8 @@ public class OffsetCalculator {
 //                System.out.println("two");
                 return 2;
             }
-//            System.out.println("three");
-            return 1;
+            return random.nextInt(20);
+//            return 1;
         }).feedTo(offset);
     }
 

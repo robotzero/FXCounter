@@ -21,10 +21,10 @@ public class Cell {
     private BooleanProperty edgeRectangle = new SimpleBooleanProperty(false);
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
-    EventStream delta = EventStreams.valuesOf(currentDelta);
-    EventStream changeText = EventStreams.invalidationsOf(this.hasTextRectangle).supply(this);
-    NumberBinding RectangleYEdge = new When(greaterDelta).then(0).otherwise(240);
-    NumberBinding RectangleYText = new When(greaterDelta).then(240).otherwise(0);
+    private EventStream delta = EventStreams.valuesOf(currentDelta);
+    private EventStream changeText = EventStreams.invalidationsOf(this.hasTextRectangle).supply(this);
+    private NumberBinding RectangleYEdge = new When(greaterDelta).then(0).otherwise(240);
+    private NumberBinding RectangleYText = new When(greaterDelta.and(currentDelta.isNotEqualTo(0))).then(0).otherwise(240);
 
     public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition) {
         this.rectangle = rectangle;
@@ -33,7 +33,8 @@ public class Cell {
         this.translateTransition = translateTransition;
         this.translateTransition.setOnFinished(event -> this.running.set(false));
         this.edgeRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYEdge)).then(true).otherwise(false));
-        this.hasTextRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYText)).then(true).otherwise(false));
+//        this.hasTextRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYText)).then(true).otherwise(false));
+        this.hasTextRectangle.bind(new When(translateTransition.fromYProperty().isEqualTo(240).and(greaterDelta.not()).and(currentDelta.isEqualTo(0))).then(true).otherwise(false));
 
         EventStream translateY = EventStreams.valuesOf(rectangle.translateYProperty());
 
@@ -110,9 +111,5 @@ public class Cell {
     public void setDelta(double delta) {
         this.greaterDelta.set(delta > 0);
         this.currentDelta.set((int) delta);
-    }
-
-    public EventStream getTextEvent() {
-        return this.changeText;
     }
 }

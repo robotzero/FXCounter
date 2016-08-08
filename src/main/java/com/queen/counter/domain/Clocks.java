@@ -36,8 +36,8 @@ public class Clocks {
         this.scrollSecondsClock = LocalTime.of(HR, MIN, mainClock.getSecond());
 
         timeShiftSeconds.set(this.scrollSecondsClock.plusSeconds(2).getSecond());
-//        timeShiftMinutes.set(this.scrollMinutesClock.plusMinutes(2).getMinute());
-//        timeShiftHours.set(this.scrollHoursClock.plusHours(2).getHour());
+        timeShiftMinutes.set(this.scrollMinutesClock.plusMinutes(2).getMinute());
+        timeShiftHours.set(this.scrollHoursClock.plusHours(2).getHour());
     }
 
     public LocalTime setScrollSecondsClock(int seconds) {
@@ -66,22 +66,22 @@ public class Clocks {
         return this.scrollSecondsClock;
     }
 
-    public void clockTick(final String label, final double delta, int timeOffset) {
+    public void clockTick(final ColumnType type, final double delta, int timeOffset) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
 
-        if (label.equals("seconds")) {
+        if (type.equals(ColumnType.SECONDS)) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             timeShiftSeconds.set(scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond());
         }
 
-        if (label.equals("minutes")) {
+        if (type.equals(ColumnType.MINUTES)) {
             this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             timeShiftMinutes.set(scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute());
         }
 
-        if (label.equals("hours")) {
+        if (type.equals(ColumnType.HOURS)) {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
             timeShiftHours.set(scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour());
