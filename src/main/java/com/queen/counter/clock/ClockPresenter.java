@@ -2,16 +2,9 @@ package com.queen.counter.clock;
 
 import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
-import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
-import com.queen.counter.domain.UIService;
 import com.queen.counter.service.Populator;
-import com.queen.counter.service.Scroller;
-import javafx.beans.binding.Binding;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -29,7 +22,6 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class ClockPresenter implements Initializable {
 
@@ -61,21 +53,9 @@ public class ClockPresenter implements Initializable {
     private Populator populator;
 
     @Inject
-    private Scroller scroller;
-
-    @Inject
-    private InMemoryCachedServiceLocator locator;
-
-    @Inject
     private Clocks clocks;
 
-    @Inject
-    private UIService uiService;
-
     private Subscription subscribe;
-
-    private StringProperty src = new SimpleStringProperty();
-    private Binding stringBinding = Bindings.createStringBinding(() -> src.getValue().equals("group") ? "seconds" : "minutes", src);
 
     private Column secondsColumn;
     private Column minutesColumn;
@@ -84,13 +64,10 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
-        this.uiService.setGroups(() -> Stream.of(seconds, minutes));
         secondsColumn = populator.create(seconds.getId(), seconds);
         minutesColumn = populator.create(minutes.getId(), minutes);
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
-
-        Binding b = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).toBinding(null);
 
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().not().or(minutesColumn.isTicking().not()));
@@ -104,13 +81,13 @@ public class ClockPresenter implements Initializable {
         merged.subscribe(event -> {
             if (((Group) event.getSource()).getId().contains("seconds")) {
                 secondsColumn.setRunning(true);
-                secondsColumn.shift(event.getDeltaY(), "seconds");
+                secondsColumn.shift(event.getDeltaY());
                 secondsColumn.play();
             }
 
             if (((Group) event.getSource()).getId().contains("minutes")) {
                 minutesColumn.setRunning(true);
-                minutesColumn.shift(event.getDeltaY(), "minutes");
+                minutesColumn.shift(event.getDeltaY());
                 minutesColumn.play();
             }
         });
@@ -118,13 +95,13 @@ public class ClockPresenter implements Initializable {
         startClicks.subscribe(click -> {
             secondsColumn.setTicking(true);
             minutesColumn.setTicking(true);
-            secondsColumn.shift(-60, "seconds");
+            secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((something) -> {
-                secondsColumn.shift(-60, "seconds");
+                secondsColumn.shift(-60);
                 secondsColumn.play();
                 if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                    minutesColumn.shift(-60, "minutes");
+                    minutesColumn.shift(-60);
                     minutesColumn.play();
                     }
                 }

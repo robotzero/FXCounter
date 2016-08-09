@@ -8,11 +8,8 @@ import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
-import com.queen.counter.service.OffsetCalculator;
 import com.queen.counter.service.Populator;
-import com.queen.counter.service.Scroller;
 import com.queen.counter.service.Ticker;
-import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,12 +18,10 @@ public class SpringApplicationConfiguration {
 
     private Animator animator = new Animator();
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
-    private EventSource eventSource = new EventSource();
     private FXMLView clockView = new ClockView();
     private UIService uiService = new UIService();
-    private OffsetCalculator offsetCalculator = new OffsetCalculator();
 
-    private Clocks clocks = new Clocks(eventSource);
+    private Clocks clocks = new Clocks();
 
     @Bean
     public FXMLView clockView() {
@@ -50,19 +45,9 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Populator populator() {
-//        Pane secondsPane = (Pane) clockView.getView().getChildrenUnmodifiable().stream().filter(p -> p.getId().contains("seconds")).findFirst().get();
-        //System.out.println(this.clockView.getViewWithoutRootContainer());
-//        Pane minutesPane = (Pane) clockView.getView().getChildrenUnmodifiable().stream().filter(p -> p.getId().contains("minutes")).findFirst().get();
-//        System.out.println(secondsPane);
-        Populator populator = new Populator(uiService, clocks, offsetCalculator);
+        Populator populator = new Populator(uiService, clocks);
 
         return populator;
-        //return new Populator(Stream.of((Group)secondsPane.getChildren().get(0), (Group)minutesPane.getChildren().get(0)));
-    }
-
-    @Bean
-    public Scroller scroller() {
-        return new Scroller(animator, cache, clocks, uiService, eventSource, offsetCalculator);
     }
 
     @Bean
@@ -83,10 +68,5 @@ public class SpringApplicationConfiguration {
     @Bean
     public UIService uiService() {
         return uiService;
-    }
-
-    @Bean
-    public OffsetCalculator offsetCalculator() {
-        return offsetCalculator;
     }
 }

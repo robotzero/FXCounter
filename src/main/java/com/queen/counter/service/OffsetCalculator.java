@@ -26,17 +26,17 @@ public class OffsetCalculator {
             Integer delta = change.get1();
             Boolean edgeRectangle = change.get2();
 //            System.out.println(edgeRectangle);
-            if (delta < 0 && edgeRectangle) {
+//            if (delta < 0 && edgeRectangle) {
 //                System.out.println("one");
-                return 2;
-            }
-
-            if (delta > 0 && edgeRectangle) {
-//                System.out.println("two");
-                return 2;
-            }
-            return random.nextInt(20);
-//            return 1;
+//                return 2;
+//            }
+//
+//            if (delta > 0 && edgeRectangle) {
+////                System.out.println("two");
+//                return 2;
+//            }
+//            return random.nextInt(20);
+            return 1;
         }).feedTo(offset);
     }
 

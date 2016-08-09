@@ -95,6 +95,23 @@ public class CounterAppIT extends ApplicationTest {
         };
     }
 
+    @DataProvider
+    public static Object[][] basicSecondsMinutesScrollsSetupUpDown() {
+
+        // Number of scrolls, direction, group, timewait, expected new translate, expected label
+        return new Object[][] {
+                { 1, VerticalDirection.UP, "#seconds", 650, 60, "14" },
+                { 2, VerticalDirection.UP, "#seconds", 650, 120, "14" },
+                { 3, VerticalDirection.UP, "#seconds", 650, 180, "14" },
+                { 4, VerticalDirection.UP, "#minutes", 650, 240, "18" },
+//                { 5, VerticalDirection.UP, "#seconds", 650, 60, "18" },
+//                { 6, VerticalDirection.UP, "#seconds", 650, 120, "18" },
+//                { 7, VerticalDirection.UP, "#seconds", 650, 180, "18" },
+//                { 8, VerticalDirection.UP, "#seconds", 650, 240, "18" },
+//                { 9, VerticalDirection.UP, "#seconds", 650, 60, "22" },
+        };
+    }
+
     @Test
     @UseDataProvider("basicSecondsScrollsSetupDown")
     public void seconds_basic_scroll_down(int scrollsNumber, VerticalDirection direction, String node, int waitTime, int newTranslate, String label) {
@@ -129,6 +146,41 @@ public class CounterAppIT extends ApplicationTest {
     @Test
     @UseDataProvider("basicSecondsScrollsSetupUp")
     public void seconds_basic_scroll_up(int scrollsNumber, VerticalDirection direction, String node, int waitTime, int newTranslate, String label) {
+
+        Group gs = assertContext().getNodeFinder().lookup(node).queryFirst();
+
+        String id = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == 0).findAny().get().getId();
+        Text l = (Text) gs.getChildren().stream().filter(lbl -> lbl.getClass().equals(Text.class)).filter(lbl1 -> lbl1.getId().equals(id)).findAny().get();
+        String t = l.getText();
+
+
+        IntStream.range(0, scrollsNumber).forEach(i -> {
+            moveTo(node);
+            scroll(direction);
+            try {
+                WaitFor.waitUntil(timeout(millis(waitTime)));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        verifyThat(node, (Group g) -> {
+            Optional<Node> r = gs.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(id)).findAny();
+            if (r.isPresent()) {
+                String lb =  gs.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(id)).map(tt -> ((Text) tt).getText()).findAny().get();
+                System.out.println("DEBUG");
+                System.out.println(r.get().getTranslateY());
+                System.out.println(lb);
+                return r.get().getTranslateY() == newTranslate && lb.equals(label);
+            }
+            return false;
+        });
+    }
+
+    // @TODO check minutes group as well.
+    @Test
+    @UseDataProvider("basicSecondsMinutesScrollsSetupUpDown")
+    public void seconds_and_minutes_basic_scroll_up_down(int scrollsNumber, VerticalDirection direction, String node, int waitTime, int newTranslate, String label) {
 
         Group gs = assertContext().getNodeFinder().lookup(node).queryFirst();
 

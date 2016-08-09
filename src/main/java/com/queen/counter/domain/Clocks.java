@@ -11,17 +11,13 @@ public class Clocks {
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
-    private EventSource<Boolean> eventSource;
+
     private IntegerProperty timeShiftSeconds = new SimpleIntegerProperty(0);
     private IntegerProperty timeShiftMinutes = new SimpleIntegerProperty(0);
     private IntegerProperty timeShiftHours = new SimpleIntegerProperty(0);
 
     private final int MIN = 59;
     private final int HR  = 23;
-
-    public Clocks(EventSource<Boolean> eventSource) {
-        this.eventSource = eventSource;
-    }
 
     //@TODO change to spring onCreate or similar.
     public void initializeClocks(final LocalTime mainClock) {
@@ -66,25 +62,25 @@ public class Clocks {
         return this.scrollSecondsClock;
     }
 
-    public void clockTick(final ColumnType type, final double delta, int timeOffset) {
+    public void clockTick(final ColumnType type, final double delta) {
         int normalizedDelta = (int) delta / (int) Math.abs(delta);
 
         if (type.equals(ColumnType.SECONDS)) {
             this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShiftSeconds.set(scrollSecondsClock.plusSeconds(timeOffset * normalizedDelta).getSecond());
+            timeShiftSeconds.set(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
         }
 
         if (type.equals(ColumnType.MINUTES)) {
             this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShiftMinutes.set(scrollMinutesClock.plusMinutes(timeOffset * normalizedDelta).getMinute());
+            timeShiftMinutes.set(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
         }
 
         if (type.equals(ColumnType.HOURS)) {
             this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
             this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShiftHours.set(scrollHoursClock.plusHours(timeOffset * normalizedDelta).getHour());
+            timeShiftHours.set(scrollHoursClock.plusHours(normalizedDelta).getHour());
         }
     }
 

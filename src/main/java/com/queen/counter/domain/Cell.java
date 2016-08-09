@@ -33,11 +33,10 @@ public class Cell {
         this.translateTransition = translateTransition;
         this.translateTransition.setOnFinished(event -> this.running.set(false));
         this.edgeRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYEdge)).then(true).otherwise(false));
-//        this.hasTextRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(RectangleYText)).then(true).otherwise(false));
-        this.hasTextRectangle.bind(new When(translateTransition.fromYProperty().isEqualTo(240).and(greaterDelta.not()).and(currentDelta.isEqualTo(0))).then(true).otherwise(false));
-
+        this.hasTextRectangle.bind(new When(rectangle.translateYProperty().greaterThan(180).and(rectangle.translateYProperty().lessThan(240)).and(currentDelta.lessThan(0))).then(true).otherwise(
+                new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(60)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
+        ));
         EventStream translateY = EventStreams.valuesOf(rectangle.translateYProperty());
-
         EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
                 delta, translateY
         );
