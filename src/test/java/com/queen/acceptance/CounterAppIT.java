@@ -20,6 +20,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -33,6 +36,8 @@ public class CounterAppIT extends ApplicationTest {
 
     private final ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
     private final static int TIME_WAIT = 650;
+    private final static int TOP_NODE_LOCATION = 0;
+    private final static int BOTTOM_NODE_LOCATION = 180;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -67,33 +72,41 @@ public class CounterAppIT extends ApplicationTest {
 
         // Number of scrolls,
         // direction, node,
-        // top location,
-        // bottom location,
         // expected top new translate,
         // expected bottom new translate,
         // expected top label,
         // expected bottom label
+        // minutes -> scrolls, direction
+//                    scrolls, direction
+        // seconds -> scrolls, direction
+        // minutes -> scrolls, direction
+        Map<String, Map<Integer, VerticalDirection>> operations = new HashMap<>();
+        Map<Integer, VerticalDirection> scrollsDirections = new HashMap<>();
+        scrollsDirections.put(1, VerticalDirection.UP);
+        operations.put("#seconds", scrollsDirections);
+
         return new Object[][] {
                 // DOWN
-                { 1, VerticalDirection.DOWN, "#seconds", 0, 180, 180, 0, "10", "13"},
-//                { 2, VerticalDirection.DOWN, "#seconds", 650, 120, "10" },
-//                { 3, VerticalDirection.DOWN, "#seconds", 650, 60, "10" },
-//                { 4, VerticalDirection.DOWN, "#seconds", 650, 0, "10" },
-//                { 5, VerticalDirection.DOWN, "#seconds", 650, 180, "6" },
-//                { 6, VerticalDirection.DOWN, "#seconds", 650, 120, "6" },
-//                { 7, VerticalDirection.DOWN, "#seconds", 650, 60, "6" },
-//                { 8, VerticalDirection.DOWN, "#seconds", 650, 0, "6" },
-//                { 9, VerticalDirection.DOWN, "#seconds", 650, 180, "2" },
+//                { 1, VerticalDirection.DOWN, "#seconds", 180, 0, "10", "13"},
+//                { 2, VerticalDirection.DOWN, "#seconds", 120, 180, "10" , "9"},
+//                { 3, VerticalDirection.DOWN, "#seconds", 60, 120, "10", "9" },
+//                { 4, VerticalDirection.DOWN, "#seconds", 0, 60, "10", "9" },
+//                { 5, VerticalDirection.DOWN, "#seconds", 180, 0, "6", "9" },
+//                { 6, VerticalDirection.DOWN, "#seconds", 120, 180, "6", "5" },
+//                { 7, VerticalDirection.DOWN, "#seconds", 60, 120, "6", "5" },
+//                { 8, VerticalDirection.DOWN, "#seconds", 0, 60, "6", "5" },
+//                { 9, VerticalDirection.DOWN, "#seconds", 180, 0, "2", "5" },
+//                { 10, VerticalDirection.DOWN, "#seconds", 120, 180, "2", "1" },
 //                // UP
-//                { 1, VerticalDirection.UP, "#seconds", 650, 60, "14" },
-//                { 2, VerticalDirection.UP, "#seconds", 650, 120, "14" },
-//                { 3, VerticalDirection.UP, "#seconds", 650, 180, "14" },
-//                { 4, VerticalDirection.UP, "#seconds", 650, 240, "14" },
-//                { 5, VerticalDirection.UP, "#seconds", 650, 60, "18" },
-//                { 6, VerticalDirection.UP, "#seconds", 650, 120, "18" },
-//                { 7, VerticalDirection.UP, "#seconds", 650, 180, "18" },
-//                { 8, VerticalDirection.UP, "#seconds", 650, 240, "18" },
-//                { 9, VerticalDirection.UP, "#seconds", 650, 60, "22" },
+                { 60, 240, "14", "11", operations },
+//                { 2, VerticalDirection.UP, "#seconds", 120, 60, "14", "15" },
+//                { 3, VerticalDirection.UP, "#seconds", 180, 120, "14", "15" },
+//                { 4, VerticalDirection.UP, "#seconds", 240, 180, "14", "15" },
+//                { 5, VerticalDirection.UP, "#seconds", 60, 240, "18", "15" },
+//                { 6, VerticalDirection.UP, "#seconds", 120, 60, "18", "19" },
+//                { 7, VerticalDirection.UP, "#seconds", 180, 120, "18", "19" },
+//                { 8, VerticalDirection.UP, "#seconds", 240, 180, "18", "19" },
+//                { 9, VerticalDirection.UP, "#seconds", 60, 240, "22", "19" },
         };
     }
 
@@ -126,42 +139,44 @@ public class CounterAppIT extends ApplicationTest {
     @Test
     @UseDataProvider("basicScrollsSetup")
     public void basic_scroll(
-            int scrollsNumber,
-            VerticalDirection direction,
-            String node,
-            int topLocation,
-            int bottomLocation,
             int topNewTranslate,
             int bottomNewTranslate,
             String topLabel,
-            String bottomLabel
-    ) {
+            String bottomLabel,
+            Map<String, Map<Integer, VerticalDirection>> ops
+            ) {
 
-        Group gs = assertContext().getNodeFinder().lookup(node).queryFirst();
+        Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
+        Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
 
-        String topId = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == topLocation).findAny().get().getId();
-        String bottomId = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == bottomLocation).findAny().get().getId();
+        String topIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
+        String bottomIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
 
-        IntStream.range(0, scrollsNumber).forEach(i -> {
-            moveTo(node);
-            scroll(direction);
-            try {
-                WaitFor.waitUntil(timeout(millis(TIME_WAIT)));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        ops.forEach((nodes, operations) -> {
+            operations.forEach((scrollNumber, direction) -> {
+                IntStream.range(0, scrollNumber).forEach(i -> {
+                    moveTo(node);
+                    scroll(direction);
+                    try {
+                        WaitFor.waitUntil(timeout(millis(TIME_WAIT)));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+            });
         });
 
-        verifyThat(node, (Group g) -> {
-            Optional<Node> exTopRectangle = gs.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topId)).findAny();
-            Optional<Node> exBottomRectangle = gs.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomId)).findAny();
+        verifyThat("#seconds", (Group s) -> {
+            Optional<Node> exTopRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
+            Optional<Node> exBottomRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
             if (exTopRectangle.isPresent()) {
-                String lb =  gs.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
                 return exTopRectangle.get().getTranslateY() == topNewTranslate && lb.equals(topLabel);
             }
 
             if (exBottomRectangle.isPresent()) {
-                String lb =  gs.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomId)).map(tt -> ((Text) tt).getText()).findAny().get();
+                String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
                 return exBottomRectangle.get().getTranslateY() == bottomNewTranslate && lb.equals(bottomLabel);
             }
             return false;
