@@ -4,6 +4,8 @@ import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
+import com.queen.counter.domain.SavedTimer;
+import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -55,6 +57,9 @@ public class ClockPresenter implements Initializable {
     @Inject
     private Clocks clocks;
 
+    @Inject
+    private SavedTimerRepository savedTimerRepository;
+
     private Subscription subscribe;
 
     private Column secondsColumn;
@@ -63,7 +68,13 @@ public class ClockPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
+        if (savedTimerRepository.selectLatest() == null) {
+            this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
+        } else {
+            SavedTimer savedTimer = savedTimerRepository.selectLatest();
+            this.clocks.initializeClocks(savedTimer.getSavedTimer());
+        }
+
         secondsColumn = populator.create(seconds.getId(), seconds);
         minutesColumn = populator.create(minutes.getId(), minutes);
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
@@ -93,6 +104,7 @@ public class ClockPresenter implements Initializable {
         });
 
         startClicks.subscribe(click -> {
+            savedTimerRepository.create("latest", clocks.getMainClock());
             secondsColumn.setTicking(true);
             minutesColumn.setTicking(true);
             secondsColumn.shift(-60);

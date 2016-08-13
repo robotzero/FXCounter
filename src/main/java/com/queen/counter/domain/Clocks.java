@@ -2,7 +2,6 @@ package com.queen.counter.domain;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import org.reactfx.EventSource;
 import java.time.LocalTime;
 
 public class Clocks {

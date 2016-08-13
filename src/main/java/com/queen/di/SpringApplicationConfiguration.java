@@ -8,10 +8,16 @@ import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
+import com.queen.counter.repository.SavedTimerRepository;
+import com.queen.counter.repository.SavedTimerSqlliteJdbcRepository;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Ticker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SpringApplicationConfiguration {
@@ -68,5 +74,23 @@ public class SpringApplicationConfiguration {
     @Bean
     public UIService uiService() {
         return uiService;
+    }
+
+    @Bean
+    public DataSource jdbcDataSource() {
+        SingleConnectionDataSource ds = new SingleConnectionDataSource();
+        ds.setDriverClassName("org.sqlite.JDBC");
+        ds.setUrl("jdbc:sqlite:clocks.db");
+        return ds;
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public SavedTimerRepository savedTimerRepository(JdbcTemplate jdbcTemplate) {
+        return new SavedTimerSqlliteJdbcRepository(jdbcTemplate);
     }
 }

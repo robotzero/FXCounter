@@ -252,7 +252,7 @@ public class ScrollTest extends CounterAppIT {
         List<Step> steps = new ArrayList<>();
         ExpectedValues expectedValues;
 
-        public static Sequence sequence(ExpectedValues expectedValues, Step ...step) {
+        static Sequence sequence(ExpectedValues expectedValues, Step ...step) {
             Sequence sequence = new Sequence();
             sequence.steps.addAll(asList(step));
             sequence.expectedValues = expectedValues;
