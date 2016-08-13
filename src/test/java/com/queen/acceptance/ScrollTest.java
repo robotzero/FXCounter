@@ -3,6 +3,7 @@ package com.queen.acceptance;
 import com.google.code.tempusfugit.temporal.WaitFor;
 import com.queen.counter.domain.ColumnType;
 import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Group;
@@ -10,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,18 +27,19 @@ import static java.util.Arrays.asList;
 import static org.testfx.api.FxAssert.assertContext;
 import static org.testfx.api.FxAssert.verifyThat;
 
+@RunWith(DataProviderRunner.class)
 public class ScrollTest extends CounterAppIT {
 
     @DataProvider
-    static Object[][] scrolls() {
+    public static Object[][] scrolls() {
         return new Object[][]{
                 //@formatter:off
                 {sequence(
-                        expected(60, "14", 240, "11"),
+                        expected(60, "14", 240, "11", 0, "18", 180, "14"),
                         step(ColumnType.SECONDS, VerticalDirection.UP, 1)
                 )},
                 {sequence(
-                        expected(60, "14", 240, "11"),
+                        expected(60, "14", 240, "11", 0, "18", 180, "14"),
                         step(ColumnType.SECONDS, VerticalDirection.UP, 1)
                 )}
                 //@formatter:on
@@ -92,6 +95,10 @@ public class ScrollTest extends CounterAppIT {
 
         String topIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
         String bottomIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
+
+        String topIdMinutes = minutes.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
+        String bottomIdMinutes = minutes.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
+
         sequence.steps.forEach(step -> {
             moveTo("#" + step.columnType.name().toLowerCase());
             IntStream.range(0, step.scrollsNumber).forEach(i -> {
@@ -110,12 +117,28 @@ public class ScrollTest extends CounterAppIT {
             Optional<Node> exBottomRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
             if (exTopRectangle.isPresent()) {
                 String label =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPosition && label.equals(sequence.expectedValues.topLabel);
+                return exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPositionSeconds && label.equals(sequence.expectedValues.topLabelSeconds);
             }
 
             if (exBottomRectangle.isPresent()) {
                 String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getTranslateY() == sequence.expectedValues.bottomPosition && lb.equals(sequence.expectedValues.bottomLabel);
+                return exBottomRectangle.get().getTranslateY() == sequence.expectedValues.bottomPositionSeconds && lb.equals(sequence.expectedValues.bottomLabelSeconds);
+            }
+
+            return false;
+        });
+
+        verifyThat("#minutes", (Group m) -> {
+            Optional<Node> exTopRectangle = minutes.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
+            Optional<Node> exBottomRectangle = minutes.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
+            if (exTopRectangle.isPresent()) {
+                String label =  minutes.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPositionMinutes && label.equals(sequence.expectedValues.topLabelMinutes);
+            }
+
+            if (exBottomRectangle.isPresent()) {
+                String lb =  minutes.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exBottomRectangle.get().getTranslateY() == sequence.expectedValues.bottomPositionMinutes && lb.equals(sequence.expectedValues.bottomLabelMinutes);
             }
 
             return false;
@@ -154,17 +177,36 @@ public class ScrollTest extends CounterAppIT {
     }
 
     static class ExpectedValues {
-        String topLabel;
-        String bottomLabel;
-        Integer topPosition;
-        Integer bottomPosition;
+        String topLabelSeconds;
+        String bottomLabelSeconds;
+        Integer topPositionSeconds;
+        Integer bottomPositionSeconds;
 
-        static ExpectedValues expected(Integer topPosition, String topLabel, Integer bottomPosition, String bottomLabel) {
+        String topLabelMinutes;
+        String bottomLabelMinutes;
+        Integer topPositionMinutes;
+        Integer bottomPositionMinutes;
+
+        static ExpectedValues expected(
+                Integer topPositionSeconds,
+                String topLabelSeconds,
+                Integer bottomPositionSeconds,
+                String bottomLabelSeconds,
+                Integer topPositionMinutes,
+                String topLabelMinutes,
+                Integer bottomPositionMinutes,
+                String bottomLabelMinutes
+        ) {
             ExpectedValues exp = new ExpectedValues();
-            exp.bottomLabel = bottomLabel;
-            exp.topLabel = topLabel;
-            exp.topPosition = topPosition;
-            exp.bottomPosition = bottomPosition;
+            exp.bottomLabelSeconds = bottomLabelSeconds;
+            exp.topLabelSeconds = topLabelSeconds;
+            exp.topPositionSeconds = topPositionSeconds;
+            exp.bottomPositionSeconds = bottomPositionSeconds;
+
+            exp.bottomLabelMinutes = bottomLabelMinutes;
+            exp.topLabelMinutes = topLabelMinutes;
+            exp.topPositionMinutes = topPositionMinutes;
+            exp.bottomPositionMinutes = bottomPositionMinutes;
 
             return exp;
         }
