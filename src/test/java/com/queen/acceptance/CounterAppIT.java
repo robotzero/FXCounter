@@ -3,6 +3,7 @@ package com.queen.acceptance;
 import com.airhacks.afterburner.injection.Injector;
 import com.google.code.tempusfugit.temporal.WaitFor;
 import com.queen.counter.clock.ClockView;
+import com.queen.counter.domain.ColumnType;
 import com.queen.di.SpringApplicationConfiguration;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
@@ -20,14 +21,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testfx.framework.junit.ApplicationTest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;
 import static com.google.code.tempusfugit.temporal.Timeout.timeout;
+import static com.queen.acceptance.CounterAppIT.ExpectedValues.expected;
+import static com.queen.acceptance.CounterAppIT.Sequence.sequence;
+import static com.queen.acceptance.CounterAppIT.Step.step;
+import static java.util.Arrays.asList;
 import static org.testfx.api.FxAssert.assertContext;
 import static org.testfx.api.FxAssert.verifyThat;
 
@@ -69,23 +71,18 @@ public class CounterAppIT extends ApplicationTest {
 
     @DataProvider
     public static Object[][] basicScrollsSetup() {
+        return new Object[][]{
+            {sequence(
+                expected(60, "14", 240, "11"),
+                step(ColumnType.SECONDS, VerticalDirection.UP, 1)
+            )},
+            {sequence(
+                    expected(60, "14", 240, "11"),
+                    step(ColumnType.SECONDS, VerticalDirection.UP, 1)
+            )}
+        };
+    }
 
-        // Number of scrolls,
-        // direction, node,
-        // expected top new translate,
-        // expected bottom new translate,
-        // expected top label,
-        // expected bottom label
-        // minutes -> scrolls, direction
-//                    scrolls, direction
-        // seconds -> scrolls, direction
-        // minutes -> scrolls, direction
-        Map<String, Map<Integer, VerticalDirection>> operations = new HashMap<>();
-        Map<Integer, VerticalDirection> scrollsDirections = new HashMap<>();
-        scrollsDirections.put(1, VerticalDirection.UP);
-        operations.put("#seconds", scrollsDirections);
-
-        return new Object[][] {
                 // DOWN
 //                { 1, VerticalDirection.DOWN, "#seconds", 180, 0, "10", "13"},
 //                { 2, VerticalDirection.DOWN, "#seconds", 120, 180, "10" , "9"},
@@ -98,7 +95,7 @@ public class CounterAppIT extends ApplicationTest {
 //                { 9, VerticalDirection.DOWN, "#seconds", 180, 0, "2", "5" },
 //                { 10, VerticalDirection.DOWN, "#seconds", 120, 180, "2", "1" },
 //                // UP
-                { 60, 240, "14", "11", operations },
+
 //                { 2, VerticalDirection.UP, "#seconds", 120, 60, "14", "15" },
 //                { 3, VerticalDirection.UP, "#seconds", 180, 120, "14", "15" },
 //                { 4, VerticalDirection.UP, "#seconds", 240, 180, "14", "15" },
@@ -107,11 +104,10 @@ public class CounterAppIT extends ApplicationTest {
 //                { 7, VerticalDirection.UP, "#seconds", 180, 120, "18", "19" },
 //                { 8, VerticalDirection.UP, "#seconds", 240, 180, "18", "19" },
 //                { 9, VerticalDirection.UP, "#seconds", 60, 240, "22", "19" },
-        };
-    }
 
     @DataProvider
     public static Object[][] basicSecondsMinutesScrollsSetupUpDown() {
+
 
         // Number of scrolls, direction, group, timewait, expected new translate, expected label
         return new Object[][] {
@@ -126,37 +122,20 @@ public class CounterAppIT extends ApplicationTest {
                 { 9, VerticalDirection.UP, "#seconds", 650, 60, "22" },
         };
     }
-
-    // Number of scrolls,
-    // direction,
-    // node,
-    // top location,
-    // bottom location,
-    // expected top new translate,
-    // expected bottom new translate,
-    // expected top label,
-    // expected bottom label
+    
     @Test
     @UseDataProvider("basicScrollsSetup")
-    public void basic_scroll(
-            int topNewTranslate,
-            int bottomNewTranslate,
-            String topLabel,
-            String bottomLabel,
-            Map<String, Map<Integer, VerticalDirection>> ops
-            ) {
+    public void basic_scroll(Sequence sequence) {
 
-        Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
-        Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
+            Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
+            Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
 
-        String topIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
-        String bottomIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
-
-        ops.forEach((nodes, operations) -> {
-            operations.forEach((scrollNumber, direction) -> {
-                IntStream.range(0, scrollNumber).forEach(i -> {
-                    moveTo(node);
-                    scroll(direction);
+            String topIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
+            String bottomIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
+            sequence.steps.forEach(step -> {
+                moveTo("#" + step.columnType.name().toLowerCase());
+                IntStream.range(0, step.scrollsNumber).forEach(i -> {
+                    scroll(step.scrollsNumber, step.direction);
                     try {
                         WaitFor.waitUntil(timeout(millis(TIME_WAIT)));
                     } catch (InterruptedException e) {
@@ -165,59 +144,69 @@ public class CounterAppIT extends ApplicationTest {
                 });
 
             });
-        });
 
-        verifyThat("#seconds", (Group s) -> {
-            Optional<Node> exTopRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
-            Optional<Node> exBottomRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
-            if (exTopRectangle.isPresent()) {
-                String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getTranslateY() == topNewTranslate && lb.equals(topLabel);
-            }
+            verifyThat("#seconds", (Group s) -> {
+                Optional<Node> exTopRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
+                Optional<Node> exBottomRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
+                if (exTopRectangle.isPresent()) {
+                    String label =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                    return exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPosition && label.equals(sequence.expectedValues.topLabel);
+                }
 
-            if (exBottomRectangle.isPresent()) {
-                String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getTranslateY() == bottomNewTranslate && lb.equals(bottomLabel);
-            }
-            return false;
-        });
+                if (exBottomRectangle.isPresent()) {
+                    String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
+                    return exBottomRectangle.get().getTranslateY() == sequence.expectedValues.bottomPosition && lb.equals(sequence.expectedValues.bottomLabel);
+                }
+
+                return false;
+            });
     }
 
     // @TODO check minutes group as well.
     // @TODO check cases around 0 and 50
     // @TODO test ticking, including minutes are up when seconds are at 0
     // @TODO test that you can't move columns when time is ticking.
-    @Test
-    @UseDataProvider("basicSecondsMinutesScrollsSetupUpDown")
-    public void seconds_and_minutes_basic_scroll_up_down(int scrollsNumber, VerticalDirection direction, String node, int waitTime, int newTranslate, String label) {
 
-        Group gs = assertContext().getNodeFinder().lookup(node).queryFirst();
+    static class Step {
+        ColumnType columnType;
+        VerticalDirection direction;
+        Integer scrollsNumber;
 
-        String id = gs.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == 0).findAny().get().getId();
-        Text l = (Text) gs.getChildren().stream().filter(lbl -> lbl.getClass().equals(Text.class)).filter(lbl1 -> lbl1.getId().equals(id)).findAny().get();
-        String t = l.getText();
+        public static Step step(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
+            Step step = new Step();
+            step.columnType = columnType;
+            step.direction = direction;
+            step.scrollsNumber = scrollsNumber;
+            return step;
+        }
+    }
 
+    static class Sequence {
+        List<Step> steps = new ArrayList<>();
+        ExpectedValues expectedValues;
 
-        IntStream.range(0, scrollsNumber).forEach(i -> {
-            moveTo(node);
-            scroll(direction);
-            try {
-                WaitFor.waitUntil(timeout(millis(waitTime)));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
+        public static Sequence sequence(ExpectedValues expectedValues, Step ...step) {
+            Sequence sequence = new Sequence();
+            sequence.steps.addAll(asList(step));
+            sequence.expectedValues = expectedValues;
+            return sequence;
+        }
+    }
 
-        verifyThat(node, (Group g) -> {
-            Optional<Node> r = gs.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(id)).findAny();
-            if (r.isPresent()) {
-                String lb =  gs.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(id)).map(tt -> ((Text) tt).getText()).findAny().get();
-                System.out.println("DEBUG");
-                System.out.println(r.get().getTranslateY());
-                System.out.println(lb);
-                return r.get().getTranslateY() == newTranslate && lb.equals(label);
-            }
-            return false;
-        });
+    static class ExpectedValues {
+        String topLabel;
+        String bottomLabel;
+        Integer topPosition;
+        Integer bottomPosition;
+
+        public static ExpectedValues expected(Integer topPosition, String topLabel, Integer bottomPosition, String bottomLabel) {
+            ExpectedValues exp = new ExpectedValues();
+            exp.bottomLabel = bottomLabel;
+            exp.topLabel = topLabel;
+            exp.topPosition = topPosition;
+            exp.bottomPosition = bottomPosition;
+
+            return exp;
+        }
     }
 }
