@@ -134,6 +134,39 @@ public class ScrollTest extends CounterAppIT {
                         expected(0, "14", 180, "11", 120, "10", 60, "11"),
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 6)
                 )},
+                // Seconds and Minutes
+                {sequence(
+                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
+                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
+                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+                )},
+                {sequence(
+                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
+                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
+                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+                )},
+                {sequence(
+                        expected(240, "14", 180, "15", 60, "14", 240, "11"),
+                        step(ColumnType.SECONDS, VerticalDirection.UP, 3),
+                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4),
+                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                )},
+                {sequence(
+                        expected(0, "14", 180, "11", 0, "18", 180, "15"),
+                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
+                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
+                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                )},
+                {sequence(
+                        expected(0, "14", 180, "11", 120, "18", 60, "19"),
+                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
+                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
+                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1),
+                        step(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                )},
                 //@formatter:on
         };
     }
