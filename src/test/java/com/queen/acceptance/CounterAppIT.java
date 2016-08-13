@@ -1,8 +1,8 @@
 package com.queen.acceptance;
 
 import com.airhacks.afterburner.injection.Injector;
+import com.queen.acceptance.di.TestSpringApplicationConfiguration;
 import com.queen.counter.clock.ClockView;
-import com.queen.di.SpringApplicationConfiguration;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -14,7 +14,7 @@ import org.testfx.framework.junit.ApplicationTest;
 @RunWith(DataProviderRunner.class)
 public class CounterAppIT extends ApplicationTest {
 
-    private final ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
+    private final ApplicationContext injector = new AnnotationConfigApplicationContext(TestSpringApplicationConfiguration.class);
     final static int TIME_WAIT = 650;
     final static int TOP_NODE_LOCATION = 0;
     final static int BOTTOM_NODE_LOCATION = 180;
