@@ -68,12 +68,11 @@ public class ClockPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        if (savedTimerRepository.selectLatest() == null) {
-            this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
-        } else {
-            SavedTimer savedTimer = savedTimerRepository.selectLatest();
-            this.clocks.initializeClocks(savedTimer.getSavedTimer());
-        }
+        this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
+            SavedTimer savedTimer = new SavedTimer();
+            savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
+            return savedTimer;
+        }).getSavedTimer());
 
         secondsColumn = populator.create(seconds.getId(), seconds);
         minutesColumn = populator.create(minutes.getId(), minutes);
