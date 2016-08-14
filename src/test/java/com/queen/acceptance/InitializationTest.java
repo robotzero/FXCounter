@@ -35,14 +35,22 @@ public class InitializationTest extends CounterAppIT {
         Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
         Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
 
-        List<String> visibleLabels = seconds.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
+        List<String> visibleSecondsLabels = seconds.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
                                       .map(text -> ((Text) text).getText())
                                       .collect(Collectors.toList());
 
         String[] expectedLabels = {"2", "1", "0", "59"};
 
-        for (int i = 0; i < visibleLabels.size(); i++) {
-            Assert.assertEquals(expectedLabels[i], visibleLabels.get(i));
+        for (int i = 0; i < visibleSecondsLabels.size(); i++) {
+            Assert.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
+        }
+
+        List<String> visibleMinutesLabels = minutes.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
+                .map(text -> ((Text) text).getText())
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < visibleMinutesLabels.size(); i++) {
+            Assert.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
         }
     }
 }
