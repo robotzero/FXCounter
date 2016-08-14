@@ -69,7 +69,7 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         if (savedTimerRepository.selectLatest() == null) {
-            this.clocks.initializeClocks(LocalTime.of(0, 16, 12));
+            this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
         } else {
             SavedTimer savedTimer = savedTimerRepository.selectLatest();
             this.clocks.initializeClocks(savedTimer.getSavedTimer());

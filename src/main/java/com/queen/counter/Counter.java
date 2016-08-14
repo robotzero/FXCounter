@@ -52,6 +52,8 @@ public class Counter extends Application {
         primaryStage.setHeight(sceneConfiguration.getInitHeight());
         primaryStage.setWidth(sceneConfiguration.getInitWidth());
         primaryStage.setScene(scene);
+        primaryStage.setX(2000);
+        primaryStage.setY(100);
         primaryStage.show();
     }
 

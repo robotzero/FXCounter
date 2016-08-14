@@ -11,6 +11,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.time.LocalTime;
+
 @RunWith(DataProviderRunner.class)
 public class CounterAppIT extends ApplicationTest {
 
@@ -18,6 +20,11 @@ public class CounterAppIT extends ApplicationTest {
     final static int TIME_WAIT = 650;
     final static int TOP_NODE_LOCATION = 0;
     final static int BOTTOM_NODE_LOCATION = 180;
+    final static LocalTime DEFAULT_CLOCK_STATE = LocalTime.of(0, 16, 12);
+
+    protected <T> T getBean(Class<T> c) {
+        return injector.getBean(c);
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -43,6 +50,8 @@ public class CounterAppIT extends ApplicationTest {
         ClockView clockView = new ClockView();
         Scene scene = new Scene(clockView.getView(), 800, 600);
 
+        stage.setX(2000);
+        stage.setY(100);
         stage.setScene(scene);
         stage.show();
     }
