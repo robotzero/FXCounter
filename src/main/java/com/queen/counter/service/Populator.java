@@ -96,7 +96,7 @@ public class Populator {
             }
 
             if (gid.equals("minutes")) {
-                int minute = this.clocks.getMainClock().getSecond() - i + 2;
+                int minute = this.clocks.getMainClock().getMinute() - i + 2;
                 minute = minute == -1 ? 59 : minute;
                 label.setText(Integer.toString(minute));
                 id = i + "minutes";

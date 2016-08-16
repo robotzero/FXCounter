@@ -6,6 +6,7 @@ import com.queen.counter.clock.ClockView;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -26,10 +27,15 @@ public class CounterAppIT extends ApplicationTest {
         return injector.getBean(c);
     }
 
+    @Before
+    public void set() {
+        System.out.println("TEst3");
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         Injector.setConfigurationSource(null);
-
+        System.out.println("TEST");
         Injector.setInstanceSupplier(new Injector.InstanceProvider() {
             @Override
             public boolean isInjectionAware() {

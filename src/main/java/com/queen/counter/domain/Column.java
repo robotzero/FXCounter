@@ -60,4 +60,19 @@ public class Column {
     public BooleanProperty isTicking() {
         return isTicking;
     }
+
+    public void setLabels() {
+        for (int i = 0; i < columnList.size(); i++) {
+            int value = 0;
+            if (columnType.equals(ColumnType.SECONDS)) {
+                value = this.clocks.getMainClock().getSecond() - i + 2;
+            }
+            if (columnType.equals(ColumnType.MINUTES)) {
+                value = this.clocks.getMainClock().getMinute() - i + 2;
+            }
+
+            value = value == -1 ? 59 : value;
+            columnList.get(i).setLabel(Integer.toString(value));
+        }
+    }
 }

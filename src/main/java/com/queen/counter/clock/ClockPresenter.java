@@ -34,7 +34,7 @@ public class ClockPresenter implements Initializable {
     Pane paneMinutes;
 
     @FXML
-    Button start, stop;
+    Button start, stop, reset;
 
     @FXML
     Group seconds;
@@ -81,6 +81,7 @@ public class ClockPresenter implements Initializable {
 
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().not().or(minutesColumn.isTicking().not()));
+        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
         EventStream<ScrollEvent> merged = EventStreams.merge(
@@ -123,6 +124,12 @@ public class ClockPresenter implements Initializable {
             secondsColumn.setTicking(false);
             minutesColumn.setTicking(false);
             this.subscribe.unsubscribe();
+        });
+
+        resetClicks.subscribe(click -> {
+            this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
+            secondsColumn.setLabels();
+            minutesColumn.setLabels();
         });
     }
 }

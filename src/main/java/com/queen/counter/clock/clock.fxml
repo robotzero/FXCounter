@@ -25,5 +25,6 @@
        </Pane>
       <Button id="start" fx:id="start" mnemonicParsing="false" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
       <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
+       <Button id="reset" fx:id="reset" mnemonicParsing="false" text="Reset" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
    </children>
 </GridPane>

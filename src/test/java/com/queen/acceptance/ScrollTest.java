@@ -6,6 +6,7 @@ import com.queen.counter.repository.SavedTimerRepository;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
+import javafx.application.Application;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -14,6 +15,7 @@ import javafx.scene.text.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testfx.api.FxToolkit;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class ScrollTest extends CounterAppIT {
 
     @Before
     public void setUp() {
+        System.out.println("TEST2");
         repository = this.getBean(SavedTimerRepository.class);
         repository.deleteAll();
     }
@@ -46,158 +49,158 @@ public class ScrollTest extends CounterAppIT {
         return new Object[][]{
                 // @formatter:off
                 // Seconds UP
-                {sequence(
-                        expected(60, "14", 240, "11", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1)
-                )},
-                {sequence(
-                        expected(120, "14", 60, "15", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 2)
-                )},
-                {sequence(
-                        expected(180, "14", 120, "15", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(240, "14", 180, "15", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 4)
-                )},
-                {sequence(
-                        expected(60, "18", 240, "15", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 5)
-                )},
-                {sequence(
-                        expected(120, "18", 60, "19", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 6)
-                )},
-                // Seconds DOWN
-                {sequence(
-                        expected(180, "10", 120, "11", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
-                )},
-                {sequence(
-                        expected(120, "10", 60, "11", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
-                )},
-                {sequence(
-                        expected(60, "10", 0, "11", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 3)
-                )},
-                {sequence(
-                        expected(0, "10", 180, "7", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 4)
-                )},
-                {sequence(
-                        expected(180, "6", 120, "7", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 5)
-                )},
-                {sequence(
-                        expected(120, "6", 60, "7", 0, "18", 180, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 6)
-                )},
-                // Minutes UP
-                {sequence(
-                        expected(0, "14", 180, "11", 60, "18", 240, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 120, "18", 60, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 2)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 180, "18", 120, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 240, "18", 180, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 4)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 60, "22", 240, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 5)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 120, "22", 60, "23"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 6)
-                )},
-                // Minutes DOWN
-                {sequence(
-                        expected(0, "14", 180, "11", 180, "14", 120, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 120, "14", 60, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 60, "14", 0, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 0, "14", 180, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 180, "10", 120, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 5)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 120, "10", 60, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 6)
-                )},
-                // Seconds and Minutes
-                {sequence(
-                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(240, "14", 180, "15", 60, "14", 240, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 3),
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4),
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 180, "11", 0, "18", 180, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-                )},
+//                {sequence(
+//                        expected(60, "14", 240, "11", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1)
+//                )},
+//                {sequence(
+//                        expected(120, "14", 60, "15", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 2)
+//                )},
+//                {sequence(
+//                        expected(180, "14", 120, "15", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 3)
+//                )},
+//                {sequence(
+//                        expected(240, "14", 180, "15", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 4)
+//                )},
+//                {sequence(
+//                        expected(60, "18", 240, "15", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 5)
+//                )},
+//                {sequence(
+//                        expected(120, "18", 60, "19", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 6)
+//                )},
+//                // Seconds DOWN
+//                {sequence(
+//                        expected(180, "10", 120, "11", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+//                )},
+//                {sequence(
+//                        expected(120, "10", 60, "11", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+//                )},
+//                {sequence(
+//                        expected(60, "10", 0, "11", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 3)
+//                )},
+//                {sequence(
+//                        expected(0, "10", 180, "7", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 4)
+//                )},
+//                {sequence(
+//                        expected(180, "6", 120, "7", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 5)
+//                )},
+//                {sequence(
+//                        expected(120, "6", 60, "7", 0, "18", 180, "14"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 6)
+//                )},
+//                // Minutes UP
+//                {sequence(
+//                        expected(0, "14", 180, "11", 60, "18", 240, "15"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 120, "18", 60, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 2)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 180, "18", 120, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 240, "18", 180, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 4)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 60, "22", 240, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 5)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 120, "22", 60, "23"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 6)
+//                )},
+//                // Minutes DOWN
+//                {sequence(
+//                        expected(0, "14", 180, "11", 180, "14", 120, "15"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 120, "14", 60, "15"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 60, "14", 0, "15"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 0, "14", 180, "11"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 180, "10", 120, "11"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 5)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 120, "10", 60, "11"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 6)
+//                )},
+//                // Seconds and Minutes
+//                {sequence(
+//                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+//                )},
+//                {sequence(
+//                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+//                )},
+//                {sequence(
+//                        expected(240, "14", 180, "15", 60, "14", 240, "11"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 3),
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4),
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 180, "11", 0, "18", 180, "15"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+//                )},
                 {sequence(
                         expected(0, "14", 180, "11", 120, "18", 60, "19"),
                         DEFAULT_CLOCK_STATE,
@@ -224,6 +227,9 @@ public class ScrollTest extends CounterAppIT {
     @UseDataProvider("scrolls")
     public void scroll(Sequence sequence) {
 
+        // Prepare clock state;
+        repository.create("start", sequence.clockStartState);
+
         Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
         Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
 
@@ -232,9 +238,6 @@ public class ScrollTest extends CounterAppIT {
 
         String topIdMinutes = minutes.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
         String bottomIdMinutes = minutes.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
-
-        // Prepare clock state;
-        repository.create("start", sequence.clockStartState);
 
         sequence.steps.forEach(step -> {
             moveTo("#" + step.columnType.name().toLowerCase());
@@ -282,7 +285,6 @@ public class ScrollTest extends CounterAppIT {
         });
     }
 
-    // @TODO check cases around 0 and 50
     // @TODO test ticking, including minutes are up when seconds are at 0
     // @TODO test that you can't move columns when time is ticking.
 
