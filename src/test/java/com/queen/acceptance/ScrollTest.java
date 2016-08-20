@@ -15,7 +15,6 @@ import javafx.scene.text.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testfx.api.FxToolkit;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
