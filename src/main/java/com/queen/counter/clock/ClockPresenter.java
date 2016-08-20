@@ -127,7 +127,6 @@ public class ClockPresenter implements Initializable {
         });
 
         resetClicks.subscribe(click -> {
-            this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
             secondsColumn.setLabels();
             minutesColumn.setLabels();
         });
