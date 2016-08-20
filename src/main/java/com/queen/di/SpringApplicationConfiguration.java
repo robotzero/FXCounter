@@ -12,6 +12,8 @@ import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.repository.SavedTimerSqlliteJdbcRepository;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.Ticker;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -92,5 +94,10 @@ public class SpringApplicationConfiguration {
     @Bean
     public SavedTimerRepository savedTimerRepository(JdbcTemplate jdbcTemplate) {
         return new SavedTimerSqlliteJdbcRepository(jdbcTemplate);
+    }
+
+    @Bean
+    BooleanProperty fetchFromDatabase() {
+        return new SimpleBooleanProperty(false);
     }
 }

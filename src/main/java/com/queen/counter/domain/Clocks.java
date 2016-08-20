@@ -18,7 +18,6 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    //@TODO change to spring onCreate or similar.
     public void initializeClocks(final LocalTime mainClock) {
         this.mainClock = LocalTime.of(
                 mainClock.getHour(),

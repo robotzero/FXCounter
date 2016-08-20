@@ -54,7 +54,7 @@ public class Column {
                 }
 
                 if (combo.get1()) {
-                    cell.setLabel(hasTopEdge.get());
+                    cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType);
                 }
             });
         });
@@ -88,7 +88,6 @@ public class Column {
     public void setLabels() {
         indicator.suspendWhile(() -> {
             resetPositions();
-            clocks.initializeClocks(LocalTime.of(0, 0, 0));
         });
     }
 

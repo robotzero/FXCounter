@@ -9,6 +9,8 @@ import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
+import java.time.LocalTime;
+
 public class Cell {
 
     private Rectangle rectangle;
@@ -96,40 +98,80 @@ public class Cell {
         }
     }
 
-    public void setLabel(boolean topEdgeExists) {
-        if (topEdgeExists) {
-            if (rectangle.translateYProperty().get() == 0) {
-                label.setText(Integer.toString(2));
+    public void setLabel(boolean topEdgeExists, LocalTime clock, ColumnType columnType) {
+        if (columnType.equals(ColumnType.SECONDS)) {
+            if (topEdgeExists) {
+                if (rectangle.translateYProperty().get() == 0) {
+                    label.setText(Integer.toString(clock.plusSeconds(2).getSecond()));
+                }
+
+                if (rectangle.translateYProperty().get() == 60) {
+                    label.setText(Integer.toString(clock.plusSeconds(1).getSecond()));
+                }
+
+                if (rectangle.translateYProperty().get() == 120) {
+                    label.setText(Integer.toString(clock.getSecond()));
+                }
+
+                if (rectangle.translateYProperty().get() == 180) {
+                    label.setText(Integer.toString(clock.minusSeconds(1).getSecond()));
+                }
             }
 
-            if (rectangle.translateYProperty().get() == 60) {
-                label.setText(Integer.toString(1));
-            }
+            if (!topEdgeExists) {
+                if (rectangle.translateYProperty().get() == 60) {
+                    label.setText(Integer.toString(clock.plusSeconds(2).getSecond()));
+                }
 
-            if (rectangle.translateYProperty().get() == 120) {
-                label.setText(Integer.toString(0));
-            }
+                if (rectangle.translateYProperty().get() == 120) {
+                    label.setText(Integer.toString(clock.plusSeconds(1).getSecond()));
+                }
 
-            if (rectangle.translateYProperty().get() == 180) {
-                label.setText(Integer.toString(59));
+                if (rectangle.translateYProperty().get() == 180) {
+                    label.setText(Integer.toString(clock.getSecond()));
+                }
+
+                if (rectangle.translateYProperty().get() == 240) {
+                    label.setText(Integer.toString(clock.minusSeconds(1).getSecond()));
+                }
             }
         }
 
-        if (!topEdgeExists) {
-            if (rectangle.translateYProperty().get() == 60) {
-                label.setText(Integer.toString(2));
+        if (columnType.equals(ColumnType.MINUTES)) {
+            if (topEdgeExists) {
+                if (rectangle.translateYProperty().get() == 0) {
+                    label.setText(Integer.toString(clock.plusMinutes(2).getMinute()));
+                }
+
+                if (rectangle.translateYProperty().get() == 60) {
+                    label.setText(Integer.toString(clock.plusMinutes(1).getMinute()));
+                }
+
+                if (rectangle.translateYProperty().get() == 120) {
+                    label.setText(Integer.toString(clock.getMinute()));
+                }
+
+                if (rectangle.translateYProperty().get() == 180) {
+                    label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
+                }
             }
 
-            if (rectangle.translateYProperty().get() == 120) {
-                label.setText(Integer.toString(1));
-            }
+            if (!topEdgeExists) {
+                if (rectangle.translateYProperty().get() == 60) {
+                    label.setText(Integer.toString(clock.plusMinutes(2).getMinute()));
+                }
 
-            if (rectangle.translateYProperty().get() == 180) {
-                label.setText(Integer.toString(0));
-            }
+                if (rectangle.translateYProperty().get() == 120) {
+                    label.setText(Integer.toString(clock.plusMinutes(1).getMinute()));
+                }
 
-            if (rectangle.translateYProperty().get() == 240) {
-                label.setText(Integer.toString(59));
+                if (rectangle.translateYProperty().get() == 180) {
+                    label.setText(Integer.toString(clock.getMinute()));
+                }
+
+                if (rectangle.translateYProperty().get() == 240) {
+                    label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import com.queen.counter.domain.Column;
 import com.queen.counter.domain.SavedTimer;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
+import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -59,6 +60,10 @@ public class ClockPresenter implements Initializable {
 
     @Inject
     private SavedTimerRepository savedTimerRepository;
+
+    // Temp option simulating options screen
+    @Inject
+    private BooleanProperty fetchFromDatabase;
 
     private Subscription subscribe;
 
@@ -127,6 +132,16 @@ public class ClockPresenter implements Initializable {
         });
 
         resetClicks.subscribe(click -> {
+            this.fetchFromDatabase.setValue(true);
+            if (fetchFromDatabase.get()) {
+                this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
+                    SavedTimer savedTimer = new SavedTimer();
+                    savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
+                    return savedTimer;
+                }).getSavedTimer());
+            } else {
+                this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
+            }
             secondsColumn.setLabels();
             minutesColumn.setLabels();
         });
