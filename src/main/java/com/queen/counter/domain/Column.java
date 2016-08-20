@@ -5,6 +5,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
+import org.reactfx.SuspendableNo;
+import org.reactfx.util.Tuple2;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -18,10 +20,9 @@ public class Column {
     private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
     private BooleanBinding runningBinding;
     private BooleanBinding topEdgeBinding;
-    private BooleanBinding resettingBinding;
 
     private ColumnType columnType;
-    private BooleanProperty isResetting = new SimpleBooleanProperty(false);
+        private SuspendableNo indicator = new SuspendableNo();
 
     public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType) {
         this.columnList = columnList;
@@ -41,14 +42,19 @@ public class Column {
 
         this.hasTopEdge.bind(topEdgeBinding);
 
-        resettingBinding = columnList.get(0).isDuringReset()
-                .or(columnList.get(1).isDuringReset())
-                .or(columnList.get(2).isDuringReset())
-                .or(columnList.get(3).isDuringReset());
-
         this.columnList.forEach(cell -> {
-            EventStream changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle()).filter(Boolean::booleanValue).supply(cell).suppressWhen(resettingBinding);
-            changeText.subscribe(event -> cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get())));
+            EventStream changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle());
+            EventStream doneReset = indicator.values();
+            EventStream<Tuple2<Boolean, Boolean>> canChangeStuff = EventStreams.combine(doneReset, changeText);
+
+            // Allow update cells data only when we are not in the reset mode.
+            canChangeStuff.subscribe(combo -> {
+                if (!combo.get1() && combo.get2()) {
+                    cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
+                } else if (combo.get1()) {
+                    cell.setLabel();
+                }
+            });
         });
     }
 
@@ -78,22 +84,10 @@ public class Column {
     }
 
     public void setLabels() {
-        this.setResetting();
-        this.resetPositions();
-        this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
-
-//        for (int i = 0; i < columnList.size(); i++) {
-//            int value = 0;
-//            if (columnType.equals(ColumnType.SECONDS)) {
-//                value = this.clocks.getMainClock().getSecond() - i + 2;
-//            }
-//            if (columnType.equals(ColumnType.MINUTES)) {
-//                value = this.clocks.getMainClock().getMinute() - i + 2;
-//            }
-//
-//            value = value == -1 ? 59 : value;
-//            columnList.get(i).setLabel(Integer.toString(value));
-//        }
+        indicator.suspendWhile(() -> {
+            resetPositions();
+            clocks.initializeClocks(LocalTime.of(0, 0, 0));
+        });
     }
 
     private void resetPositions() {
@@ -101,9 +95,5 @@ public class Column {
             this.shift(-60);
             this.play();
         }
-    }
-
-    private void setResetting() {
-        this.columnList.forEach(cell -> cell.setResetting(true));
     }
 }

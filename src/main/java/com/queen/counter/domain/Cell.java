@@ -16,7 +16,6 @@ public class Cell {
     private Text label;
     private TranslateTransition translateTransition;
     private BooleanProperty running = new SimpleBooleanProperty(false);
-    private BooleanProperty resetting = new SimpleBooleanProperty(false);
     private BooleanProperty greaterDelta = new SimpleBooleanProperty(false);
     private BooleanProperty edgeTopRectangle = new SimpleBooleanProperty(false);
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
@@ -28,35 +27,12 @@ public class Cell {
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
-        this.translateTransition.setOnFinished(event -> {
-            this.running.set(false);
-            this.resetting.set(false);
-        });
+        this.translateTransition.setOnFinished(event -> this.running.set(false));
         this.edgeTopRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(0)).then(true).otherwise(false));
         this.hasTextRectangle.bind(new When(rectangle.translateYProperty().greaterThan(180).and(rectangle.translateYProperty().lessThan(240)).and(currentDelta.lessThan(0))).then(true).otherwise(
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(60)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
         ));
         EventStream<Number> translateY = EventStreams.valuesOf(rectangle.translateYProperty());
-
-        translateY.suppressWhen(resetting.not()).map(translate -> {
-            if (translate.intValue() == 0) {
-                return Integer.toString(2);
-            }
-
-            if (translate.intValue() == 60) {
-                return Integer.toString(1);
-            }
-
-            if (translate.intValue() == 120) {
-                return Integer.toString(0);
-            }
-
-            if (translate.intValue() == 180) {
-                return Integer.toString(59);
-            }
-
-            return "";
-        }).feedTo(label.textProperty());
 
         EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
                 delta, translateY
@@ -120,6 +96,24 @@ public class Cell {
         }
     }
 
+    public void setLabel() {
+        if (rectangle.translateYProperty().get() == 0) {
+            label.setText(Integer.toString(2));
+        }
+
+        if (rectangle.translateYProperty().get() == 60) {
+            label.setText(Integer.toString(1));
+        }
+
+        if (rectangle.translateYProperty().get() == 120) {
+            label.setText(Integer.toString(0));
+        }
+
+        if (rectangle.translateYProperty().get() == 180) {
+            label.setText(Integer.toString(59));
+        }
+    }
+
     public BooleanProperty isRunning() {
         return this.running;
     }
@@ -131,13 +125,5 @@ public class Cell {
     public void setDelta(double delta) {
         this.greaterDelta.set(delta > 0);
         this.currentDelta.set((int) delta);
-    }
-
-    public void setResetting(boolean reset) {
-        this.resetting.set(reset);
-    }
-
-    public BooleanProperty isDuringReset() {
-        return this.resetting;
     }
 }
