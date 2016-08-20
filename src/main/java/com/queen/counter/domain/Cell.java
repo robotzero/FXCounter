@@ -96,21 +96,41 @@ public class Cell {
         }
     }
 
-    public void setLabel() {
-        if (rectangle.translateYProperty().get() == 0) {
-            label.setText(Integer.toString(2));
+    public void setLabel(boolean topEdgeExists) {
+        if (topEdgeExists) {
+            if (rectangle.translateYProperty().get() == 0) {
+                label.setText(Integer.toString(2));
+            }
+
+            if (rectangle.translateYProperty().get() == 60) {
+                label.setText(Integer.toString(1));
+            }
+
+            if (rectangle.translateYProperty().get() == 120) {
+                label.setText(Integer.toString(0));
+            }
+
+            if (rectangle.translateYProperty().get() == 180) {
+                label.setText(Integer.toString(59));
+            }
         }
 
-        if (rectangle.translateYProperty().get() == 60) {
-            label.setText(Integer.toString(1));
-        }
+        if (!topEdgeExists) {
+            if (rectangle.translateYProperty().get() == 60) {
+                label.setText(Integer.toString(2));
+            }
 
-        if (rectangle.translateYProperty().get() == 120) {
-            label.setText(Integer.toString(0));
-        }
+            if (rectangle.translateYProperty().get() == 120) {
+                label.setText(Integer.toString(1));
+            }
 
-        if (rectangle.translateYProperty().get() == 180) {
-            label.setText(Integer.toString(59));
+            if (rectangle.translateYProperty().get() == 180) {
+                label.setText(Integer.toString(0));
+            }
+
+            if (rectangle.translateYProperty().get() == 240) {
+                label.setText(Integer.toString(59));
+            }
         }
     }
 
@@ -125,5 +145,9 @@ public class Cell {
     public void setDelta(double delta) {
         this.greaterDelta.set(delta > 0);
         this.currentDelta.set((int) delta);
+    }
+
+    public int getDelta() {
+        return this.currentDelta.get();
     }
 }

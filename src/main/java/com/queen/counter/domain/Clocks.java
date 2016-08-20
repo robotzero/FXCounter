@@ -62,24 +62,25 @@ public class Clocks {
     }
 
     public void clockTick(final ColumnType type, final double delta) {
-        int normalizedDelta = (int) delta / (int) Math.abs(delta);
+        if (delta != 0) {
+            int normalizedDelta = (int) delta / (int) Math.abs(delta);
+            if (type.equals(ColumnType.SECONDS)) {
+                this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
+                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                timeShiftSeconds.set(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
+            }
 
-        if (type.equals(ColumnType.SECONDS)) {
-            this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
-            this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShiftSeconds.set(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
-        }
+            if (type.equals(ColumnType.MINUTES)) {
+                this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
+                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                timeShiftMinutes.set(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
+            }
 
-        if (type.equals(ColumnType.MINUTES)) {
-            this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
-            this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShiftMinutes.set(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
-        }
-
-        if (type.equals(ColumnType.HOURS)) {
-            this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
-            this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-            timeShiftHours.set(scrollHoursClock.plusHours(normalizedDelta).getHour());
+            if (type.equals(ColumnType.HOURS)) {
+                this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
+                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                timeShiftHours.set(scrollHoursClock.plusHours(normalizedDelta).getHour());
+            }
         }
     }
 

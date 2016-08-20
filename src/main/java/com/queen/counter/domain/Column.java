@@ -49,10 +49,12 @@ public class Column {
 
             // Allow update cells data only when we are not in the reset mode.
             canChangeStuff.subscribe(combo -> {
-                if (!combo.get1() && combo.get2()) {
+                if (!combo.get1() && combo.get2() && cell.getDelta() != 0) {
                     cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
-                } else if (combo.get1()) {
-                    cell.setLabel();
+                }
+
+                if (combo.get1()) {
+                    cell.setLabel(hasTopEdge.get());
                 }
             });
         });
@@ -92,7 +94,7 @@ public class Column {
 
     private void resetPositions() {
         if (!hasTopEdge.get()) {
-            this.shift(-60);
+            this.shift(0);
             this.play();
         }
     }
