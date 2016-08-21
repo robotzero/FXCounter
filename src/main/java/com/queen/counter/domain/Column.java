@@ -22,7 +22,7 @@ public class Column {
     private BooleanBinding topEdgeBinding;
 
     private ColumnType columnType;
-        private SuspendableNo indicator = new SuspendableNo();
+    private SuspendableNo indicator = new SuspendableNo();
 
     public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType) {
         this.columnList = columnList;
@@ -84,9 +84,7 @@ public class Column {
     }
 
     public void setLabels() {
-        indicator.suspendWhile(() -> {
-            resetPositions();
-        });
+        indicator.suspendWhile(this::resetPositions);
     }
 
     private void resetPositions() {

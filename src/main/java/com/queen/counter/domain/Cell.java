@@ -4,8 +4,6 @@ import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.reactfx.EventStream;

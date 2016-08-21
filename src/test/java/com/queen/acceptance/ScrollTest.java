@@ -6,7 +6,6 @@ import com.queen.counter.repository.SavedTimerRepository;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
-import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Group;

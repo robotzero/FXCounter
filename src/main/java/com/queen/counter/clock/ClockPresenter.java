@@ -91,7 +91,6 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
-
         EventStream<ScrollEvent> merged = EventStreams.merge(
                 EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning().or(secondsColumn.isTicking())),
                 EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning().or(minutesColumn.isTicking()))
@@ -104,11 +103,11 @@ public class ClockPresenter implements Initializable {
             }
 
             if (((Group) event.getSource()).getId().contains("minutes")) {
-//                minutesColumn.setRunning(true);
                 minutesColumn.shift(event.getDeltaY());
                 minutesColumn.play();
             }
         });
+
 
         startClicks.subscribe(click -> {
             savedTimerRepository.create("latest", clocks.getMainClock());
@@ -116,7 +115,7 @@ public class ClockPresenter implements Initializable {
             minutesColumn.setTicking(true);
             secondsColumn.shift(-60);
             secondsColumn.play();
-            this.subscribe  = ticks.subscribe((something) -> {
+            this.subscribe  = ticks.subscribe((nullEvent) -> {
                 secondsColumn.shift(-60);
                 secondsColumn.play();
                 if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
