@@ -49,11 +49,13 @@ public class Column {
 
             // Allow update cells data only when we are not in the reset mode.
             canChangeStuff.subscribe(combo -> {
-                if (!combo.get1() && combo.get2() && cell.getDelta() != 0) {
+                Boolean isResetDone = combo.get1();
+                Boolean shouldChangeLabel = combo.get2();
+                if (!isResetDone && shouldChangeLabel && cell.getDelta() != 0) {
                     cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
                 }
 
-                if (combo.get1()) {
+                if (isResetDone) {
                     cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType);
                 }
             });
