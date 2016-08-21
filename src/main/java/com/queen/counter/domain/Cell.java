@@ -1,8 +1,11 @@
 package com.queen.counter.domain;
 
+import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.reactfx.EventStream;
@@ -17,7 +20,6 @@ public class Cell {
     private Location location;
     private Text label;
     private TranslateTransition translateTransition;
-    private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty greaterDelta = new SimpleBooleanProperty(false);
     private BooleanProperty edgeTopRectangle = new SimpleBooleanProperty(false);
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
@@ -29,7 +31,6 @@ public class Cell {
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
-        this.translateTransition.setOnFinished(event -> this.running.set(false));
         this.edgeTopRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(0)).then(true).otherwise(false));
         this.hasTextRectangle.bind(new When(rectangle.translateYProperty().greaterThan(180).and(rectangle.translateYProperty().lessThan(240)).and(currentDelta.lessThan(0))).then(true).otherwise(
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(60)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
@@ -176,13 +177,10 @@ public class Cell {
         }
     }
 
-    public BooleanProperty isRunning() {
-        return this.running;
+    public ReadOnlyObjectProperty<Animation.Status> isRunning() {
+        return translateTransition.statusProperty();
     }
 
-    public void setRunning(boolean running) {
-        this.running.set(running);
-    }
 
     public void setDelta(double delta) {
         this.greaterDelta.set(delta > 0);

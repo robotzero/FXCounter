@@ -1,5 +1,6 @@
 package com.queen.counter.domain;
 
+import javafx.animation.Animation;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -8,7 +9,6 @@ import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Tuple2;
 
-import java.time.LocalTime;
 import java.util.List;
 
 public class Column {
@@ -29,10 +29,10 @@ public class Column {
         this.clocks = clocks;
         this.columnType = columnType;
 
-        runningBinding = columnList.get(0).isRunning()
-                                    .or(columnList.get(1).isRunning())
-                                    .or(columnList.get(2).isRunning())
-                                    .or(columnList.get(3).isRunning());
+        runningBinding = columnList.get(0).isRunning().isEqualTo(Animation.Status.RUNNING)
+                                    .or(columnList.get(1).isRunning().isEqualTo(Animation.Status.RUNNING))
+                                    .or(columnList.get(2).isRunning().isEqualTo(Animation.Status.RUNNING))
+                                    .or(columnList.get(3).isRunning().isEqualTo(Animation.Status.RUNNING));
         this.running.bind(runningBinding);
 
         topEdgeBinding = columnList.get(0).hasTopEdgeRectangle()
@@ -69,10 +69,6 @@ public class Column {
 
     public void play() {
         this.columnList.forEach(Cell::animate);
-    }
-
-    public void setRunning(boolean running) {
-        this.columnList.forEach(cell -> cell.setRunning(running));
     }
 
     public void setTicking(boolean ticking) {

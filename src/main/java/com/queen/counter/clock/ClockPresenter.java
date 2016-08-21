@@ -19,6 +19,7 @@ import javafx.scene.layout.Pane;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.Subscription;
+import org.reactfx.SuspendableNo;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -70,6 +71,7 @@ public class ClockPresenter implements Initializable {
     private Column secondsColumn;
     private Column minutesColumn;
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -89,6 +91,7 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
+
         EventStream<ScrollEvent> merged = EventStreams.merge(
                 EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning().or(secondsColumn.isTicking())),
                 EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning().or(minutesColumn.isTicking()))
@@ -96,13 +99,12 @@ public class ClockPresenter implements Initializable {
 
         merged.subscribe(event -> {
             if (((Group) event.getSource()).getId().contains("seconds")) {
-                secondsColumn.setRunning(true);
                 secondsColumn.shift(event.getDeltaY());
                 secondsColumn.play();
             }
 
             if (((Group) event.getSource()).getId().contains("minutes")) {
-                minutesColumn.setRunning(true);
+//                minutesColumn.setRunning(true);
                 minutesColumn.shift(event.getDeltaY());
                 minutesColumn.play();
             }
