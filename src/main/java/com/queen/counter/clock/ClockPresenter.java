@@ -8,6 +8,7 @@ import com.queen.counter.domain.SavedTimer;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -16,10 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
-import org.reactfx.Subscription;
-import org.reactfx.SuspendableNo;
+import org.reactfx.*;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -66,6 +64,8 @@ public class ClockPresenter implements Initializable {
     @Inject
     private BooleanProperty fetchFromDatabase;
 
+    private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
+
     private Subscription subscribe;
 
     private Column secondsColumn;
@@ -86,33 +86,44 @@ public class ClockPresenter implements Initializable {
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
 
-        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
-        EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().not().or(minutesColumn.isTicking().not()));
-        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED).suppressWhen(secondsColumn.isTicking().or(minutesColumn.isTicking()));
+        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
+        EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
+        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
 
+        start.disableProperty().bind(scrollMuteProperty);
+        stop.disableProperty().bind(scrollMuteProperty.not());
+        reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
-                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning().or(secondsColumn.isTicking())),
-                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning().or(minutesColumn.isTicking()))
+                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
+                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
         );
 
-        merged.subscribe(event -> {
-            if (((Group) event.getSource()).getId().contains("seconds")) {
-                secondsColumn.shift(event.getDeltaY());
-                secondsColumn.play();
-            }
+        // If start button is clicked mute scroll event until stop button is clicked.
+        StateMachine.init(scrollMuteProperty)
+                .on(startClicks).transition((wasMuted, event) -> {
+                    scrollMuteProperty.set(true);
+                    return scrollMuteProperty;
+                })
+                .on(stopClicks).transition((wasMuted, event) -> {
+                    scrollMuteProperty.set(false);
+                    return scrollMuteProperty;
+                })
+                .on(merged).emit((muted, t) -> muted.get() ? Optional.empty() : Optional.of(t))
+                .toEventStream().subscribe(event -> {
+                    if (((Group) event.getSource()).getId().contains("seconds")) {
+                        secondsColumn.shift(event.getDeltaY());
+                        secondsColumn.play();
+                    }
 
-            if (((Group) event.getSource()).getId().contains("minutes")) {
-                minutesColumn.shift(event.getDeltaY());
-                minutesColumn.play();
-            }
-        });
-
+                    if (((Group) event.getSource()).getId().contains("minutes")) {
+                        minutesColumn.shift(event.getDeltaY());
+                        minutesColumn.play();
+                    }
+                });
 
         startClicks.subscribe(click -> {
             savedTimerRepository.create("latest", clocks.getMainClock());
-            secondsColumn.setTicking(true);
-            minutesColumn.setTicking(true);
             secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((nullEvent) -> {
@@ -126,11 +137,7 @@ public class ClockPresenter implements Initializable {
             );
         });
 
-        stopClicks.subscribe(click -> {
-            secondsColumn.setTicking(false);
-            minutesColumn.setTicking(false);
-            this.subscribe.unsubscribe();
-        });
+        stopClicks.subscribe(click -> this.subscribe.unsubscribe());
 
         resetClicks.subscribe(click -> {
             this.fetchFromDatabase.setValue(true);

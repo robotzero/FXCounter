@@ -16,7 +16,6 @@ public class Column {
     private List<Cell> columnList;
     private Clocks clocks;
     private BooleanProperty running = new SimpleBooleanProperty(false);
-    private BooleanProperty isTicking = new SimpleBooleanProperty(false);
     private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
     private BooleanBinding runningBinding;
     private BooleanBinding topEdgeBinding;
@@ -71,16 +70,8 @@ public class Column {
         this.columnList.forEach(Cell::animate);
     }
 
-    public void setTicking(boolean ticking) {
-        this.isTicking.set(ticking);
-    }
-
     public BooleanProperty isRunning() {
         return running;
-    }
-
-    public BooleanProperty isTicking() {
-        return isTicking;
     }
 
     public void setLabels() {
