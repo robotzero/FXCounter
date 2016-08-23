@@ -86,7 +86,5 @@ public class InitializationTest extends CounterAppIT {
         for (int i = 0; i < visibleMinutesLabels.size(); i++) {
             Assert.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
         }
-
     }
-
 }

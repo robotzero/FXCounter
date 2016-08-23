@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
-import org.reactfx.util.Tuple2;
 
 import java.util.List;
 
@@ -21,10 +20,11 @@ public class Column {
     private BooleanBinding topEdgeBinding;
 
     private ColumnType columnType;
-    private SuspendableNo indicator = new SuspendableNo();
+    private SuspendableNo resetClicked = new SuspendableNo();
 
     public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType) {
         this.columnList = columnList;
+
         this.clocks = clocks;
         this.columnType = columnType;
 
@@ -41,21 +41,20 @@ public class Column {
 
         this.hasTopEdge.bind(topEdgeBinding);
 
+        // When we are in reset mode / button reset has been clicked set new value of the each cell.
+        resetClicked.noes()
+                 .supply(this.columnList)
+                 .subscribe(cellList -> cellList.forEach(
+                         cell -> cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType))
+                 );
+
         this.columnList.forEach(cell -> {
-            EventStream changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle());
-            EventStream doneReset = indicator.values();
-            EventStream<Tuple2<Boolean, Boolean>> canChangeStuff = EventStreams.combine(doneReset, changeText);
-
-            // Allow update cells data only when we are not in the reset mode.
-            canChangeStuff.subscribe(combo -> {
-                Boolean isResetDone = combo.get1();
-                Boolean shouldChangeLabel = combo.get2();
-                if (!isResetDone && shouldChangeLabel && cell.getDelta() != 0) {
+            // Suppress setting a label when reset has been clicked.
+            EventStream<Boolean> changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle())
+                                                          .suppressWhen(resetClicked);
+            changeText.subscribe(hasTextRectangle -> {
+                if (hasTextRectangle && cell.getDelta() != 0) {
                     cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
-                }
-
-                if (isResetDone) {
-                    cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType);
                 }
             });
         });
@@ -75,7 +74,7 @@ public class Column {
     }
 
     public void setLabels() {
-        indicator.suspendWhile(this::resetPositions);
+        resetClicked.suspendWhile(this::resetPositions);
     }
 
     private void resetPositions() {

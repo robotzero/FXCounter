@@ -1,6 +1,5 @@
 package com.queen.counter.clock;
 
-import com.queen.animator.Animator;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
@@ -49,9 +48,6 @@ public class ClockPresenter implements Initializable {
     private SceneConfiguration sceneConfiguration;
 
     @Inject
-    private Animator animator;
-
-    @Inject
     private Populator populator;
 
     @Inject
@@ -80,12 +76,13 @@ public class ClockPresenter implements Initializable {
             savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
             return savedTimer;
         }).getSavedTimer());
-
+        
         secondsColumn = populator.create(seconds.getId(), seconds);
         minutesColumn = populator.create(minutes.getId(), minutes);
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
 
+        //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
@@ -124,6 +121,8 @@ public class ClockPresenter implements Initializable {
 
         startClicks.subscribe(click -> {
             savedTimerRepository.create("latest", clocks.getMainClock());
+
+            //@TODO reconsider this approach.
             secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((nullEvent) -> {
