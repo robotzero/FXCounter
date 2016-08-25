@@ -48,14 +48,17 @@ public class Column {
                          cell -> cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType))
                  );
 
-        this.columnList.forEach(cell -> {
-            // Suppress setting a label when reset has been clicked.
-            EventStream<Boolean> changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle())
-                                                          .suppressWhen(resetClicked);
-            changeText.subscribe(hasTextRectangle -> {
-                if (hasTextRectangle && cell.getDelta() != 0) {
-                    cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
-                }
+        this.clocks.getEvent().subscribe(timeshift -> {
+            this.columnList.forEach(cell -> {
+                // Suppress setting a label when reset has been clicked.
+                EventStream<Boolean> changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle())
+                        .suppressWhen(resetClicked);
+                changeText.subscribe(hasTextRectangle -> {
+                    if (hasTextRectangle && cell.getDelta() != 0) {
+//                        cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
+                        cell.setLabel(Integer.toString(timeshift));
+                    }
+                });
             });
         });
     }
