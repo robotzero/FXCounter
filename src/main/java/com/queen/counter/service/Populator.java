@@ -12,6 +12,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import org.reactfx.EventSource;
 
 import java.util.List;
 import java.util.Random;
@@ -24,10 +25,12 @@ public class Populator {
     private final int blockCount = 4;
     private final UIService uiService;
     private final Clocks clocks;
+    private final EventSource clocksEvent;
 
-    public Populator(final UIService uiService, final Clocks clocks) {
+    public Populator(final UIService uiService, final Clocks clocks, final EventSource clocksEvent) {
         this.uiService = uiService;
         this.clocks = clocks;
+        this.clocksEvent = clocksEvent;
     }
 
     public void populate(Group... groups) {
@@ -121,13 +124,13 @@ public class Populator {
         }).collect(Collectors.toList());
 
         if (gid.equals("seconds")) {
-            return new Column(list, clocks, ColumnType.SECONDS);
+            return new Column(list, clocks, ColumnType.SECONDS, clocksEvent);
         }
 
         if (gid.equals("minutes")) {
-            return new Column(list, clocks, ColumnType.MINUTES);
+            return new Column(list, clocks, ColumnType.MINUTES, clocksEvent);
         }
 
-        return new Column(list, clocks, ColumnType.HOURS);
+        return new Column(list, clocks, ColumnType.HOURS, clocksEvent);
     }
 }

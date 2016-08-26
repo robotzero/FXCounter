@@ -14,6 +14,7 @@ import com.queen.counter.service.Populator;
 import com.queen.counter.service.Ticker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,8 +29,9 @@ public class SpringApplicationConfiguration {
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
     private FXMLView clockView = new ClockView();
     private UIService uiService = new UIService();
+    private EventSource clocksEvent = new EventSource();
 
-    private Clocks clocks = new Clocks();
+    private Clocks clocks = new Clocks(clocksEvent);
 
     @Bean
     public FXMLView clockView() {
@@ -53,7 +55,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Populator populator() {
-        Populator populator = new Populator(uiService, clocks);
+        Populator populator = new Populator(uiService, clocks, clocksEvent);
 
         return populator;
     }

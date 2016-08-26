@@ -4,6 +4,7 @@ import javafx.animation.Animation;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import org.reactfx.EventSource;
 import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 
@@ -20,12 +21,14 @@ public class Column {
 
     private ColumnType columnType;
     private SuspendableNo resetClicked = new SuspendableNo();
+    private EventSource clocksEvent;
 
-    public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType) {
+    public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType, EventSource<Integer> clocksEvent) {
         this.columnList = columnList;
 
         this.clocks = clocks;
         this.columnType = columnType;
+        this.clocksEvent = clocksEvent;
 
         runningBinding = columnList.get(0).isRunning().isEqualTo(Animation.Status.RUNNING)
                                     .or(columnList.get(1).isRunning().isEqualTo(Animation.Status.RUNNING))
@@ -52,7 +55,7 @@ public class Column {
         }).reduce((current, next) -> {
             return EventStreams.merge(current, next);
         }).ifPresent(changeText -> {
-            EventStreams.combine(changeText, clocks.getEvent()).subscribe(event -> {
+            EventStreams.combine(changeText, clocksEvent).subscribe(event -> {
                 Cell cell = event.get1();
                 Integer timeshift = event.get2();
                 if (cell.hasChangeTextRectangle().get() && cell.getDelta() !=0 ) {
