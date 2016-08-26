@@ -4,7 +4,6 @@ import javafx.animation.Animation;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 
@@ -48,17 +47,17 @@ public class Column {
                          cell -> cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType))
                  );
 
-        this.clocks.getEvent().subscribe(timeshift -> {
-            this.columnList.forEach(cell -> {
-                // Suppress setting a label when reset has been clicked.
-                EventStream<Boolean> changeText = EventStreams.valuesOf(cell.hasChangeTextRectangle())
-                        .suppressWhen(resetClicked);
-                changeText.subscribe(hasTextRectangle -> {
-                    if (hasTextRectangle && cell.getDelta() != 0) {
-//                        cell.setLabel(Integer.toString(this.clocks.getTimeShift(columnType).get()));
-                        cell.setLabel(Integer.toString(timeshift));
-                    }
-                });
+        this.columnList.stream().map(cell -> {
+            return EventStreams.valuesOf(cell.hasChangeTextRectangle()).suppressWhen(resetClicked).supply(cell);
+        }).reduce((current, next) -> {
+            return EventStreams.merge(current, next);
+        }).ifPresent(changeText -> {
+            EventStreams.combine(changeText, clocks.getEvent()).subscribe(event -> {
+                Cell cell = event.get1();
+                Integer timeshift = event.get2();
+                if (cell.hasChangeTextRectangle().get() && cell.getDelta() !=0 ) {
+                    cell.setLabel(Integer.toString(timeshift));
+                }
             });
         });
     }
