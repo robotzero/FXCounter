@@ -1,10 +1,7 @@
 package com.queen.counter.domain;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import org.reactfx.EventSource;
 import java.time.LocalTime;
-import java.util.Optional;
 
 public class Clocks {
 
@@ -15,10 +12,6 @@ public class Clocks {
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
-    private EventSource<Integer> timeShiftSecondsStream = new EventSource<>();
-    private IntegerProperty timeShiftSeconds = new SimpleIntegerProperty(0);
-    private IntegerProperty timeShiftMinutes = new SimpleIntegerProperty(0);
-    private IntegerProperty timeShiftHours = new SimpleIntegerProperty(0);
 
     private final int MIN = 59;
     private final int HR  = 23;
@@ -42,10 +35,6 @@ public class Clocks {
         eventSeconds.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
         eventMinutes.push(this.scrollMinutesClock.plusMinutes(2).getMinute());
         eventHours.push(this.scrollHoursClock.plusHours(2).getHour());
-//        timeShiftSecondsStream.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
-        timeShiftSeconds.set(this.scrollSecondsClock.plusSeconds(2).getSecond());
-        timeShiftMinutes.set(this.scrollMinutesClock.plusMinutes(2).getMinute());
-        timeShiftHours.set(this.scrollHoursClock.plusHours(2).getHour());
     }
 
     public LocalTime getMainClock() {
