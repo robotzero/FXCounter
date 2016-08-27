@@ -25,12 +25,12 @@ public class Populator {
     private final int blockCount = 4;
     private final UIService uiService;
     private final Clocks clocks;
-    private final EventSource clocksEvent;
+    private final EventSource[] clocksEvents;
 
-    public Populator(final UIService uiService, final Clocks clocks, final EventSource clocksEvent) {
+    public Populator(final UIService uiService, final Clocks clocks, final EventSource ...clocksEvents) {
         this.uiService = uiService;
         this.clocks = clocks;
-        this.clocksEvent = clocksEvent;
+        this.clocksEvents = clocksEvents;
     }
 
     public void populate(Group... groups) {
@@ -124,13 +124,13 @@ public class Populator {
         }).collect(Collectors.toList());
 
         if (gid.equals("seconds")) {
-            return new Column(list, clocks, ColumnType.SECONDS, clocksEvent);
+            return new Column(list, clocks, ColumnType.SECONDS, clocksEvents[0]);
         }
 
         if (gid.equals("minutes")) {
-            return new Column(list, clocks, ColumnType.MINUTES, clocksEvent);
+            return new Column(list, clocks, ColumnType.MINUTES, clocksEvents[1]);
         }
 
-        return new Column(list, clocks, ColumnType.HOURS, clocksEvent);
+        return new Column(list, clocks, ColumnType.HOURS, clocksEvents[2]);
     }
 }

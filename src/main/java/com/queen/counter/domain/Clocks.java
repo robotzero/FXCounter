@@ -3,13 +3,14 @@ package com.queen.counter.domain;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.reactfx.EventSource;
-import org.reactfx.util.Tuple2;
-
 import java.time.LocalTime;
+import java.util.Optional;
 
 public class Clocks {
 
-    private final EventSource event;
+    private final EventSource<Integer> eventSeconds;
+    private final EventSource<Integer> eventMinutes;
+    private final EventSource<Integer> eventHours;
     private LocalTime mainClock          = LocalTime.of(0, 0, 0);
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
@@ -22,8 +23,10 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(EventSource<Integer> event) {
-        this.event = event;
+    public Clocks(EventSource<Integer> ...eventSources) {
+        this.eventSeconds = eventSources[0];
+        this.eventMinutes = eventSources[1];
+        this.eventHours = eventSources[2];
     }
     public void initializeClocks(final LocalTime mainClock) {
         this.mainClock = LocalTime.of(
@@ -36,8 +39,10 @@ public class Clocks {
         this.scrollMinutesClock = LocalTime.of(HR, mainClock.getMinute(), MIN);
         this.scrollSecondsClock = LocalTime.of(HR, MIN, mainClock.getSecond());
 
-        event.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
-        timeShiftSecondsStream.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
+        eventSeconds.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
+        eventMinutes.push(this.scrollMinutesClock.plusMinutes(2).getMinute());
+        eventHours.push(this.scrollHoursClock.plusHours(2).getHour());
+//        timeShiftSecondsStream.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
         timeShiftSeconds.set(this.scrollSecondsClock.plusSeconds(2).getSecond());
         timeShiftMinutes.set(this.scrollMinutesClock.plusMinutes(2).getMinute());
         timeShiftHours.set(this.scrollHoursClock.plusHours(2).getHour());
@@ -46,6 +51,12 @@ public class Clocks {
     public LocalTime getMainClock() {
         return this.mainClock;
     }
+
+//    BiFunction<Integer, Void, Tuple2<Integer, Optional<String>>> countdown =
+//            (s, i) -> s == 1
+//                    ? t(3, Optional.of("COUNTDOWN REACHED"))
+//                    : t(s-1, Optional.empty());
+
 
     public LocalTime getScrollSecondsClock() {
         return this.scrollSecondsClock;
@@ -57,19 +68,19 @@ public class Clocks {
             if (type.equals(ColumnType.SECONDS)) {
                 this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
                 this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.event.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
+                this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
             }
 
             if (type.equals(ColumnType.MINUTES)) {
                 this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
                 this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.event.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
+                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
             }
 
             if (type.equals(ColumnType.HOURS)) {
                 this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
                 this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.event.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
+                this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
             }
         }
     }

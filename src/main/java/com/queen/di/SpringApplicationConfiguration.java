@@ -29,9 +29,11 @@ public class SpringApplicationConfiguration {
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
     private FXMLView clockView = new ClockView();
     private UIService uiService = new UIService();
-    private EventSource clocksEvent = new EventSource();
+    private EventSource seconds = new EventSource();
+    private EventSource minutes = new EventSource();
+    private EventSource hours = new EventSource();
 
-    private Clocks clocks = new Clocks(clocksEvent);
+    private Clocks clocks = new Clocks(seconds, minutes, hours);
 
     @Bean
     public FXMLView clockView() {
@@ -55,7 +57,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Populator populator() {
-        Populator populator = new Populator(uiService, clocks, clocksEvent);
+        Populator populator = new Populator(uiService, clocks, seconds, minutes, hours);
 
         return populator;
     }
