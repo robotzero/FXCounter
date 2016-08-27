@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventSource;
 import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
-import org.reactfx.util.Tuple2;
 
 import java.util.List;
 
@@ -45,10 +44,9 @@ public class Column {
 
         // When we are in reset mode / button reset has been clicked set new value of the each cell.
         resetClicked.noes()
-                 .supply(this.columnList)
-                 .subscribe(cellList -> cellList.forEach(
+                    .subscribe(cellList -> this.columnList.forEach(
                          cell -> cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType))
-                 );
+                    );
 
         this.columnList.stream().map(cell -> {
             return EventStreams.valuesOf(cell.hasChangeTextRectangle()).suppressWhen(resetClicked).supply(cell);

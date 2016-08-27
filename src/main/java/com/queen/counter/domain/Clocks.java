@@ -2,12 +2,17 @@ package com.queen.counter.domain;
 
 import org.reactfx.EventSource;
 import java.time.LocalTime;
+import java.util.List;
 
 public class Clocks {
 
     private final EventSource<Integer> eventSeconds;
     private final EventSource<Integer> eventMinutes;
     private final EventSource<Integer> eventHours;
+
+    private final EventSource<Void> playMinutes;
+    private final EventSource<Void> playHours;
+
     private LocalTime mainClock          = LocalTime.of(0, 0, 0);
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
@@ -16,10 +21,13 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(EventSource<Integer> ...eventSources) {
+    public Clocks(List<EventSource<Void>> playSources, EventSource<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
+
+        this.playMinutes = playSources.get(0);
+        this.playHours = playSources.get(1);
     }
     public void initializeClocks(final LocalTime mainClock) {
         this.mainClock = LocalTime.of(
@@ -46,12 +54,7 @@ public class Clocks {
 //                    ? t(3, Optional.of("COUNTDOWN REACHED"))
 //                    : t(s-1, Optional.empty());
 
-
-    public LocalTime getScrollSecondsClock() {
-        return this.scrollSecondsClock;
-    }
-
-    public void clockTick(final ColumnType type, final double delta) {
+    void clockTick(final ColumnType type, final double delta) {
         if (delta != 0) {
             int normalizedDelta = (int) delta / (int) Math.abs(delta);
             if (type.equals(ColumnType.SECONDS)) {
@@ -71,6 +74,14 @@ public class Clocks {
                 this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
                 this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
             }
+        }
+
+        if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
+            this.playMinutes.push(null);
+        }
+
+        if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
+            this.playHours.push(null);
         }
     }
 }

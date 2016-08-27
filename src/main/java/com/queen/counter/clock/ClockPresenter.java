@@ -17,6 +17,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import org.reactfx.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -60,13 +61,20 @@ public class ClockPresenter implements Initializable {
     @Inject
     private BooleanProperty fetchFromDatabase;
 
+    @Inject
+    @Qualifier("PlayMinutes")
+    private EventSource<Void> playMinutes;
+
+    @Inject
+    @Qualifier("PlayHours")
+    private EventSource<Void> playHours;
+
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
     private Subscription subscribe;
 
     private Column secondsColumn;
     private Column minutesColumn;
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -87,6 +95,17 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
+        playMinutes.emitOn(ticks).emitOn(startClicks);
+        playHours.emitOn(ticks).emitOn(startClicks);
+
+        Subscription playM = playMinutes.subscribe(v -> {
+            minutesColumn.shift(-60);
+            minutesColumn.play();
+        });
+
+        Subscription playH = playHours.subscribe(v -> {
+
+        });
 
         start.disableProperty().bind(scrollMuteProperty);
         stop.disableProperty().bind(scrollMuteProperty.not());
@@ -121,22 +140,25 @@ public class ClockPresenter implements Initializable {
 
         startClicks.subscribe(click -> {
             savedTimerRepository.create("latest", clocks.getMainClock());
-
             //@TODO reconsider this approach.
             secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((nullEvent) -> {
                 secondsColumn.shift(-60);
                 secondsColumn.play();
-                if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-                    minutesColumn.shift(-60);
-                    minutesColumn.play();
-                    }
+//                if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
+//                    minutesColumn.shift(-60);
+//                    minutesColumn.play();
+//                    }
                 }
             );
         });
 
-        stopClicks.subscribe(click -> this.subscribe.unsubscribe());
+        stopClicks.subscribe(click -> {
+            this.subscribe.unsubscribe();
+            playM.unsubscribe();
+            playH.unsubscribe();
+        });
 
         resetClicks.subscribe(click -> {
             this.fetchFromDatabase.setValue(true);

@@ -1,7 +1,6 @@
 package com.queen.counter.service;
 
 import com.queen.counter.domain.*;
-import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -27,54 +26,10 @@ public class Populator {
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
 
-    public Populator(final UIService uiService, final Clocks clocks, final EventSource ...clocksEvents) {
+    public Populator(final UIService uiService, final Clocks clocks, EventSource ...clocksEvents) {
         this.uiService = uiService;
         this.clocks = clocks;
         this.clocksEvents = clocksEvents;
-    }
-
-    public void populate(Group... groups) {
-
-        final Random random = new Random();
-
-        this.uiService.getRectanglesGroups().forEach(g -> IntStream.range(0, blockCount).mapToObj(i -> {
-                Rectangle rectangle = new Rectangle(cellsize, 0, cellsize, cellsize);
-                rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1));
-                rectangle.setStrokeType(StrokeType.INSIDE);
-                rectangle.setStroke(Color.BLACK);
-                rectangle.setTranslateY(cellsize * i);
-
-                final Text t = new Text();
-
-                String id = "";
-                if (g.getId().equals("group")) {
-                    t.setText(this.clocks.getMainClock().getSecond() - i + 2 + "");
-                    id = i + "seconds";
-                }
-
-                if (g.getId().equals("minutesgroup")) {
-                    t.setText(this.clocks.getMainClock().getMinute() - i + 2 + "");
-                    id = i + "minutes";
-                }
-
-                t.setFont(Font.font(20));
-
-                t.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
-
-                t.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
-                t.setTextAlignment(TextAlignment.CENTER);
-                t.setTextOrigin(VPos.CENTER);
-
-                t.setId(id);
-                rectangle.setId(id);
-
-                g.getChildren().addAll(rectangle, t);
-
-                TranslateTransition translateTransition = new TranslateTransition();
-                translateTransition.setInterpolator(Interpolator.EASE_IN);
-                Cell cell = new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), t, translateTransition);
-                return 0;
-            }).count());
     }
 
     public Column create(final String gid, Group group) {

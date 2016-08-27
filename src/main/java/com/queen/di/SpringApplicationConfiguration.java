@@ -21,6 +21,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class SpringApplicationConfiguration {
@@ -33,7 +35,8 @@ public class SpringApplicationConfiguration {
     private EventSource minutes = new EventSource();
     private EventSource hours = new EventSource();
 
-    private Clocks clocks = new Clocks(seconds, minutes, hours);
+    private EventSource<Void> playMinutes = new EventSource<>();
+    private EventSource<Void> playHours = new EventSource<>();
 
     @Bean
     public FXMLView clockView() {
@@ -51,13 +54,18 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Animator animator() {
-        return animator;
+    public EventSource<Void> PlayMinutes() {
+        return playMinutes;
+    }
+
+    @Bean
+    public EventSource<Void> PlayHours() {
+        return playHours;
     }
 
     @Bean
     public Populator populator() {
-        Populator populator = new Populator(uiService, clocks, seconds, minutes, hours);
+        Populator populator = new Populator(uiService, configureClocks(), seconds, minutes, hours);
 
         return populator;
     }
@@ -74,7 +82,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Clocks clocks() {
-        return clocks;
+        return configureClocks();
     }
 
     @Bean
@@ -103,5 +111,12 @@ public class SpringApplicationConfiguration {
     @Bean
     BooleanProperty fetchFromDatabase() {
         return new SimpleBooleanProperty(false);
+    }
+
+    private Clocks configureClocks() {
+        List<EventSource<Void>> plays = new ArrayList<>();
+        plays.add(playMinutes);
+        plays.add(playHours);
+        return new Clocks(plays, seconds, minutes, hours);
     }
 }
