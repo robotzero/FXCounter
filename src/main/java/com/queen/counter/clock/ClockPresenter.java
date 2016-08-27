@@ -95,15 +95,12 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
-        playMinutes.emitOn(ticks).emitOn(startClicks);
-        playHours.emitOn(ticks).emitOn(startClicks);
-
-        Subscription playM = playMinutes.subscribe(v -> {
+        Subscription playM = playMinutes.emitOn(ticks).emitOn(startClicks).onRecurseRetainLatest().subscribe(v -> {
             minutesColumn.shift(-60);
             minutesColumn.play();
         });
 
-        Subscription playH = playHours.subscribe(v -> {
+        Subscription playH = playHours.emitOn(ticks).emitOn(startClicks).onRecurseRetainLatest().subscribe(v -> {
 
         });
 
@@ -146,10 +143,6 @@ public class ClockPresenter implements Initializable {
             this.subscribe  = ticks.subscribe((nullEvent) -> {
                 secondsColumn.shift(-60);
                 secondsColumn.play();
-//                if (clocks.getScrollSecondsClock().minusSeconds(1).getSecond() == 59) {
-//                    minutesColumn.shift(-60);
-//                    minutesColumn.play();
-//                    }
                 }
             );
         });

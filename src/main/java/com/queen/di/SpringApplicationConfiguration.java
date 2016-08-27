@@ -65,7 +65,7 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public Populator populator() {
-        Populator populator = new Populator(uiService, configureClocks(), seconds, minutes, hours);
+        Populator populator = new Populator(configureClocks(), seconds, minutes, hours);
 
         return populator;
     }

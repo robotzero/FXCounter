@@ -22,12 +22,10 @@ public class Populator {
 
     private final int cellsize = 60;
     private final int blockCount = 4;
-    private final UIService uiService;
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
 
-    public Populator(final UIService uiService, final Clocks clocks, EventSource ...clocksEvents) {
-        this.uiService = uiService;
+    public Populator(final Clocks clocks, EventSource ...clocksEvents) {
         this.clocks = clocks;
         this.clocksEvents = clocksEvents;
     }
