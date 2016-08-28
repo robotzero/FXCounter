@@ -12,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.reactfx.EventSource;
+import org.reactfx.util.Tuple2;
 
 import java.util.List;
 import java.util.Random;
@@ -24,9 +25,9 @@ public class Populator {
     private final int blockCount = 4;
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
-    private final EventSource<Integer> deltaStream;
+    private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
 
-    public Populator(final Clocks clocks, final EventSource<Integer> deltaStream, EventSource ...clocksEvents) {
+    public Populator(final Clocks clocks, final EventSource<Tuple2<Integer, ColumnType>> deltaStream, EventSource ...clocksEvents) {
         this.clocks = clocks;
         this.deltaStream = deltaStream;
         this.clocksEvents = clocksEvents;

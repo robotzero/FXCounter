@@ -3,6 +3,7 @@ package com.queen.counter.clock;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
+import com.queen.counter.domain.ColumnType;
 import com.queen.counter.domain.SavedTimer;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
@@ -17,6 +18,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import org.reactfx.*;
+import org.reactfx.util.Tuple2;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.inject.Inject;
@@ -24,6 +26,8 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
+
+import static org.reactfx.util.Tuples.t;
 
 public class ClockPresenter implements Initializable {
 
@@ -71,7 +75,7 @@ public class ClockPresenter implements Initializable {
 
     @Inject
     @Qualifier("DeltaStream")
-    private EventSource<Integer> deltaStream;
+    private EventSource<Tuple2<Integer, ColumnType>> deltaStream;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
@@ -102,7 +106,7 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         Subscription playM = playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
-            this.deltaStream.push(-60);
+            this.deltaStream.push(t(-60, ColumnType.MINUTES));
             minutesColumn.shift(-60);
             minutesColumn.play();
         });
@@ -132,13 +136,13 @@ public class ClockPresenter implements Initializable {
                 .on(merged).emit((muted, t) -> muted.get() ? Optional.empty() : Optional.of(t))
                 .toEventStream().subscribe(event -> {
                     if (((Group) event.getSource()).getId().contains("seconds")) {
-                        this.deltaStream.push((int)event.getDeltaY());
+                        this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.SECONDS));
                         secondsColumn.shift(event.getDeltaY());
                         secondsColumn.play();
                     }
 
                     if (((Group) event.getSource()).getId().contains("minutes")) {
-                        this.deltaStream.push((int)event.getDeltaY());
+                        this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.MINUTES));
                         minutesColumn.shift(event.getDeltaY());
                         minutesColumn.play();
                     }
@@ -147,11 +151,11 @@ public class ClockPresenter implements Initializable {
         startClicks.subscribe(click -> {
             savedTimerRepository.create("latest", clocks.getMainClock());
             //@TODO reconsider this approach.
-            this.deltaStream.push(-60);
+            this.deltaStream.push(t(-60, ColumnType.SECONDS));
             secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((nullEvent) -> {
-                this.deltaStream.push(-60);
+                this.deltaStream.push(t(-60, ColumnType.SECONDS));
                 secondsColumn.shift(-60);
                 secondsColumn.play();
                 }

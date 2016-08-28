@@ -1,6 +1,8 @@
 package com.queen.counter.domain;
 
 import org.reactfx.EventSource;
+import org.reactfx.util.Tuple2;
+
 import java.time.LocalTime;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Clocks {
 
     private final EventSource<Void> playMinutes;
     private final EventSource<Void> playHours;
+    private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
 
     private LocalTime mainClock          = LocalTime.of(0, 0, 0);
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
@@ -21,13 +24,15 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(List<EventSource<Void>> playSources, EventSource<Integer> ...eventSources) {
+    public Clocks(List<EventSource<Void>> playSources, EventSource<Tuple2<Integer, ColumnType>> deltaStream, EventSource<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
 
         this.playMinutes = playSources.get(0);
         this.playHours = playSources.get(1);
+
+        this.deltaStream = deltaStream;
     }
     public void initializeClocks(final LocalTime mainClock) {
         this.mainClock = LocalTime.of(
@@ -43,6 +48,10 @@ public class Clocks {
         eventSeconds.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
         eventMinutes.push(this.scrollMinutesClock.plusMinutes(2).getMinute());
         eventHours.push(this.scrollHoursClock.plusHours(2).getHour());
+
+        deltaStream.subscribe(currentDelta -> {
+
+        });
     }
 
     public LocalTime getMainClock() {

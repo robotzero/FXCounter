@@ -7,6 +7,7 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.domain.Clocks;
+import com.queen.counter.domain.ColumnType;
 import com.queen.counter.domain.UIService;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.repository.SavedTimerSqlliteJdbcRepository;
@@ -15,6 +16,7 @@ import com.queen.counter.service.Ticker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventSource;
+import org.reactfx.util.Tuple2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,7 +41,7 @@ public class SpringApplicationConfiguration {
     private EventSource<Void> playHours = new EventSource<>();
 
     private EventSource<Integer> deltaEvent = new EventSource<>();
-    private EventSource<Integer> deltaStream = new EventSource<>();
+    private EventSource<Tuple2<Integer, ColumnType>> deltaStream = new EventSource<>();
 
     @Bean
     public FXMLView clockView() {
@@ -67,7 +69,7 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public EventSource<Integer> DeltaStream() {
+    public EventSource<Tuple2<Integer, ColumnType>> DeltaStream() {
         return deltaStream;
     }
 
@@ -129,7 +131,7 @@ public class SpringApplicationConfiguration {
             List<EventSource<Void>> plays = new ArrayList<>();
             plays.add(playMinutes);
             plays.add(playHours);
-            clocks = new Clocks(plays, seconds, minutes, hours);
+            clocks = new Clocks(plays, deltaStream, seconds, minutes, hours);
         }
 
         return clocks;

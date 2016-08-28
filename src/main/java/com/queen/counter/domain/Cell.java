@@ -25,7 +25,7 @@ public class Cell {
     private EventStream delta = EventStreams.valuesOf(currentDelta);
     private EventSource deltaStream;
 
-    public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition, EventSource<Integer> deltaStream) {
+    public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition, EventSource<Tuple2<Integer, ColumnType>> deltaStream) {
         this.rectangle = rectangle;
         this.location = location;
         this.label = label;
@@ -36,14 +36,14 @@ public class Cell {
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(60)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
         ));
         EventStream<Number> translateY = EventStreams.valuesOf(rectangle.translateYProperty());
-        currentDelta.bind(deltaStream.toBinding(0));
+        currentDelta.bind(deltaStream.map(Tuple2::get1).toBinding(0));
 
-        EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
+        EventStream<Tuple2<Tuple2<Integer, ColumnType>, Double>> combo = EventStreams.combine(
                 this.deltaStream, translateY
         );
 
         combo.map(change -> {
-            Integer currDelta = change.get1();
+            Integer currDelta = change.get1().get1();
             Double transY = change.get2();
 
             if (currDelta == 0 || currDelta < 0) {
@@ -62,7 +62,7 @@ public class Cell {
         }).feedTo(translateTransition.fromYProperty());
 
         combo.map(change -> {
-            Integer currDelta = change.get1();
+            Integer currDelta = change.get1().get1();
             Double transY = change.get2();
 
             if (currDelta == 0 || currDelta < 0) {
