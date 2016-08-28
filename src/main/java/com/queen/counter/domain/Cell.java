@@ -18,7 +18,6 @@ public class Cell {
     private Location location;
     private Text label;
     private TranslateTransition translateTransition;
-    private BooleanProperty greaterDelta = new SimpleBooleanProperty(false);
     private BooleanProperty edgeTopRectangle = new SimpleBooleanProperty(false);
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
@@ -181,7 +180,6 @@ public class Cell {
 
 
     public void setDelta(double delta) {
-        this.greaterDelta.set(delta > 0);
         this.currentDelta.set((int) delta);
     }
 
