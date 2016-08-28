@@ -113,10 +113,17 @@ public class SpringApplicationConfiguration {
         return new SimpleBooleanProperty(false);
     }
 
-    private Clocks configureClocks() {
-        List<EventSource<Void>> plays = new ArrayList<>();
-        plays.add(playMinutes);
-        plays.add(playHours);
-        return new Clocks(plays, seconds, minutes, hours);
+    private Clocks clocks;
+
+    @Bean
+    public Clocks configureClocks() {
+        if (clocks == null) {
+            List<EventSource<Void>> plays = new ArrayList<>();
+            plays.add(playMinutes);
+            plays.add(playHours);
+            clocks = new Clocks(plays, seconds, minutes, hours);
+        }
+
+        return clocks;
     }
 }
