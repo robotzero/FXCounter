@@ -174,6 +174,8 @@ public class ClockPresenter implements Initializable {
             } else {
                 this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
             }
+            this.deltaStream.push(t(0, ColumnType.SECONDS));
+            this.deltaStream.push(t(0, ColumnType.MINUTES));
             secondsColumn.setLabels();
             minutesColumn.setLabels();
         });

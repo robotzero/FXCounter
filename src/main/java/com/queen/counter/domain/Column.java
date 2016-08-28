@@ -77,7 +77,6 @@ public class Column {
 
     private void resetPositions() {
         if (!hasTopEdge.get()) {
-//            this.shift(0);
             this.play();
         }
     }
