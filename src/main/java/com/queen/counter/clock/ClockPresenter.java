@@ -102,6 +102,7 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         Subscription playM = playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
+            this.deltaStream.push(-60);
             minutesColumn.shift(-60);
             minutesColumn.play();
         });
@@ -131,11 +132,13 @@ public class ClockPresenter implements Initializable {
                 .on(merged).emit((muted, t) -> muted.get() ? Optional.empty() : Optional.of(t))
                 .toEventStream().subscribe(event -> {
                     if (((Group) event.getSource()).getId().contains("seconds")) {
+                        this.deltaStream.push((int)event.getDeltaY());
                         secondsColumn.shift(event.getDeltaY());
                         secondsColumn.play();
                     }
 
                     if (((Group) event.getSource()).getId().contains("minutes")) {
+                        this.deltaStream.push((int)event.getDeltaY());
                         minutesColumn.shift(event.getDeltaY());
                         minutesColumn.play();
                     }
@@ -144,9 +147,11 @@ public class ClockPresenter implements Initializable {
         startClicks.subscribe(click -> {
             savedTimerRepository.create("latest", clocks.getMainClock());
             //@TODO reconsider this approach.
+            this.deltaStream.push(-60);
             secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((nullEvent) -> {
+                this.deltaStream.push(-60);
                 secondsColumn.shift(-60);
                 secondsColumn.play();
                 }

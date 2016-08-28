@@ -36,9 +36,10 @@ public class Cell {
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(60)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
         ));
         EventStream<Number> translateY = EventStreams.valuesOf(rectangle.translateYProperty());
+        currentDelta.bind(deltaStream.toBinding(0));
 
         EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
-                delta, translateY
+                this.deltaStream, translateY
         );
 
         combo.map(change -> {
@@ -179,11 +180,6 @@ public class Cell {
 
     public ReadOnlyObjectProperty<Animation.Status> isRunning() {
         return translateTransition.statusProperty();
-    }
-
-
-    public void setDelta(double delta) {
-        this.currentDelta.set((int) delta);
     }
 
     public int getDelta() {

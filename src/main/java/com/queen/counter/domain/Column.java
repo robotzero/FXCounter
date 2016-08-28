@@ -64,7 +64,6 @@ public class Column {
     }
 
     public void shift(double delta) {
-        this.columnList.forEach(cell -> cell.setDelta(delta));
         this.clocks.clockTick(columnType, delta);
     }
 
