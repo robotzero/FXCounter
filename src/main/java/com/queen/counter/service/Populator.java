@@ -45,16 +45,10 @@ public class Populator {
             String id = "";
 
             if (gid.equals("seconds")) {
-                int second = this.clocks.getMainClock().getSecond() - i + 2;
-                second = second == -1 ? 59 : second;
-                label.setText(Integer.toString(second));
                 id = i + "seconds";
             }
 
             if (gid.equals("minutes")) {
-                int minute = this.clocks.getMainClock().getMinute() - i + 2;
-                minute = minute == -1 ? 59 : minute;
-                label.setText(Integer.toString(minute));
                 id = i + "minutes";
             }
 

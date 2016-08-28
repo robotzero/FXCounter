@@ -87,6 +87,8 @@ public class ClockPresenter implements Initializable {
         
         secondsColumn = populator.create(seconds.getId(), seconds);
         minutesColumn = populator.create(minutes.getId(), minutes);
+        secondsColumn.setLabels();
+        minutesColumn.setLabels();
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
 
