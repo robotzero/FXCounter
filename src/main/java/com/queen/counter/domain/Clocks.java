@@ -33,6 +33,39 @@ public class Clocks {
         this.playHours = playSources.get(1);
 
         this.deltaStream = deltaStream;
+        this.deltaStream.subscribe(currentTuple -> {
+            int delta = currentTuple.get1();
+            ColumnType type = currentTuple.get2();
+
+            if (delta != 0) {
+                int normalizedDelta = delta / Math.abs(delta);
+                if (type.equals(ColumnType.SECONDS)) {
+                    this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
+                    this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                    this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
+                }
+
+                if (type.equals(ColumnType.MINUTES)) {
+                    this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
+                    this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                    this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
+                }
+
+                if (type.equals(ColumnType.HOURS)) {
+                    this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
+                    this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                    this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
+                }
+            }
+
+            if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
+                this.playMinutes.push(null);
+            }
+
+            if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
+                this.playHours.push(null);
+            }
+        });
     }
     public void initializeClocks(final LocalTime mainClock) {
         this.mainClock = LocalTime.of(
@@ -48,10 +81,6 @@ public class Clocks {
         eventSeconds.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
         eventMinutes.push(this.scrollMinutesClock.plusMinutes(2).getMinute());
         eventHours.push(this.scrollHoursClock.plusHours(2).getHour());
-
-        deltaStream.subscribe(currentDelta -> {
-
-        });
     }
 
     public LocalTime getMainClock() {
@@ -63,34 +92,34 @@ public class Clocks {
 //                    ? t(3, Optional.of("COUNTDOWN REACHED"))
 //                    : t(s-1, Optional.empty());
 
-    void clockTick(final ColumnType type, final double delta) {
-        if (delta != 0) {
-            int normalizedDelta = (int) delta / (int) Math.abs(delta);
-            if (type.equals(ColumnType.SECONDS)) {
-                this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
-                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
-            }
-
-            if (type.equals(ColumnType.MINUTES)) {
-                this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
-                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
-            }
-
-            if (type.equals(ColumnType.HOURS)) {
-                this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
-                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
-            }
-        }
-
-        if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
-            this.playMinutes.push(null);
-        }
-
-        if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
-            this.playHours.push(null);
-        }
-    }
+//    void clockTick(final ColumnType type, final double delta) {
+//        if (delta != 0) {
+//            int normalizedDelta = (int) delta / (int) Math.abs(delta);
+//            if (type.equals(ColumnType.SECONDS)) {
+//                this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
+//                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+//                this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
+//            }
+//
+//            if (type.equals(ColumnType.MINUTES)) {
+//                this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
+//                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+//                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
+//            }
+//
+//            if (type.equals(ColumnType.HOURS)) {
+//                this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
+//                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+//                this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
+//            }
+//        }
+//
+//        if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
+//            this.playMinutes.push(null);
+//        }
+//
+//        if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
+//            this.playHours.push(null);
+//        }
+//    }
 }

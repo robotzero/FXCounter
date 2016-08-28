@@ -107,7 +107,6 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
         Subscription playM = playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStream.push(t(-60, ColumnType.MINUTES));
-            minutesColumn.shift(-60);
             minutesColumn.play();
         });
 
@@ -137,13 +136,11 @@ public class ClockPresenter implements Initializable {
                 .toEventStream().subscribe(event -> {
                     if (((Group) event.getSource()).getId().contains("seconds")) {
                         this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.SECONDS));
-                        secondsColumn.shift(event.getDeltaY());
                         secondsColumn.play();
                     }
 
                     if (((Group) event.getSource()).getId().contains("minutes")) {
                         this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.MINUTES));
-                        minutesColumn.shift(event.getDeltaY());
                         minutesColumn.play();
                     }
                 });
@@ -152,11 +149,9 @@ public class ClockPresenter implements Initializable {
             savedTimerRepository.create("latest", clocks.getMainClock());
             //@TODO reconsider this approach.
             this.deltaStream.push(t(-60, ColumnType.SECONDS));
-            secondsColumn.shift(-60);
             secondsColumn.play();
             this.subscribe  = ticks.subscribe((nullEvent) -> {
                 this.deltaStream.push(t(-60, ColumnType.SECONDS));
-                secondsColumn.shift(-60);
                 secondsColumn.play();
                 }
             );

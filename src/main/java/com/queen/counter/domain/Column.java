@@ -63,10 +63,6 @@ public class Column {
         });
     }
 
-    public void shift(double delta) {
-        this.clocks.clockTick(columnType, delta);
-    }
-
     public void play() {
         this.columnList.forEach(Cell::animate);
     }
@@ -81,7 +77,7 @@ public class Column {
 
     private void resetPositions() {
         if (!hasTopEdge.get()) {
-            this.shift(0);
+//            this.shift(0);
             this.play();
         }
     }
