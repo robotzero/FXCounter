@@ -69,6 +69,10 @@ public class ClockPresenter implements Initializable {
     @Qualifier("PlayHours")
     private EventSource<Void> playHours;
 
+    @Inject
+    @Qualifier("DeltaStream")
+    private EventSource<Integer> deltaStream;
+
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
     private Subscription subscribe;

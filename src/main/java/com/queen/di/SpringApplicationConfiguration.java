@@ -38,6 +38,9 @@ public class SpringApplicationConfiguration {
     private EventSource<Void> playMinutes = new EventSource<>();
     private EventSource<Void> playHours = new EventSource<>();
 
+    private EventSource<Integer> deltaEvent = new EventSource<>();
+    private EventSource<Integer> deltaStream = new EventSource<>();
+
     @Bean
     public FXMLView clockView() {
         return clockView;
@@ -64,8 +67,13 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
+    public EventSource<Integer> DeltaStream() {
+        return deltaStream;
+    }
+
+    @Bean
     public Populator populator() {
-        Populator populator = new Populator(configureClocks(), seconds, minutes, hours);
+        Populator populator = new Populator(configureClocks(), deltaStream, seconds, minutes, hours);
 
         return populator;
     }

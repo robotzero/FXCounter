@@ -24,9 +24,11 @@ public class Populator {
     private final int blockCount = 4;
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
+    private final EventSource<Integer> deltaStream;
 
-    public Populator(final Clocks clocks, EventSource ...clocksEvents) {
+    public Populator(final Clocks clocks, final EventSource<Integer> deltaStream, EventSource ...clocksEvents) {
         this.clocks = clocks;
+        this.deltaStream = deltaStream;
         this.clocksEvents = clocksEvents;
     }
 
@@ -67,7 +69,7 @@ public class Populator {
 
             TranslateTransition translateTransition = new TranslateTransition();
             translateTransition.setNode(rectangle);
-            return new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), label, translateTransition);
+            return new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), label, translateTransition, deltaStream);
         }).collect(Collectors.toList());
 
         if (gid.equals("seconds")) {

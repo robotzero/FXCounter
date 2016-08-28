@@ -6,6 +6,7 @@ import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import org.reactfx.EventSource;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
@@ -22,12 +23,14 @@ public class Cell {
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
     private EventStream delta = EventStreams.valuesOf(currentDelta);
+    private EventSource deltaStream;
 
-    public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition) {
+    public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition, EventSource<Integer> deltaStream) {
         this.rectangle = rectangle;
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
+        this.deltaStream = deltaStream;
         this.edgeTopRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(0)).then(true).otherwise(false));
         this.hasTextRectangle.bind(new When(rectangle.translateYProperty().greaterThan(180).and(rectangle.translateYProperty().lessThan(240)).and(currentDelta.lessThan(0))).then(true).otherwise(
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(60)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
