@@ -2,6 +2,8 @@ package com.queen.counter.service;
 
 import com.queen.counter.domain.*;
 import javafx.animation.TranslateTransition;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -33,7 +35,7 @@ public class Populator {
         this.clocksEvents = clocksEvents;
     }
 
-    public Column create(final String gid, Group group) {
+    public Column create(Group group, ReadOnlyDoubleProperty widthProperty, ReadOnlyDoubleProperty heightProperty) {
 
         final Random random = new Random();
         List<Cell> list =  IntStream.range(0, blockCount).mapToObj(i -> {
@@ -47,18 +49,21 @@ public class Populator {
 
             String id = "";
 
-            if (gid.equals("seconds")) {
+            if (group.getId().equals("seconds")) {
                 id = i + "seconds";
             }
 
-            if (gid.equals("minutes")) {
+            if (group.getId().equals("minutes")) {
                 id = i + "minutes";
             }
 
+            rectangle.xProperty().bind(widthProperty.divide(2).subtract(rectangle.widthProperty().divide(2)));
+            rectangle.yProperty().bind(heightProperty.divide(2).subtract(rectangle.heightProperty().multiply(blockCount).divide(2)));
+
             label.setFont(Font.font(20));
 
+//            label.xProperty().bind(rectangle.widthProperty().divide(2).subtract(label.xProperty().divide(2)));
             label.xProperty().bind(rectangle.xProperty().add(rectangle.widthProperty().divide(2)));
-
             label.yProperty().bind(rectangle.translateYProperty().add(rectangle.heightProperty().divide(2)));
             label.setTextAlignment(TextAlignment.CENTER);
             label.setTextOrigin(VPos.CENTER);
@@ -73,11 +78,11 @@ public class Populator {
             return new Cell(rectangle, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), label, translateTransition, deltaStream);
         }).collect(Collectors.toList());
 
-        if (gid.equals("seconds")) {
+        if (group.getId().equals("seconds")) {
             return new Column(list, clocks, ColumnType.SECONDS, clocksEvents[0]);
         }
 
-        if (gid.equals("minutes")) {
+        if (group.getId().equals("minutes")) {
             return new Column(list, clocks, ColumnType.MINUTES, clocksEvents[1]);
         }
 

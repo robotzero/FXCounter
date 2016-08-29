@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import org.reactfx.*;
 import org.reactfx.util.Tuple2;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -48,6 +49,9 @@ public class ClockPresenter implements Initializable {
 
     @FXML
     Pane paneSeconds;
+
+    @FXML
+    Rectangle rec;
 
     @Inject
     private SceneConfiguration sceneConfiguration;
@@ -93,13 +97,13 @@ public class ClockPresenter implements Initializable {
             return savedTimer;
         }).getSavedTimer());
         
-        secondsColumn = populator.create(seconds.getId(), seconds);
-        minutesColumn = populator.create(minutes.getId(), minutes);
+        secondsColumn = populator.create(seconds, paneSeconds.widthProperty(), paneSeconds.heightProperty());
+        minutesColumn = populator.create(minutes, paneMinutes.widthProperty(), paneMinutes.heightProperty());
         secondsColumn.setLabels();
         minutesColumn.setLabels();
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
-
+//        rec.xProperty().bind(paneSeconds.widthProperty().divide(2).subtract(rec.widthProperty().divide(2)));
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
