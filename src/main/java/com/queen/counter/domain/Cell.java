@@ -22,7 +22,6 @@ public class Cell {
     private BooleanProperty edgeTopRectangle = new SimpleBooleanProperty(false);
     private BooleanProperty hasTextRectangle = new SimpleBooleanProperty(false);
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
-    private EventStream delta = EventStreams.valuesOf(currentDelta);
     private EventSource deltaStream;
 
     public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition, EventSource<Tuple2<Integer, ColumnType>> deltaStream) {

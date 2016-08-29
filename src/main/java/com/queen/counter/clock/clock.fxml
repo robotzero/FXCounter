@@ -1,30 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.Group?>
-<?import javafx.scene.layout.*?>
-<GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.queen.counter.clock.ClockPresenter">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.queen.counter.clock.ClockPresenter">
   <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
   <rowConstraints>
-    <RowConstraints maxHeight="204.0" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="300.0" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="400.0" minHeight="10.0" prefHeight="343.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="400.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Pane id="paneSeconds" fx:id="paneSeconds" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Pane id="paneSeconds" fx:id="paneSeconds" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <children>
             <Group id="seconds" fx:id="seconds" />
          </children>
       </Pane>
-       <Pane id="paneMinutes" fx:id="paneMinutes" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+       <Pane id="paneMinutes" fx:id="paneMinutes" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
            <children>
                <Group id="minutes" fx:id="minutes" />
            </children>
        </Pane>
-      <Button id="start" fx:id="start" mnemonicParsing="false" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
-      <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
-       <Button id="reset" fx:id="reset" mnemonicParsing="false" text="Reset" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="TOP" />
+       <Pane id="paneHours" fx:id="paneHours" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+           <children>
+               <Group id="hours" fx:id="hours" />
+           </children>
+       </Pane>
+      <Button id="start" fx:id="start" mnemonicParsing="false" styleClass="green" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+      <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+      <Button id="reset" fx:id="reset" mnemonicParsing="false" text="Reset" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
    </children>
 </GridPane>
