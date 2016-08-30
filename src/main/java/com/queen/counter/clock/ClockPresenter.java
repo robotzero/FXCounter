@@ -11,13 +11,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.*;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import org.reactfx.*;
 import org.reactfx.util.Tuple2;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +24,8 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 import static org.reactfx.util.Tuples.t;
 
@@ -39,19 +38,10 @@ public class ClockPresenter implements Initializable {
     Button start, stop, reset;
 
     @FXML
-    Group minutes;
-
-    @FXML
     StackPane paneSeconds;
 
     @FXML
     StackPane paneMinutes;
-
-    @FXML
-    Rectangle rec;
-
-    @FXML
-    Text lbl;
 
     @Inject
     private SceneConfiguration sceneConfiguration;
@@ -97,14 +87,13 @@ public class ClockPresenter implements Initializable {
             return savedTimer;
         }).getSavedTimer());
 
-//        secondsColumn = populator.create(seconds, paneSeconds.widthProperty(), paneSeconds.heightProperty());
         secondsColumn = populator.create(paneSeconds);
-//        minutesColumn = populator.create(minutes, paneMinutes.widthProperty(), paneMinutes.heightProperty());
+        minutesColumn = populator.create(paneMinutes);
+
         secondsColumn.setLabels();
-//        minutesColumn.setLabels();
+        minutesColumn.setLabels();
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
-//        rec.xProperty().bind(paneSeconds.widthProperty().divide(2).subtract(rec.widthProperty().divide(2)));
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
@@ -123,8 +112,8 @@ public class ClockPresenter implements Initializable {
         stop.disableProperty().bind(scrollMuteProperty.not());
         reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
-                EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning())
-//                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
+                EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
+                EventStreams.eventsOf(paneMinutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
         );
 
         // If start button is clicked mute scroll event until stop button is clicked.

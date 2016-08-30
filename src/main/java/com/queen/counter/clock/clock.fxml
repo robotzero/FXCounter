@@ -42,7 +42,7 @@
                   </StackPane>
                </children>
             </VBox>
-            <VBox id="2" fx:id="vv" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+            <VBox id="2"  alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
@@ -74,9 +74,48 @@
             </VBox>
          </children>
       </StackPane>
-       <StackPane id="paneMinutes" fx:id="paneMinutes" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+       <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
            <children>
-               <Group id="minutes" fx:id="minutes" />
+               <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                   <children>
+                       <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                           </children>
+                       </StackPane>
+                   </children>
+               </VBox>
+               <VBox id="2"  alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                   <children>
+                       <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                           </children>
+                       </StackPane>
+                   </children>
+               </VBox>
+               <VBox id="3" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                   <children>
+                       <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                           </children>
+                       </StackPane>
+                   </children>
+               </VBox>
+               <VBox id="4" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                   <children>
+                       <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" width="60.0" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                           </children>
+                       </StackPane>
+                   </children>
+               </VBox>
            </children>
        </StackPane>
        <StackPane id="paneHours" fx:id="paneHours" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">

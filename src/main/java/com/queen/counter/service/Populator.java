@@ -49,7 +49,7 @@ public class Populator {
                 rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
-                rectangle.setTranslateY(cellsize * Integer.valueOf(vbox.getId()));
+                vbox.setTranslateY(cellsize * Integer.valueOf(vbox.getId()));
                 text.translateYProperty().bind(rectangle.translateYProperty());
 
                 rectangle.setId(id);
@@ -59,12 +59,21 @@ public class Populator {
                 rectangle.setId(id);
 
                 TranslateTransition translateTransition = new TranslateTransition();
-                translateTransition.setNode(rectangle);
+                translateTransition.setNode(vbox);
                 return new Cell((VBox)vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream);
             }).findFirst().get();
             return cell;
         }).collect(Collectors.toList());
-        return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
+
+        if (stack.getId().contains("Seconds")) {
+            return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
+        }
+
+        if (stack.getId().contains("Minutes")) {
+            return new Column(cc, clocks, ColumnType.MINUTES, clocksEvents[1]);
+        }
+
+        return new Column(cc, clocks, ColumnType.HOURS, clocksEvents[2]);
     }
 
 //    public Column create(Group group, ReadOnlyDoubleProperty widthProperty, ReadOnlyDoubleProperty heightProperty) {
