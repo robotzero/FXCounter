@@ -43,6 +43,9 @@ public class ClockPresenter implements Initializable {
     @FXML
     StackPane paneMinutes;
 
+    @FXML
+    StackPane paneHours;
+
     @Inject
     private SceneConfiguration sceneConfiguration;
 
@@ -77,6 +80,7 @@ public class ClockPresenter implements Initializable {
 
     private Column secondsColumn;
     private Column minutesColumn;
+    private Column hoursColumn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -89,11 +93,15 @@ public class ClockPresenter implements Initializable {
 
         secondsColumn = populator.create(paneSeconds);
         minutesColumn = populator.create(paneMinutes);
+        hoursColumn = populator.create(paneHours);
 
         secondsColumn.setLabels();
         minutesColumn.setLabels();
+        hoursColumn.setLabels();
+
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
+        paneHours.setStyle("-fx-background-color: #FFFFFF;");
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
@@ -113,7 +121,8 @@ public class ClockPresenter implements Initializable {
         reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
                 EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
-                EventStreams.eventsOf(paneMinutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
+                EventStreams.eventsOf(paneMinutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning()),
+                EventStreams.eventsOf(paneHours, ScrollEvent.SCROLL).suppressWhen(hoursColumn.isRunning())
         );
 
         // If start button is clicked mute scroll event until stop button is clicked.
@@ -170,8 +179,10 @@ public class ClockPresenter implements Initializable {
             }
             this.deltaStream.push(t(0, ColumnType.SECONDS));
             this.deltaStream.push(t(0, ColumnType.MINUTES));
+            this.deltaStream.push(t(0, ColumnType.HOURS));
             secondsColumn.setLabels();
             minutesColumn.setLabels();
+            hoursColumn.setLabels();
         });
     }
 }

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class Populator {
 
     private final int cellsize = 60;
-    private final int blockCount = 4;
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
     private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
@@ -46,10 +45,14 @@ public class Populator {
                     id = vbox.getId() + "minutes";
                 }
 
+                if (stack.getId().equals("paneHours")) {
+                    id = vbox.getId() + "hours";
+                }
+
                 rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
-                vbox.setTranslateY(cellsize * Integer.valueOf(vbox.getId()));
+                vbox.setTranslateY(cellsize * (Integer.valueOf(vbox.getId()) - 1));
                 text.translateYProperty().bind(rectangle.translateYProperty());
 
                 rectangle.setId(id);
