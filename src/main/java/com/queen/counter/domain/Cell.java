@@ -4,7 +4,7 @@ import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
 import org.reactfx.EventStream;
@@ -15,7 +15,7 @@ import java.time.LocalTime;
 
 public class Cell {
 
-    private Rectangle rectangle;
+    private VBox rectangle;
     private Location location;
     private Text label;
     private TranslateTransition translateTransition;
@@ -24,7 +24,7 @@ public class Cell {
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
     private EventSource deltaStream;
 
-    public Cell(Rectangle rectangle, Location location, Text label, TranslateTransition translateTransition, EventSource<Tuple2<Integer, ColumnType>> deltaStream) {
+    public Cell(VBox rectangle, Location location, Text label, TranslateTransition translateTransition, EventSource<Tuple2<Integer, ColumnType>> deltaStream) {
         this.rectangle = rectangle;
         this.location = location;
         this.label = label;

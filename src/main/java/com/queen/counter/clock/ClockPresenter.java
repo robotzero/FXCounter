@@ -15,9 +15,9 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.reactfx.util.Tuple2;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,22 +36,22 @@ public class ClockPresenter implements Initializable {
     GridPane gridPane;
 
     @FXML
-    Pane paneMinutes;
-
-    @FXML
     Button start, stop, reset;
-
-    @FXML
-    Group seconds;
 
     @FXML
     Group minutes;
 
     @FXML
-    Pane paneSeconds;
+    StackPane paneSeconds;
+
+    @FXML
+    StackPane paneMinutes;
 
     @FXML
     Rectangle rec;
+
+    @FXML
+    Text lbl;
 
     @Inject
     private SceneConfiguration sceneConfiguration;
@@ -96,11 +96,12 @@ public class ClockPresenter implements Initializable {
             savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
             return savedTimer;
         }).getSavedTimer());
-        
-        secondsColumn = populator.create(seconds, paneSeconds.widthProperty(), paneSeconds.heightProperty());
-        minutesColumn = populator.create(minutes, paneMinutes.widthProperty(), paneMinutes.heightProperty());
+
+//        secondsColumn = populator.create(seconds, paneSeconds.widthProperty(), paneSeconds.heightProperty());
+        secondsColumn = populator.create(paneSeconds);
+//        minutesColumn = populator.create(minutes, paneMinutes.widthProperty(), paneMinutes.heightProperty());
         secondsColumn.setLabels();
-        minutesColumn.setLabels();
+//        minutesColumn.setLabels();
         paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
         paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
 //        rec.xProperty().bind(paneSeconds.widthProperty().divide(2).subtract(rec.widthProperty().divide(2)));
@@ -122,8 +123,8 @@ public class ClockPresenter implements Initializable {
         stop.disableProperty().bind(scrollMuteProperty.not());
         reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
-                EventStreams.eventsOf(seconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
-                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
+                EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning())
+//                EventStreams.eventsOf(minutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning())
         );
 
         // If start button is clicked mute scroll event until stop button is clicked.
@@ -138,12 +139,12 @@ public class ClockPresenter implements Initializable {
                 })
                 .on(merged).emit((muted, t) -> muted.get() ? Optional.empty() : Optional.of(t))
                 .toEventStream().subscribe(event -> {
-                    if (((Group) event.getSource()).getId().contains("seconds")) {
+                    if (((StackPane) event.getSource()).getId().contains("Seconds")) {
                         this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.SECONDS));
                         secondsColumn.play();
                     }
 
-                    if (((Group) event.getSource()).getId().contains("minutes")) {
+                    if (((StackPane) event.getSource()).getId().contains("Minutes")) {
                         this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.MINUTES));
                         minutesColumn.play();
                     }
