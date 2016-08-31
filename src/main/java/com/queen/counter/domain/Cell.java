@@ -94,7 +94,7 @@ public class Cell {
     }
 
     public void setLabel(String newLabel) {
-        if (rectangle.getId().equals(label.getId())) {
+        if (label.getId().contains(rectangle.getId())) {
             this.label.setText(newLabel);
         }
     }
@@ -172,6 +172,44 @@ public class Cell {
 
                 if (rectangle.translateYProperty().get() == 240) {
                     label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
+                }
+            }
+        }
+
+        if (columnType.equals(ColumnType.HOURS)) {
+            if (topEdgeExists) {
+                if (rectangle.translateYProperty().get() == 0) {
+                    label.setText(Integer.toString(clock.plusHours(2).getHour()));
+                }
+
+                if (rectangle.translateYProperty().get() == 60) {
+                    label.setText(Integer.toString(clock.plusHours(1).getHour()));
+                }
+
+                if (rectangle.translateYProperty().get() == 120) {
+                    label.setText(Integer.toString(clock.getHour()));
+                }
+
+                if (rectangle.translateYProperty().get() == 180) {
+                    label.setText(Integer.toString(clock.minusHours(1).getHour()));
+                }
+            }
+
+            if (!topEdgeExists) {
+                if (rectangle.translateYProperty().get() == 60) {
+                    label.setText(Integer.toString(clock.plusHours(2).getHour()));
+                }
+
+                if (rectangle.translateYProperty().get() == 120) {
+                    label.setText(Integer.toString(clock.plusHours(1).getHour()));
+                }
+
+                if (rectangle.translateYProperty().get() == 180) {
+                    label.setText(Integer.toString(clock.getHour()));
+                }
+
+                if (rectangle.translateYProperty().get() == 240) {
+                    label.setText(Integer.toString(clock.minusHours(1).getHour()));
                 }
             }
         }
