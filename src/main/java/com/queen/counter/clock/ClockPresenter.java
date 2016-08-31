@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.reactfx.util.Tuple2;
@@ -95,6 +96,28 @@ public class ClockPresenter implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        Rectangle rec1 = new Rectangle();
+        rec1.setHeight(180);
+        rec1.setWidth(120);
+        rec1.setX(0);
+        rec1.setY(60);
+
+        Rectangle rec2 = new Rectangle();
+        rec2.setHeight(180);
+        rec2.setWidth(120);
+        rec2.setX(0);
+        rec2.setY(60);
+
+        Rectangle rec3 = new Rectangle();
+        rec3.setHeight(180);
+        rec3.setWidth(120);
+        rec3.setX(0);
+        rec3.setY(60);
+
+        paneSeconds.setClip(rec1);
+        paneMinutes.setClip(rec2);
+        paneHours.setClip(rec3);
 
         this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
             SavedTimer savedTimer = new SavedTimer();
