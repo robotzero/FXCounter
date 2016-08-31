@@ -57,7 +57,7 @@ public class Populator {
 
                 rectangle.setId(id);
 
-                text.setFont(Font.font(20));
+                text.setFont(Font.font(40));
                 text.setId(id);
                 rectangle.setId(id);
 
