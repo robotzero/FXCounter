@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.queen.counter.clock.ClockPresenter">
@@ -25,7 +26,7 @@
         <ColumnConstraints hgrow="SOMETIMES" />
     </columnConstraints>
     <rowConstraints>
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
         <RowConstraints vgrow="SOMETIMES" />
         <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
@@ -165,6 +166,20 @@
       <Button id="start" fx:id="start" mnemonicParsing="false" styleClass="green" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button id="reset" fx:id="reset" mnemonicParsing="false" text="Reset" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+      <Text id="textMinutes" fx:id="textMinutes" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Minutes" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Text id="textHours" fx:id="textHours" layoutX="210.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hours" textAlignment="CENTER" GridPane.halignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Text id="textSeconds" fx:id="textSeconds" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seconds" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
    </children>
 </GridPane>

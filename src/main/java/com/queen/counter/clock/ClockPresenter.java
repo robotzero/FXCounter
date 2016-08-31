@@ -11,11 +11,13 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.reactfx.util.Tuple2;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,6 +47,15 @@ public class ClockPresenter implements Initializable {
 
     @FXML
     StackPane paneHours;
+
+    @FXML
+    Text textSeconds;
+
+    @FXML
+    Text textMinutes;
+
+    @FXML
+    Text textHours;
 
     @Inject
     private SceneConfiguration sceneConfiguration;
@@ -91,9 +102,14 @@ public class ClockPresenter implements Initializable {
             return savedTimer;
         }).getSavedTimer());
 
+
         secondsColumn = populator.create(paneSeconds);
         minutesColumn = populator.create(paneMinutes);
         hoursColumn = populator.create(paneHours);
+
+        GridPane.setMargin(textSeconds, new Insets(320, 0, 320, 0));
+        GridPane.setMargin(textMinutes, new Insets(320, 0, 320, 0));
+        GridPane.setMargin(textHours, new Insets(320, 0, 320, 0));
 
         secondsColumn.setLabels();
         minutesColumn.setLabels();
