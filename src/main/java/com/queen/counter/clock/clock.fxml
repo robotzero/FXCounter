@@ -47,8 +47,8 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle id="rec" fx:id="rec" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                        <Text id="labl" fx:id="lbl" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
                </children>

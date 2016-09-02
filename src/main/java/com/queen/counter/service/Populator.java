@@ -2,6 +2,8 @@ package com.queen.counter.service;
 
 import com.queen.counter.domain.*;
 import javafx.animation.TranslateTransition;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class Populator {
 
-    private final int cellsize = 60;
+    private IntegerProperty cellSize = new SimpleIntegerProperty(60);
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
     private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
@@ -52,7 +54,7 @@ public class Populator {
                 rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
-                vbox.setTranslateY(cellsize * (Integer.valueOf(vbox.getId()) - 1));
+                vbox.setTranslateY(cellSize.get() * (Integer.valueOf(vbox.getId()) - 1));
                 text.translateYProperty().bind(rectangle.translateYProperty());
 
                 rectangle.setId(id);
@@ -67,6 +69,13 @@ public class Populator {
             }).findFirst().get();
             return cell;
         }).collect(Collectors.toList());
+
+        Rectangle clipRectangle = new Rectangle();
+        clipRectangle.heightProperty().bind(cellSize.multiply(3));
+        clipRectangle.widthProperty().bind(stack.widthProperty());
+        clipRectangle.setX(0);
+        clipRectangle.yProperty().bind(cellSize);
+        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
