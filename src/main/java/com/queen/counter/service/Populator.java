@@ -12,7 +12,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import org.reactfx.Change;
 import org.reactfx.EventSource;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import java.util.List;
@@ -56,6 +59,7 @@ public class Populator {
                 rectangle.setStrokeType(StrokeType.INSIDE);
                 vbox.setTranslateY(cellSize.get() * (Integer.valueOf(vbox.getId()) - 1));
                 text.translateYProperty().bind(rectangle.translateYProperty());
+                rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
 
                 rectangle.setId(id);
 
@@ -76,6 +80,11 @@ public class Populator {
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
         stack.setClip(clipRectangle);
+        EventStream<Tuple2<Change<Number>, Change<Number>>> e = EventStreams.combine(EventStreams.changesOf(stack.widthProperty()), EventStreams.changesOf(stack.heightProperty()));
+        e.subscribe(ev -> {
+//            System.out.println(ev.get1());
+//            System.out.println(ev.get2());
+        });
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
