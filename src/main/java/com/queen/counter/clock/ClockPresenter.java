@@ -123,7 +123,7 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
-        EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000));
+        EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
         Subscription playM = playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStream.push(t(-60, ColumnType.MINUTES));
             minutesColumn.play();
@@ -165,16 +165,21 @@ public class ClockPresenter implements Initializable {
                     }
                 });
 
-        startClicks.subscribe(click -> {
-            savedTimerRepository.create("latest", clocks.getMainClock());
-            //@TODO reconsider this approach.
+        this.subscribe = ticks.subscribe(nullEvent -> {
             this.deltaStream.push(t(-60, ColumnType.SECONDS));
             secondsColumn.play();
-            this.subscribe  = ticks.subscribe((nullEvent) -> {
-                this.deltaStream.push(t(-60, ColumnType.SECONDS));
-                secondsColumn.play();
-                }
-            );
+        });
+
+        startClicks.subscribe(click -> {
+            savedTimerRepository.create("latest", clocks.getMainClock());
+//            //@TODO reconsider this approach.
+//            this.deltaStream.push(t(-60, ColumnType.SECONDS));
+//            secondsColumn.play();
+//            this.subscribe  = ticks.subscribe((nullEvent) -> {
+//                this.deltaStream.push(t(-60, ColumnType.SECONDS));
+//                secondsColumn.play();
+//                }
+//            );
         });
 
         stopClicks.subscribe(click -> {

@@ -60,6 +60,8 @@ public class Populator {
                 vbox.setTranslateY(cellSize.get() * (Integer.valueOf(vbox.getId()) - 1));
                 text.translateYProperty().bind(rectangle.translateYProperty());
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
+//                rectangle.heightProperty().bind(stack.heightProperty().divide(4));
+                rectangle.heightProperty().setValue(60);
 
                 rectangle.setId(id);
 
@@ -80,11 +82,6 @@ public class Populator {
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
         stack.setClip(clipRectangle);
-        EventStream<Tuple2<Change<Number>, Change<Number>>> e = EventStreams.combine(EventStreams.changesOf(stack.widthProperty()), EventStreams.changesOf(stack.heightProperty()));
-        e.subscribe(ev -> {
-//            System.out.println(ev.get1());
-//            System.out.println(ev.get2());
-        });
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);

@@ -37,7 +37,7 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
@@ -47,7 +47,7 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
@@ -57,7 +57,7 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
@@ -81,7 +81,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -91,7 +91,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -101,7 +101,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -111,7 +111,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -135,7 +135,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -145,7 +145,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE"  />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE"  />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -155,7 +155,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
