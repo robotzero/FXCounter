@@ -12,10 +12,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import org.reactfx.Change;
 import org.reactfx.EventSource;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import java.util.List;
@@ -57,11 +54,13 @@ public class Populator {
                 rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
-                vbox.setTranslateY(cellSize.get() * (Integer.valueOf(vbox.getId()) - 1));
                 text.translateYProperty().bind(rectangle.translateYProperty());
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
-//                rectangle.heightProperty().bind(stack.heightProperty().divide(4));
-                rectangle.heightProperty().setValue(60);
+                rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.7));
+                cellSize.bind(rectangle.heightProperty());
+//                vbox.translateYProperty().bind(cellSize.multiply(Integer.valueOf(vbox.getId()) - 1));
+//                vbox.setTranslateY(cellSize.get() * (Integer.valueOf(vbox.getId()) - 1));
+//                rectangle.heightProperty().setValue(60);
 
                 rectangle.setId(id);
 
@@ -71,7 +70,7 @@ public class Populator {
 
                 TranslateTransition translateTransition = new TranslateTransition();
                 translateTransition.setNode(vbox);
-                return new Cell((VBox)vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream);
+                return new Cell((VBox)vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
             }).findFirst().get();
             return cell;
         }).collect(Collectors.toList());
@@ -81,7 +80,7 @@ public class Populator {
         clipRectangle.widthProperty().bind(stack.widthProperty());
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
-        stack.setClip(clipRectangle);
+//        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);

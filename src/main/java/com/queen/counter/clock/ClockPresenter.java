@@ -170,17 +170,7 @@ public class ClockPresenter implements Initializable {
             secondsColumn.play();
         });
 
-        startClicks.subscribe(click -> {
-            savedTimerRepository.create("latest", clocks.getMainClock());
-//            //@TODO reconsider this approach.
-//            this.deltaStream.push(t(-60, ColumnType.SECONDS));
-//            secondsColumn.play();
-//            this.subscribe  = ticks.subscribe((nullEvent) -> {
-//                this.deltaStream.push(t(-60, ColumnType.SECONDS));
-//                secondsColumn.play();
-//                }
-//            );
-        });
+        startClicks.subscribe(click -> savedTimerRepository.create("latest", clocks.getMainClock()));
 
         stopClicks.subscribe(click -> {
             this.subscribe.unsubscribe();
