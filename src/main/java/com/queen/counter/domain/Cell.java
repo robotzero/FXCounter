@@ -25,6 +25,7 @@ public class Cell {
     private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
     private IntegerProperty currentSize;
     private EventSource deltaStream;
+    private IntegerProperty currentMultiplayer = new SimpleIntegerProperty(0);
 
     public Cell(
             VBox rectangle,
@@ -40,6 +41,8 @@ public class Cell {
         this.translateTransition = translateTransition;
         this.deltaStream = deltaStream;
         this.currentSize = currentSize;
+        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()));
+
         this.edgeTopRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(0).or(rectangle.translateYProperty().lessThan(0))).then(true).otherwise(false));
         this.hasTextRectangle.bind(new When(rectangle.translateYProperty().greaterThan(currentSize.multiply(3)).and(rectangle.translateYProperty().lessThan(currentSize.multiply(4))).and(currentDelta.lessThan(0))).then(true).otherwise(
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(currentSize)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
@@ -52,10 +55,9 @@ public class Cell {
                 this.deltaStream, translateY
         );
 
-        cellSize.subscribe(size -> rectangle.setTranslateY(size.getNewValue().intValue()  * Integer.valueOf(rectangle.getId()) - 1));
+        cellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
 
         combo.map(change -> {
-            System.out.println(rectangle.getTranslateY());
             Integer currDelta = change.get1().get1();
             Double transY = change.get2();
 
@@ -98,6 +100,11 @@ public class Cell {
 
     public void animate() {
         translateTransition.play();
+        if (this.currentMultiplayer.get() == 4) {
+            this.currentMultiplayer.set(1);
+        } else {
+            this.currentMultiplayer.set(this.currentMultiplayer.get() + 1);
+        }
     }
 
     public BooleanProperty hasTopEdgeRectangle() {

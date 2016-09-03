@@ -13,6 +13,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
+import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import java.util.List;
@@ -58,20 +59,16 @@ public class Populator {
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
                 rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.7));
                 cellSize.bind(rectangle.heightProperty());
-//                vbox.translateYProperty().bind(cellSize.multiply(Integer.valueOf(vbox.getId()) - 1));
-//                vbox.setTranslateY(cellSize.get() * (Integer.valueOf(vbox.getId()) - 1));
-//                rectangle.heightProperty().setValue(60);
-
-                rectangle.setId(id);
-
+                vbox.setTranslateY(cellSize.getValue() * (Integer.valueOf(vbox.getId()) - 1));
                 text.setFont(Font.font(40));
                 text.setId(id);
                 rectangle.setId(id);
-
+                VBox v = (VBox) vbox;
                 TranslateTransition translateTransition = new TranslateTransition();
                 translateTransition.setNode(vbox);
-                return new Cell((VBox)vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
+                return new Cell(v, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
             }).findFirst().get();
+
             return cell;
         }).collect(Collectors.toList());
 
