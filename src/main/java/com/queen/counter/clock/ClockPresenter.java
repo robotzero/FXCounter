@@ -108,9 +108,9 @@ public class ClockPresenter implements Initializable {
         minutesColumn = populator.create(paneMinutes);
         hoursColumn = populator.create(paneHours);
 
-        GridPane.setMargin(textSeconds, new Insets(320, 0, 320, 0));
-        GridPane.setMargin(textMinutes, new Insets(320, 0, 320, 0));
-        GridPane.setMargin(textHours, new Insets(320, 0, 320, 0));
+//        GridPane.setMargin(textSeconds, new Insets(320, 0, 320, 0));
+//        GridPane.setMargin(textMinutes, new Insets(320, 0, 320, 0));
+//        GridPane.setMargin(textHours, new Insets(320, 0, 320, 0));
 
         secondsColumn.setLabels();
         minutesColumn.setLabels();

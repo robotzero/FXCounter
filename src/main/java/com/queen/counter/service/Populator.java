@@ -59,7 +59,7 @@ public class Populator {
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
                 rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.7));
                 cellSize.bind(rectangle.heightProperty());
-                vbox.setTranslateY(cellSize.getValue() * (Integer.valueOf(vbox.getId()) - 1));
+//                vbox.setTranslateY(cellSize.getValue() * (Integer.valueOf(vbox.getId()) - 1));
                 text.setFont(Font.font(40));
                 text.setId(id);
                 rectangle.setId(id);

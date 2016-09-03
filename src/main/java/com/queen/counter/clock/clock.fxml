@@ -31,7 +31,7 @@
         <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
    <children>
-      <StackPane id="paneSeconds" fx:id="paneSeconds" alignment="TOP_CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <StackPane id="paneSeconds" fx:id="paneSeconds" alignment="TOP_CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <children>
             <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
@@ -75,7 +75,7 @@
             </VBox>
          </children>
       </StackPane>
-       <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+       <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
            <children>
                <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                    <children>
@@ -119,7 +119,7 @@
                </VBox>
            </children>
        </StackPane>
-       <StackPane id="paneHours" fx:id="paneHours" alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+       <StackPane id="paneHours" fx:id="paneHours" alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
            <children>
                <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                    <children>
