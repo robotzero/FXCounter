@@ -41,7 +41,7 @@ public class Cell {
         this.translateTransition = translateTransition;
         this.deltaStream = deltaStream;
         this.currentSize = currentSize;
-        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()));
+        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
 
         this.edgeTopRectangle.bind(new When(rectangle.translateYProperty().isEqualTo(0).or(rectangle.translateYProperty().lessThan(0))).then(true).otherwise(false));
         this.hasTextRectangle.bind(new When(rectangle.translateYProperty().greaterThan(currentSize.multiply(3)).and(rectangle.translateYProperty().lessThan(currentSize.multiply(4))).and(currentDelta.lessThan(0))).then(true).otherwise(
@@ -100,8 +100,8 @@ public class Cell {
 
     public void animate() {
         translateTransition.play();
-        if (this.currentMultiplayer.get() == 4) {
-            this.currentMultiplayer.set(1);
+        if (this.currentMultiplayer.get() == 3) {
+            this.currentMultiplayer.set(0);
         } else {
             this.currentMultiplayer.set(this.currentMultiplayer.get() + 1);
         }
