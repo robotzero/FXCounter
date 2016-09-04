@@ -2,6 +2,7 @@ package com.queen.counter.service;
 
 import com.queen.counter.domain.*;
 import javafx.animation.TranslateTransition;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
@@ -10,10 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
-import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 public class Populator {
 
     private IntegerProperty cellSize = new SimpleIntegerProperty(60);
+    private IntegerProperty fontSize = new SimpleIntegerProperty(40);
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
     private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
@@ -35,7 +35,7 @@ public class Populator {
 
     public Column create(StackPane stack) {
         final Random random = new Random();
-        List cc = stack.getChildren().stream().map(vbox -> {
+        List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
@@ -52,21 +52,22 @@ public class Populator {
                     id = vbox.getId() + "hours";
                 }
 
-                rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+//                rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
                 text.translateYProperty().bind(rectangle.translateYProperty());
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
                 rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.7));
                 cellSize.bind(rectangle.heightProperty());
-//                vbox.setTranslateY(cellSize.getValue() * (Integer.valueOf(vbox.getId()) - 1));
-                text.setFont(Font.font(40));
+                text.translateYProperty().bind(rectangle.heightProperty().subtract(fontSize).multiply(0.4));
+                fontSize.bind(rectangle.widthProperty().add(rectangle.heightProperty()).divide(5));
+                text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
+                        ,"-fx-base: rgb(100,100,100);"));
                 text.setId(id);
                 rectangle.setId(id);
-                VBox v = (VBox) vbox;
                 TranslateTransition translateTransition = new TranslateTransition();
                 translateTransition.setNode(vbox);
-                return new Cell(v, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
+                return new Cell((VBox) vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
             }).findFirst().get();
 
             return cell;
@@ -77,7 +78,7 @@ public class Populator {
         clipRectangle.widthProperty().bind(stack.widthProperty());
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
-//        stack.setClip(clipRectangle);
+        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);

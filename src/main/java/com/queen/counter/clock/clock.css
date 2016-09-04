@@ -9,3 +9,13 @@
 .gridPane {
     -fx-background-color: #191c19
 }
+
+.paneSeconds {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%,
+                                          rgba(0, 0, 0, 255) 0%,
+                                          rgba(0, 0, 0, 255) 10%,
+                                          rgba(0, 0, 0, 0) 40%,
+                                          rgba(0, 0, 0, 0) 60%,
+                                          rgba(0, 0, 0, 255) 90%,
+                                          rgba(0, 0, 0, 255) 100%);
+}
