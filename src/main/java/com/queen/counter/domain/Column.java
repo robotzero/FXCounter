@@ -45,7 +45,7 @@ public class Column {
         // When we are in reset mode / button reset has been clicked set new value of the each cell.
         resetClicked.noes()
                     .subscribe(cellList -> this.columnList.forEach(
-                         cell -> cell.setLabel(hasTopEdge.get(), clocks.getMainClock(), columnType))
+                         cell -> cell.setLabel(clocks.getMainClock(), columnType))
                     );
 
         this.columnList.stream().map(cell -> {

@@ -65,8 +65,7 @@ public class Cell {
                 if (transY == 0 || transY < 0) {
                     return currentSize.multiply(4).get();
                 } else {
-//                    return transY;
-                    return 0;
+                    return transY;
                 }
             } else {
                 if (transY == currentSize.multiply(4).get()) {
@@ -97,7 +96,6 @@ public class Cell {
         }).feedTo(translateTransition.toYProperty());
     }
 
-
     public void animate() {
         translateTransition.play();
         if (this.currentMultiplayer.get() == 3) {
@@ -121,118 +119,55 @@ public class Cell {
         }
     }
 
-    public void setLabel(boolean topEdgeExists, LocalTime clock, ColumnType columnType) {
+    public void setLabel(LocalTime clock, ColumnType columnType) {
         if (columnType.equals(ColumnType.SECONDS)) {
-            if (topEdgeExists) {
-                if (rectangle.translateYProperty().get() == 0) {
-                    label.setText(Integer.toString(clock.plusSeconds(2).getSecond()));
-                }
-
-                if (rectangle.translateYProperty().get() == 60) {
-                    label.setText(Integer.toString(clock.plusSeconds(1).getSecond()));
-                }
-
-                if (rectangle.translateYProperty().get() == 120) {
-                    label.setText(Integer.toString(clock.getSecond()));
-                }
-
-                if (rectangle.translateYProperty().get() == 180) {
-                    label.setText(Integer.toString(clock.minusSeconds(1).getSecond()));
-                }
+            if (currentMultiplayer.get() == 0) {
+                label.setText(Integer.toString(clock.plusSeconds(2).getSecond()));
+            }
+            if (currentMultiplayer.get() == 1) {
+                label.setText(Integer.toString(clock.plusSeconds(1).getSecond()));
             }
 
-            if (!topEdgeExists) {
-                if (rectangle.translateYProperty().get() == 60) {
-                    label.setText(Integer.toString(clock.plusSeconds(2).getSecond()));
-                }
+            if (currentMultiplayer.get() == 2) {
+                label.setText(Integer.toString(clock.getSecond()));
+            }
 
-                if (rectangle.translateYProperty().get() == 120) {
-                    label.setText(Integer.toString(clock.plusSeconds(1).getSecond()));
-                }
-
-                if (rectangle.translateYProperty().get() == 180) {
-                    label.setText(Integer.toString(clock.getSecond()));
-                }
-
-                if (rectangle.translateYProperty().get() == 240) {
-                    label.setText(Integer.toString(clock.minusSeconds(1).getSecond()));
-                }
+            if (currentMultiplayer.get() == 3) {
+                label.setText(Integer.toString(clock.minusSeconds(1).getSecond()));
             }
         }
 
         if (columnType.equals(ColumnType.MINUTES)) {
-            if (topEdgeExists) {
-                if (rectangle.translateYProperty().get() == 0) {
-                    label.setText(Integer.toString(clock.plusMinutes(2).getMinute()));
-                }
-
-                if (rectangle.translateYProperty().get() == 60) {
-                    label.setText(Integer.toString(clock.plusMinutes(1).getMinute()));
-                }
-
-                if (rectangle.translateYProperty().get() == 120) {
-                    label.setText(Integer.toString(clock.getMinute()));
-                }
-
-                if (rectangle.translateYProperty().get() == 180) {
-                    label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
-                }
+            if (currentMultiplayer.get() == 0) {
+                label.setText(Integer.toString(clock.plusMinutes(2).getMinute()));
+            }
+            if (currentMultiplayer.get() == 1) {
+                label.setText(Integer.toString(clock.plusMinutes(1).getMinute()));
             }
 
-            if (!topEdgeExists) {
-                if (rectangle.translateYProperty().get() == 60) {
-                    label.setText(Integer.toString(clock.plusMinutes(2).getMinute()));
-                }
+            if (currentMultiplayer.get() == 2) {
+                label.setText(Integer.toString(clock.getMinute()));
+            }
 
-                if (rectangle.translateYProperty().get() == 120) {
-                    label.setText(Integer.toString(clock.plusMinutes(1).getMinute()));
-                }
-
-                if (rectangle.translateYProperty().get() == 180) {
-                    label.setText(Integer.toString(clock.getMinute()));
-                }
-
-                if (rectangle.translateYProperty().get() == 240) {
-                    label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
-                }
+            if (currentMultiplayer.get() == 3) {
+                label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
             }
         }
 
         if (columnType.equals(ColumnType.HOURS)) {
-            if (topEdgeExists) {
-                if (rectangle.translateYProperty().get() == 0) {
-                    label.setText(Integer.toString(clock.plusHours(2).getHour()));
-                }
-
-                if (rectangle.translateYProperty().get() == 60) {
-                    label.setText(Integer.toString(clock.plusHours(1).getHour()));
-                }
-
-                if (rectangle.translateYProperty().get() == 120) {
-                    label.setText(Integer.toString(clock.getHour()));
-                }
-
-                if (rectangle.translateYProperty().get() == 180) {
-                    label.setText(Integer.toString(clock.minusHours(1).getHour()));
-                }
+            if (currentMultiplayer.get() == 0) {
+                label.setText(Integer.toString(clock.plusHours(2).getHour()));
+            }
+            if (currentMultiplayer.get() == 1) {
+                label.setText(Integer.toString(clock.plusHours(1).getHour()));
             }
 
-            if (!topEdgeExists) {
-                if (rectangle.translateYProperty().get() == 60) {
-                    label.setText(Integer.toString(clock.plusHours(2).getHour()));
-                }
+            if (currentMultiplayer.get() == 2) {
+                label.setText(Integer.toString(clock.getHour()));
+            }
 
-                if (rectangle.translateYProperty().get() == 120) {
-                    label.setText(Integer.toString(clock.plusHours(1).getHour()));
-                }
-
-                if (rectangle.translateYProperty().get() == 180) {
-                    label.setText(Integer.toString(clock.getHour()));
-                }
-
-                if (rectangle.translateYProperty().get() == 240) {
-                    label.setText(Integer.toString(clock.minusHours(1).getHour()));
-                }
+            if (currentMultiplayer.get() == 3) {
+                label.setText(Integer.toString(clock.minusHours(1).getHour()));
             }
         }
     }

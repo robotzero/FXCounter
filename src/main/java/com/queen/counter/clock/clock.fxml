@@ -83,7 +83,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -93,7 +93,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -103,7 +103,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -113,12 +113,13 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
                    </children>
                </VBox>
+               <Region styleClass="paneSeconds" />
            </children>
        </StackPane>
        <StackPane id="paneHours" fx:id="paneHours" alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -137,7 +138,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -147,7 +148,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
@@ -157,12 +158,13 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            </children>
                        </StackPane>
                    </children>
                </VBox>
+               <Region styleClass="paneSeconds" />
            </children>
        </StackPane>
       <Button id="start" fx:id="start" mnemonicParsing="false" styleClass="green" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
