@@ -16,7 +16,6 @@ import org.reactfx.EventSource;
 import org.reactfx.util.Tuple2;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Populator {
@@ -34,7 +33,6 @@ public class Populator {
     }
 
     public Column create(StackPane stack) {
-        final Random random = new Random();
         List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
@@ -52,7 +50,6 @@ public class Populator {
                     id = vbox.getId() + "hours";
                 }
 
-//                rectangle.setFill(Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
                 text.translateYProperty().bind(rectangle.translateYProperty());
