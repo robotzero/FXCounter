@@ -6,9 +6,13 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
@@ -33,6 +37,15 @@ public class Populator {
     }
 
     public Column create(StackPane stack) {
+        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).map(reg -> {
+                    return reg;
+                }).findAny().ifPresent(r -> {
+            Rectangle rect = (Rectangle) r;
+            rect.heightProperty().bind(cellSize.multiply(3));
+            rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
+            rect.translateYProperty().bind(cellSize);
+        });
+
         List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);

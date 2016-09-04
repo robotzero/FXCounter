@@ -74,7 +74,7 @@
                   </StackPane>
                </children>
             </VBox>
-            <Region styleClass="paneSeconds" />
+            <Rectangle stroke="BLACK" strokeType="INSIDE" fill="aquamarine" height="60" width="60" styleClass="rectWhite" id="grad1"/>
          </children>
       </StackPane>
        <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
