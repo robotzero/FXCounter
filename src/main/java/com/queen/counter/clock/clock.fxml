@@ -33,12 +33,13 @@
     </rowConstraints>
    <children>
       <StackPane id="paneSeconds" fx:id="paneSeconds" alignment="TOP_CENTER" styleClass="paneSeconds" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <Rectangle stroke="BLACK" strokeType="INSIDE" height="60" width="60" styleClass="rectWhite" id="grad1"/>
          <children>
             <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
@@ -48,7 +49,7 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
@@ -58,7 +59,7 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
@@ -68,13 +69,12 @@
                <children>
                   <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="60.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" height="60.0" stroke="BLACK" strokeType="INSIDE" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                      </children>
                   </StackPane>
                </children>
             </VBox>
-            <Rectangle stroke="BLACK" strokeType="INSIDE" fill="aquamarine" height="60" width="60" styleClass="rectWhite" id="grad1"/>
          </children>
       </StackPane>
        <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -83,8 +83,8 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
@@ -93,8 +93,8 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
@@ -103,8 +103,8 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
@@ -113,13 +113,13 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
                </VBox>
-               <Region styleClass="paneSeconds" />
+               <Rectangle styleClass="rectDark" height="60" width="60" />
            </children>
        </StackPane>
        <StackPane id="paneHours" fx:id="paneHours" alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -129,7 +129,7 @@
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
                                <Rectangle arcHeight="5.0" arcWidth="5.0" height="60.0" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
@@ -138,8 +138,8 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
@@ -148,8 +148,8 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
@@ -158,29 +158,29 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" stroke="BLACK" strokeType="INSIDE" />
-                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#393C3F" stroke="BLACK" strokeType="INSIDE" />
+                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
                    </children>
                </VBox>
-               <Region styleClass="paneSeconds" />
+               <Rectangle height="60" width="60" styleClass="rectDark" />
            </children>
        </StackPane>
       <Button id="start" fx:id="start" mnemonicParsing="false" styleClass="green" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button id="reset" fx:id="reset" mnemonicParsing="false" text="Reset" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-      <Text id="textMinutes" fx:id="textMinutes" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Minutes" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+      <Text fill="white" id="textMinutes" fx:id="textMinutes" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Minutes" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
-      <Text id="textHours" fx:id="textHours" layoutX="210.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hours" textAlignment="CENTER" GridPane.halignment="CENTER">
+      <Text fill="white" id="textHours" fx:id="textHours" layoutX="210.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hours" textAlignment="CENTER" GridPane.halignment="CENTER">
          <font>
             <Font size="20.0" />
          </font>
       </Text>
-      <Text id="textSeconds" fx:id="textSeconds" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seconds" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+      <Text fill="white" id="textSeconds" fx:id="textSeconds" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seconds" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER">
          <font>
             <Font size="20.0" />
          </font>

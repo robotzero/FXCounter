@@ -37,12 +37,10 @@ public class Populator {
     }
 
     public Column create(StackPane stack) {
-        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).map(reg -> {
-                    return reg;
-                }).findAny().ifPresent(r -> {
+        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).map(reg -> reg).findAny().ifPresent(r -> {
             Rectangle rect = (Rectangle) r;
             rect.heightProperty().bind(cellSize.multiply(3));
-            rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
+            rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
             rect.translateYProperty().bind(cellSize);
         });
 
@@ -65,14 +63,20 @@ public class Populator {
 
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
-                text.translateYProperty().bind(rectangle.translateYProperty());
-                rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.3)));
-                rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.7));
+                rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
+                rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
                 cellSize.bind(rectangle.heightProperty());
-                text.translateYProperty().bind(rectangle.heightProperty().subtract(fontSize).multiply(0.4));
-                fontSize.bind(rectangle.widthProperty().add(rectangle.heightProperty()).divide(5));
-                text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
-                        ,"-fx-base: rgb(100,100,100);"));
+                text.translateYProperty().bind(rectangle.heightProperty().subtract(fontSize).multiply(0.23));
+                fontSize.bind(rectangle.widthProperty().add(rectangle.heightProperty()).divide(4.5));
+
+                if (stack.getId().equals("paneSeconds")) {
+                    rectangle.setFill(Color.TRANSPARENT);
+                    text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
+                            ,"-fx-base: rgb(100,100,100);", "-fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"));
+                } else {
+                    text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
+                            ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"));
+                }
                 text.setId(id);
                 rectangle.setId(id);
                 TranslateTransition translateTransition = new TranslateTransition();
