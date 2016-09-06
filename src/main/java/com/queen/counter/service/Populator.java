@@ -5,10 +5,9 @@ import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -37,7 +36,7 @@ public class Populator {
     }
 
     public Column create(StackPane stack) {
-        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).map(reg -> reg).findAny().ifPresent(r -> {
+        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).map(reg -> reg).forEach(r -> {
             Rectangle rect = (Rectangle) r;
             rect.heightProperty().bind(cellSize.multiply(3));
             rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
@@ -45,7 +44,9 @@ public class Populator {
         });
 
         List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
+            stack.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(0), new Insets(0, 0, 0, 0))));
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
+                ((VBox) vbox).setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(0), new Insets(0, 0, 0, 0))));
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
                 String id = "";
@@ -61,8 +62,6 @@ public class Populator {
                     id = vbox.getId() + "hours";
                 }
 
-                rectangle.setStroke(Color.BLACK);
-                rectangle.setStrokeType(StrokeType.INSIDE);
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
                 rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
                 cellSize.bind(rectangle.heightProperty());

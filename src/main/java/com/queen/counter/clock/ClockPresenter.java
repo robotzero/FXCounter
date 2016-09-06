@@ -17,7 +17,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.reactfx.util.Tuple2;
@@ -116,9 +115,6 @@ public class ClockPresenter implements Initializable {
         minutesColumn.setLabels();
         hoursColumn.setLabels();
 
-        paneSeconds.setStyle("-fx-background-color: #FFFFFF;");
-        paneMinutes.setStyle("-fx-background-color: #FFFFFF;");
-        paneHours.setStyle("-fx-background-color: #FFFFFF;");
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
