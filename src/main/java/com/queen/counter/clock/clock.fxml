@@ -79,7 +79,7 @@
       </StackPane>
        <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
            <children>
-               <Rectangle fill="#393C41" id="bottomDarkMinutes" arcHeight="20" arcWidth="20" height="60" width="60" />
+               <Rectangle fill="#393C41" id="bottomDarkMinutes" arcHeight="20" arcWidth="20" height="60" width="60" stroke="RED" strokeType="OUTSIDE" />
                <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
@@ -125,7 +125,7 @@
        </StackPane>
        <StackPane id="paneHours" fx:id="paneHours" alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
            <children>
-               <Rectangle fill="#393C41" id="bottomDarkHours" arcHeight="20" arcWidth="20" height="60" width="60" />
+               <Rectangle fill="#393C41" id="bottomDarkHours" arcHeight="20" arcWidth="20" height="60" width="60" stroke="RED" strokeType="OUTSIDE" />
                <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">

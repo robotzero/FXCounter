@@ -92,7 +92,7 @@ public class Populator {
         clipRectangle.widthProperty().bind(stack.widthProperty());
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
-        stack.setClip(clipRectangle);
+//        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
