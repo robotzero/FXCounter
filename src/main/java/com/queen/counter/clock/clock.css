@@ -11,6 +11,11 @@
     -fx-background-color: radial-gradient(center 50% 50%, radius 90%, #313031, #000000)
 }
 
+.stackPane {
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
+}
+
 .paneSeconds {
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%,
                                           rgba(0, 0, 0, 255) 0%,
