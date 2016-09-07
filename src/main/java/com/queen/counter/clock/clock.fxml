@@ -76,6 +76,7 @@
                </children>
             </VBox>
              <Rectangle id="topWhiteSeconds" arcHeight="20" arcWidth="20" height="60" width="60" stroke="#494849" strokeType="OUTSIDE" />
+             <Rectangle id="strokeInsideDarkSeconds" arcHeight="20" arcWidth="20" height="60" width="60" styleClass="insideGradient" />
          </children>
       </StackPane>
        <StackPane id="paneMinutes" fx:id="paneMinutes" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -123,6 +124,7 @@
                </VBox>
                <Rectangle styleClass="rectDark" height="60" width="60" arcHeight="20" arcWidth="20" />
                <Rectangle id="topDarkMinutes" arcHeight="20" arcWidth="20" height="60" width="60" stroke="#494849" strokeType="OUTSIDE" />
+               <Rectangle id="strokeInsideDarkMinutes" arcHeight="20" arcWidth="20" height="60" width="60" styleClass="insideGradient" />
            </children>
        </StackPane>
        <StackPane id="paneHours" fx:id="paneHours" alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -170,6 +172,7 @@
                </VBox>
                <Rectangle height="60" width="60" arcWidth="20" arcHeight="20" styleClass="rectDark" />
                <Rectangle id="topDarkHours" arcHeight="20" arcWidth="20" height="60" width="60" stroke="#494849" strokeType="OUTSIDE" />
+               <Rectangle id="strokeInsideDarkHours" arcHeight="20" arcWidth="20" height="60" width="60" styleClass="insideGradient" />
            </children>
        </StackPane>
       <Button id="start" fx:id="start" mnemonicParsing="false" styleClass="green" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
