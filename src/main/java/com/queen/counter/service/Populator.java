@@ -42,6 +42,10 @@ public class Populator {
                 rect.translateYProperty().bind(cellSize);
             }
 
+            if (rect.getId() != null && (rect.getId().contains("topDark") || rect.getId().contains("topWhiteSeconds"))) {
+                rect.setFill(Color.TRANSPARENT);
+            }
+
             rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
         });
 
@@ -50,6 +54,7 @@ public class Populator {
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
                 ((VBox) vbox).setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(0), new Insets(0, 0, 0, 0))));
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
+
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
                 String id = "";
                 if (stack.getId().equals("paneSeconds")) {
@@ -72,7 +77,7 @@ public class Populator {
                 rectangle.setFill(Color.TRANSPARENT);
                 if (stack.getId().equals("paneSeconds")) {
                     text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
-                            ,"-fx-base: rgb(100,100,100);", "-fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"));
+                            ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"));
                 } else {
                     text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
                             ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"));
@@ -88,11 +93,11 @@ public class Populator {
         }).collect(Collectors.toList());
 
         Rectangle clipRectangle = new Rectangle();
-        clipRectangle.heightProperty().bind(cellSize.multiply(3));
+        clipRectangle.heightProperty().bind(cellSize.multiply(3).add(2));
         clipRectangle.widthProperty().bind(stack.widthProperty());
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
-//        stack.setClip(clipRectangle);
+        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
