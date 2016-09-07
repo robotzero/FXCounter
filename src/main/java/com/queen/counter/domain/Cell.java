@@ -113,61 +113,61 @@ public class Cell {
         return this.hasTextRectangle;
     }
 
-    public void setLabel(String newLabel) {
+    public void setLabel(int newLabel) {
         if (label.getId().contains(rectangle.getId())) {
-            this.label.setText(newLabel);
+            this.label.setText(String.format("%02d", newLabel));
         }
     }
 
     public void setLabel(LocalTime clock, ColumnType columnType) {
         if (columnType.equals(ColumnType.SECONDS)) {
             if (currentMultiplayer.get() == 0) {
-                label.setText(Integer.toString(clock.plusSeconds(2).getSecond()));
+                label.setText(String.format("%02d", clock.plusSeconds(2).getSecond()));
             }
             if (currentMultiplayer.get() == 1) {
-                label.setText(Integer.toString(clock.plusSeconds(1).getSecond()));
+                label.setText(String.format("%02d", clock.plusSeconds(1).getSecond()));
             }
 
             if (currentMultiplayer.get() == 2) {
-                label.setText(Integer.toString(clock.getSecond()));
+                label.setText(String.format("%02d", clock.getSecond()));
             }
 
             if (currentMultiplayer.get() == 3) {
-                label.setText(Integer.toString(clock.minusSeconds(1).getSecond()));
+                label.setText(String.format("%02d", clock.minusSeconds(1).getSecond()));
             }
         }
 
         if (columnType.equals(ColumnType.MINUTES)) {
             if (currentMultiplayer.get() == 0) {
-                label.setText(Integer.toString(clock.plusMinutes(2).getMinute()));
+                label.setText(String.format("%02d", clock.plusMinutes(2).getMinute()));
             }
             if (currentMultiplayer.get() == 1) {
-                label.setText(Integer.toString(clock.plusMinutes(1).getMinute()));
+                label.setText(String.format("%02d", clock.plusMinutes(1).getMinute()));
             }
 
             if (currentMultiplayer.get() == 2) {
-                label.setText(Integer.toString(clock.getMinute()));
+                label.setText(String.format("%02d", clock.getMinute()));
             }
 
             if (currentMultiplayer.get() == 3) {
-                label.setText(Integer.toString(clock.minusMinutes(1).getMinute()));
+                label.setText(String.format("%02d", clock.minusMinutes(1).getMinute()));
             }
         }
 
         if (columnType.equals(ColumnType.HOURS)) {
             if (currentMultiplayer.get() == 0) {
-                label.setText(Integer.toString(clock.plusHours(2).getHour()));
+                label.setText(String.format("%02d", clock.plusHours(2).getHour()));
             }
             if (currentMultiplayer.get() == 1) {
-                label.setText(Integer.toString(clock.plusHours(1).getHour()));
+                label.setText(String.format("%02d", clock.plusHours(1).getHour()));
             }
 
             if (currentMultiplayer.get() == 2) {
-                label.setText(Integer.toString(clock.getHour()));
+                label.setText(String.format("%02d", clock.getHour()));
             }
 
             if (currentMultiplayer.get() == 3) {
-                label.setText(Integer.toString(clock.minusHours(1).getHour()));
+                label.setText(String.format("%02d", clock.minusHours(1).getHour()));
             }
         }
     }

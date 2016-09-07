@@ -61,21 +61,6 @@ public class Populator {
             rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
         });
 
-//        stack.getChildren().stream().filter(child -> child.getClass().equals(Line.class)).forEach(l -> {
-//            IntegerProperty i = new SimpleIntegerProperty((int)stack.layoutXProperty().get());
-//
-//            Line line = (Line) l;
-//            line.setStartX(0);
-//            line.setEndX(0);
-//            line.translateYProperty().bind(cellSize.add(10));
-//            line.translateXProperty().bind(i.subtract(stack.widthProperty().divide(2)));
-//            line.startYProperty().bind(cellSize.add(10));
-//            line.endYProperty().bind(cellSize.multiply(3));
-//            line.setStroke(Color.BLACK);
-//            line.setStrokeWidth(20);
-//            line.setVisible(true);
-//        });
-
         List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
             stack.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(0), new Insets(0, 0, 0, 0))));
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
@@ -124,7 +109,7 @@ public class Populator {
         clipRectangle.widthProperty().bind(stack.widthProperty());
         clipRectangle.setX(0);
         clipRectangle.yProperty().bind(cellSize);
-//        stack.setClip(clipRectangle);
+        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);

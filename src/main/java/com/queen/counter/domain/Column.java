@@ -57,7 +57,7 @@ public class Column {
                 Cell cell = event.get1();
                 Integer timeshift = event.get2();
                 if (cell.hasChangeTextRectangle().get() && cell.getDelta() != 0) {
-                    cell.setLabel(Integer.toString(timeshift));
+                    cell.setLabel(timeshift);
                 }
             });
         });
