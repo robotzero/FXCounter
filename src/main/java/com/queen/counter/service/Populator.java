@@ -52,7 +52,7 @@ public class Populator {
 
             if (rect.getId() != null && (rect.getId().contains("strokeInsideDark"))) {
                 rect.setStrokeType(StrokeType.INSIDE);
-                rect.setStrokeWidth(3);
+                rect.strokeWidthProperty().bind(rect.widthProperty().multiply(0.02));
                 rect.setFill(Color.TRANSPARENT);
                 rect.heightProperty().bind(cellSize.multiply(3));
                 rect.translateYProperty().bind(cellSize.add(1));
