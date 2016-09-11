@@ -7,7 +7,6 @@ import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.domain.Clocks;
-import com.queen.counter.domain.ColumnType;
 import com.queen.counter.domain.UIService;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.repository.SavedTimerSqlliteJdbcRepository;
@@ -16,7 +15,6 @@ import com.queen.counter.service.Ticker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventSource;
-import org.reactfx.util.Tuple2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,7 +39,9 @@ public class SpringApplicationConfiguration {
     private EventSource<Void> playHours = new EventSource<>();
 
     private EventSource<Integer> deltaEvent = new EventSource<>();
-    private EventSource<Tuple2<Integer, ColumnType>> deltaStream = new EventSource<>();
+    private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
+    private EventSource<Integer> deltaStreamMinutes = new EventSource<>();
+    private EventSource<Integer> deltaStreamHours = new EventSource<>();
 
     @Bean
     public FXMLView clockView() {
@@ -69,13 +69,27 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public EventSource<Tuple2<Integer, ColumnType>> DeltaStream() {
-        return deltaStream;
+    public EventSource<Integer> DeltaStreamSeconds() {
+        return deltaStreamSeconds;
+    }
+
+    @Bean
+    public EventSource<Integer> DeltaStreamMinutes() {
+        return deltaStreamMinutes;
+    }
+
+    @Bean
+    public EventSource<Integer> DeltaStreamHours() {
+        return deltaStreamHours;
     }
 
     @Bean
     public Populator populator() {
-        Populator populator = new Populator(configureClocks(), deltaStream, seconds, minutes, hours);
+        List<EventSource<Integer>> deltaStreams = new ArrayList<>();
+        deltaStreams.add(deltaStreamSeconds);
+        deltaStreams.add(deltaStreamMinutes);
+        deltaStreams.add(deltaStreamHours);
+        Populator populator = new Populator(configureClocks(), deltaStreams, seconds, minutes, hours);
 
         return populator;
     }
@@ -131,7 +145,12 @@ public class SpringApplicationConfiguration {
             List<EventSource<Void>> plays = new ArrayList<>();
             plays.add(playMinutes);
             plays.add(playHours);
-            clocks = new Clocks(plays, deltaStream, seconds, minutes, hours);
+
+            List<EventSource<Integer>> deltaStreams = new ArrayList<>();
+            deltaStreams.add(deltaStreamSeconds);
+            deltaStreams.add(deltaStreamMinutes);
+            deltaStreams.add(deltaStreamHours);
+            clocks = new Clocks(plays, deltaStreams, seconds, minutes, hours);
         }
 
         return clocks;

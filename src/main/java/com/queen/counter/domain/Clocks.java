@@ -1,7 +1,6 @@
 package com.queen.counter.domain;
 
 import org.reactfx.EventSource;
-import org.reactfx.util.Tuple2;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -14,7 +13,6 @@ public class Clocks {
 
     private final EventSource<Void> playMinutes;
     private final EventSource<Void> playHours;
-    private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
 
     private LocalTime mainClock          = LocalTime.of(0, 0, 0);
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
@@ -24,7 +22,7 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(List<EventSource<Void>> playSources, EventSource<Tuple2<Integer, ColumnType>> deltaStream, EventSource<Integer> ...eventSources) {
+    public Clocks(List<EventSource<Void>> playSources, List<EventSource<Integer>> deltaStreams, EventSource<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
@@ -32,38 +30,39 @@ public class Clocks {
         this.playMinutes = playSources.get(0);
         this.playHours = playSources.get(1);
 
-        this.deltaStream = deltaStream;
-        this.deltaStream.subscribe(currentTuple -> {
-            int delta = currentTuple.get1();
-            ColumnType type = currentTuple.get2();
-
-            if (delta != 0) {
-                int normalizedDelta = delta / Math.abs(delta);
-                if (type.equals(ColumnType.SECONDS)) {
-                    this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
-                    this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                    this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
-                }
-
-                if (type.equals(ColumnType.MINUTES)) {
-                    this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
-                    this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                    this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
-                }
-
-                if (type.equals(ColumnType.HOURS)) {
-                    this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
-                    this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                    this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
+        deltaStreams.get(0).subscribe(currentDelta -> {
+            if (currentDelta != 0) {
+                int normalizedDelta = currentDelta / Math.abs(currentDelta);
+//                if (type.equals(ColumnType.SECONDS)) {
+                this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
+                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
+                if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
+                    this.playMinutes.push(null);
+//                    }
                 }
             }
+        });
 
-            if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
-                this.playMinutes.push(null);
+        deltaStreams.get(1).subscribe(currentDelta -> {
+            if (currentDelta != 0) {
+                int normalizedDelta = currentDelta / Math.abs(currentDelta);
+                this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
+                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
+
+                if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
+                    this.playHours.push(null);
+                }
             }
+        });
 
-            if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
-                this.playHours.push(null);
+        deltaStreams.get(2).subscribe(currentDelta -> {
+            if (currentDelta != 0) {
+                int normalizedDelta = currentDelta / Math.abs(currentDelta);
+                this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
+                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
+                this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
             }
         });
     }

@@ -3,7 +3,6 @@ package com.queen.counter.clock;
 import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
-import com.queen.counter.domain.ColumnType;
 import com.queen.counter.domain.SavedTimer;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
@@ -18,7 +17,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.reactfx.*;
-import org.reactfx.util.Tuple2;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.inject.Inject;
@@ -27,8 +25,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import static org.reactfx.util.Tuples.t;
 
 public class ClockPresenter implements Initializable {
 
@@ -81,8 +77,16 @@ public class ClockPresenter implements Initializable {
     private EventSource<Void> playHours;
 
     @Inject
-    @Qualifier("DeltaStream")
-    private EventSource<Tuple2<Integer, ColumnType>> deltaStream;
+    @Qualifier("DeltaStreamSeconds")
+    private EventSource<Integer> deltaStreamSeconds;
+
+    @Inject
+    @Qualifier("DeltaStreamMinutes")
+    private EventSource<Integer> deltaStreamMinutes;
+
+    @Inject
+    @Qualifier("DeltaStreamHours")
+    private EventSource<Integer> deltaStreamHours;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
@@ -120,12 +124,13 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
         Subscription playM = playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
-            this.deltaStream.push(t(-60, ColumnType.MINUTES));
+            this.deltaStreamMinutes.push(-60);
             minutesColumn.play();
         });
         
-        Subscription playH = playHours.emitOn(ticks).emitOn(startClicks).onRecurseRetainLatest().subscribe(v -> {
-
+        Subscription playH = playHours.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
+            this.deltaStreamHours.push(-60);
+            hoursColumn.play();
         });
 
         start.disableProperty().bind(scrollMuteProperty);
@@ -150,18 +155,18 @@ public class ClockPresenter implements Initializable {
                 .on(merged).emit((muted, t) -> muted.get() ? Optional.empty() : Optional.of(t))
                 .toEventStream().subscribe(event -> {
                     if (((StackPane) event.getSource()).getId().contains("Seconds")) {
-                        this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.SECONDS));
+                        this.deltaStreamSeconds.push((int)event.getDeltaY());
                         secondsColumn.play();
                     }
 
                     if (((StackPane) event.getSource()).getId().contains("Minutes")) {
-                        this.deltaStream.push(t((int)event.getDeltaY(), ColumnType.MINUTES));
+                        this.deltaStreamMinutes.push((int)event.getDeltaY());
                         minutesColumn.play();
                     }
                 });
 
         this.subscribe = ticks.subscribe(nullEvent -> {
-            this.deltaStream.push(t(-60, ColumnType.SECONDS));
+            this.deltaStreamSeconds.push(-60);
             secondsColumn.play();
         });
 
@@ -184,9 +189,9 @@ public class ClockPresenter implements Initializable {
             } else {
                 this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
             }
-            this.deltaStream.push(t(0, ColumnType.SECONDS));
-            this.deltaStream.push(t(0, ColumnType.MINUTES));
-            this.deltaStream.push(t(0, ColumnType.HOURS));
+            this.deltaStreamSeconds.push(0);
+            this.deltaStreamMinutes.push(0);
+            this.deltaStreamHours.push(0);
             secondsColumn.setLabels();
             minutesColumn.setLabels();
             hoursColumn.setLabels();

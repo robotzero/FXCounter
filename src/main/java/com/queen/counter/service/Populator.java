@@ -6,17 +6,13 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
-import javafx.geometry.NodeOrientation;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
-import org.reactfx.util.Tuple2;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,12 +23,16 @@ public class Populator {
     private IntegerProperty fontSize = new SimpleIntegerProperty(40);
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
-    private final EventSource<Tuple2<Integer, ColumnType>> deltaStream;
+    private final EventSource<Integer> deltaStreamSeconds;
+    private final EventSource<Integer> deltaStreamMinutes;
+    private final EventSource<Integer> deltaStreamHours;
 
-    public Populator(final Clocks clocks, final EventSource<Tuple2<Integer, ColumnType>> deltaStream, EventSource ...clocksEvents) {
+    public Populator(final Clocks clocks, final List<EventSource<Integer>> deltaStreams, EventSource ...clocksEvents) {
         this.clocks = clocks;
-        this.deltaStream = deltaStream;
         this.clocksEvents = clocksEvents;
+        this.deltaStreamSeconds = deltaStreams.get(0);
+        this.deltaStreamMinutes = deltaStreams.get(1);
+        this.deltaStreamHours = deltaStreams.get(2);
     }
 
     public Column create(StackPane stack) {
@@ -69,15 +69,19 @@ public class Populator {
 
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
                 String id = "";
+                EventSource<Integer> deltaStream = new EventSource<>();
                 if (stack.getId().equals("paneSeconds")) {
+                    deltaStream = deltaStreamSeconds;
                     id = vbox.getId() + "seconds";
                 }
 
                 if (stack.getId().equals("paneMinutes")) {
+                    deltaStream = deltaStreamMinutes;
                     id = vbox.getId() + "minutes";
                 }
 
                 if (stack.getId().equals("paneHours")) {
+                    deltaStream = deltaStreamHours;
                     id = vbox.getId() + "hours";
                 }
 
@@ -98,6 +102,7 @@ public class Populator {
                 rectangle.setId(id);
                 TranslateTransition translateTransition = new TranslateTransition();
                 translateTransition.setNode(vbox);
+
                 return new Cell((VBox) vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
             }).findFirst().get();
 

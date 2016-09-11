@@ -32,7 +32,7 @@ public class Cell {
             Location location,
             Text label,
             TranslateTransition translateTransition,
-            EventSource<Tuple2<Integer, ColumnType>> deltaStream,
+            EventSource<Integer> deltaStream,
             IntegerProperty currentSize
     ) {
         this.rectangle = rectangle;
@@ -49,24 +49,16 @@ public class Cell {
         ));
         EventStream<Number> translateY = EventStreams.valuesOf(rectangle.translateYProperty());
         EventStream<Change<Number>> cellSize = EventStreams.changesOf(currentSize);
-        currentDelta.bind(deltaStream
-                    .filter(tuple -> label.getId().contains(tuple.get2().toString().toLowerCase()))
-                    .map(Tuple2::get1)
-                    .toBinding(0));
+        currentDelta.bind(deltaStream.toBinding(0));
 
-//        currentDelta.bind(deltaStream.map(Tuple2::get1).toBinding(0));
-
-        EventStream<Tuple2<Tuple2<Integer, ColumnType>, Double>> combo = EventStreams.combine(
-//                this.deltaStream, translateY
-                this.deltaStream.filter(tuple -> {
-                    return label.getId().contains(((Tuple2)tuple).get2().toString().toLowerCase());
-                }), translateY
+        EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
+                this.deltaStream, translateY
         );
 
         cellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
 
         combo.map(change -> {
-            Integer currDelta = change.get1().get1();
+            Integer currDelta = change.get1();
             Double transY = change.get2();
 
             if (currDelta == 0 || currDelta < 0) {
@@ -85,7 +77,7 @@ public class Cell {
         }).feedTo(translateTransition.fromYProperty());
 
         combo.map(change -> {
-            Integer currDelta = change.get1().get1();
+            Integer currDelta = change.get1();
             Double transY = change.get2();
 
             if (currDelta == 0 || currDelta < 0) {
