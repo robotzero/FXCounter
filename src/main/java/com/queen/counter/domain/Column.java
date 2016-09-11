@@ -2,6 +2,7 @@ package com.queen.counter.domain;
 
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventSource;
@@ -9,6 +10,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Column {
 
@@ -16,7 +18,7 @@ public class Column {
     private Clocks clocks;
     private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
-    private BooleanBinding runningBinding;
+    private Optional<BooleanBinding> runningBinding;
     private BooleanBinding topEdgeBinding;
 
     private ColumnType columnType;
@@ -29,18 +31,16 @@ public class Column {
         this.columnType = columnType;
         this.clockEvent = clockEvent;
 
-        runningBinding = columnList.get(0).isRunning().isEqualTo(Animation.Status.RUNNING)
-                                    .or(columnList.get(1).isRunning().isEqualTo(Animation.Status.RUNNING))
-                                    .or(columnList.get(2).isRunning().isEqualTo(Animation.Status.RUNNING))
-                                    .or(columnList.get(3).isRunning().isEqualTo(Animation.Status.RUNNING));
-        this.running.bind(runningBinding);
+        columnList.stream().map(Cell::isRunning)
+                           .map(runningStatus -> runningStatus.isEqualTo(Animation.Status.RUNNING))
+                           .reduce(BooleanExpression::or)
+                           .ifPresent(running -> this.running.bind(running));
 
-        topEdgeBinding = columnList.get(0).hasTopEdgeRectangle()
-                                   .or(columnList.get(1).hasTopEdgeRectangle())
-                                   .or(columnList.get(2).hasTopEdgeRectangle())
-                                   .or(columnList.get(3).hasTopEdgeRectangle());
-
-        this.hasTopEdge.bind(topEdgeBinding);
+        // Could be brittle in second map.
+        columnList.stream().map(Cell::hasTopEdgeRectangle)
+                           .map(hasEdge -> hasEdge.or(hasEdge))
+                           .reduce(BooleanExpression::or)
+                           .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop));
 
         // When we are in reset mode / button reset has been clicked set new value of the each cell.
         resetClicked.noes()
