@@ -10,7 +10,6 @@ import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Column {
 
@@ -18,8 +17,6 @@ public class Column {
     private Clocks clocks;
     private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
-    private Optional<BooleanBinding> runningBinding;
-    private BooleanBinding topEdgeBinding;
 
     private ColumnType columnType;
     private SuspendableNo resetClicked = new SuspendableNo();

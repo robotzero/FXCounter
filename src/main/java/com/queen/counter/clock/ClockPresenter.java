@@ -11,7 +11,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -124,7 +123,7 @@ public class ClockPresenter implements Initializable {
             this.deltaStream.push(t(-60, ColumnType.MINUTES));
             minutesColumn.play();
         });
-
+        
         Subscription playH = playHours.emitOn(ticks).emitOn(startClicks).onRecurseRetainLatest().subscribe(v -> {
 
         });

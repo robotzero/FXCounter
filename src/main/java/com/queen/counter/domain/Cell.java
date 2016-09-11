@@ -49,10 +49,18 @@ public class Cell {
         ));
         EventStream<Number> translateY = EventStreams.valuesOf(rectangle.translateYProperty());
         EventStream<Change<Number>> cellSize = EventStreams.changesOf(currentSize);
-        currentDelta.bind(deltaStream.map(Tuple2::get1).toBinding(0));
+        currentDelta.bind(deltaStream
+                    .filter(tuple -> label.getId().contains(tuple.get2().toString().toLowerCase()))
+                    .map(Tuple2::get1)
+                    .toBinding(0));
+
+//        currentDelta.bind(deltaStream.map(Tuple2::get1).toBinding(0));
 
         EventStream<Tuple2<Tuple2<Integer, ColumnType>, Double>> combo = EventStreams.combine(
-                this.deltaStream, translateY
+//                this.deltaStream, translateY
+                this.deltaStream.filter(tuple -> {
+                    return label.getId().contains(((Tuple2)tuple).get2().toString().toLowerCase());
+                }), translateY
         );
 
         cellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
