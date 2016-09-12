@@ -117,13 +117,19 @@ public class Populator {
         stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
-            return new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
+            Column column = new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
+            column.setLabels();
+            return column;
         }
 
         if (stack.getId().contains("Minutes")) {
-            return new Column(cc, clocks, ColumnType.MINUTES, clocksEvents[1]);
+            Column column = new Column(cc, clocks, ColumnType.MINUTES, clocksEvents[1]);
+            column.setLabels();
+            return column;
         }
 
-        return new Column(cc, clocks, ColumnType.HOURS, clocksEvents[2]);
+        Column column = new Column(cc, clocks, ColumnType.HOURS, clocksEvents[2]);
+        column.setLabels();
+        return column;
     }
 }

@@ -112,10 +112,6 @@ public class ClockPresenter implements Initializable {
 //        GridPane.setMargin(textMinutes, new Insets(320, 0, 320, 0));
 //        GridPane.setMargin(textHours, new Insets(320, 0, 320, 0));
 
-        secondsColumn.setLabels();
-        minutesColumn.setLabels();
-        hoursColumn.setLabels();
-
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
