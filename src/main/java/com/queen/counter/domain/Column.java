@@ -1,6 +1,7 @@
 package com.queen.counter.domain;
 
 import javafx.animation.Animation;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

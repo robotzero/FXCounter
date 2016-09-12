@@ -98,13 +98,11 @@ public class ClockPresenter implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
             SavedTimer savedTimer = new SavedTimer();
             savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
             return savedTimer;
         }).getSavedTimer());
-
 
         secondsColumn = populator.create(paneSeconds);
         minutesColumn = populator.create(paneMinutes);
@@ -123,15 +121,13 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
-        Subscription playM = playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
+        Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStreamMinutes.push(-60);
             minutesColumn.play();
-        });
-        
-        Subscription playH = playHours.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
+        }), playHours.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStreamHours.push(-60);
             hoursColumn.play();
-        });
+        }));
 
         start.disableProperty().bind(scrollMuteProperty);
         stop.disableProperty().bind(scrollMuteProperty.not());
@@ -172,11 +168,11 @@ public class ClockPresenter implements Initializable {
 
         startClicks.subscribe(click -> savedTimerRepository.create("latest", clocks.getMainClock()));
 
-        stopClicks.subscribe(click -> {
-            this.subscribe.unsubscribe();
-            playM.unsubscribe();
-            playH.unsubscribe();
-        });
+//        stopClicks.subscribe(click -> {
+////            this.subscribe.unsubscribe();
+//            playM.unsubscribe();
+//            playH.unsubscribe();
+//        });
 
         resetClicks.subscribe(click -> {
             this.fetchFromDatabase.setValue(true);
