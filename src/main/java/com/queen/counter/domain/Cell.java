@@ -105,6 +105,10 @@ public class Cell {
         }
     }
 
+    public void animateReset() {
+        translateTransition.play();
+    }
+
     public BooleanProperty hasTopEdgeRectangle() {
         return this.edgeTopRectangle;
     }
@@ -120,6 +124,7 @@ public class Cell {
     }
 
     public void setLabel(LocalTime clock, ColumnType columnType) {
+
         if (columnType.equals(ColumnType.SECONDS)) {
             if (currentMultiplayer.get() == 0) {
                 label.setText(String.format("%02d", clock.plusSeconds(2).getSecond()));
@@ -178,5 +183,42 @@ public class Cell {
 
     public int getDelta() {
         return this.currentDelta.get();
+    }
+
+    public void resetMultiplayer(boolean hasTopEdge) {
+
+        if (hasTopEdge) {
+            if (translateTransition.fromYProperty().get() == currentSize.get()) {
+                this.currentMultiplayer.set(0);
+            }
+
+            if (translateTransition.fromYProperty().get() == currentSize.get() * 2) {
+                this.currentMultiplayer.set(1);
+            }
+
+            if (translateTransition.fromYProperty().get() == currentSize.get() * 3) {
+                this.currentMultiplayer.set(2);
+            }
+
+            if (translateTransition.fromYProperty().get() == currentSize.get() * 4) {
+                this.currentMultiplayer.set(3);
+            }
+        } else {
+            if (translateTransition.fromYProperty().get() == currentSize.get()) {
+                this.currentMultiplayer.set(1);
+            }
+
+            if (translateTransition.fromYProperty().get() == currentSize.get() * 2) {
+                this.currentMultiplayer.set(2);
+            }
+
+            if (translateTransition.fromYProperty().get() == currentSize.get() * 3) {
+                this.currentMultiplayer.set(3);
+            }
+
+            if (translateTransition.fromYProperty().get() == currentSize.get() * 4) {
+                this.currentMultiplayer.set(0);
+            }
+        }
     }
 }

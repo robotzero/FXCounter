@@ -1,7 +1,6 @@
 package com.queen.counter.domain;
 
 import javafx.animation.Animation;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -42,7 +41,14 @@ public class Column {
         // When we are in reset mode / button reset has been clicked set new value of the each cell.
         resetClicked.noes()
                     .subscribe(cellList -> this.columnList.forEach(
-                         cell -> cell.setLabel(clocks.getMainClock(), columnType))
+                            cell -> {
+                                if (!hasTopEdge.get()) {
+                                    cell.resetMultiplayer(true);
+                                } else {
+                                    cell.resetMultiplayer(false);
+                                }
+                                cell.setLabel(clocks.getMainClock(), columnType);
+                            })
                     );
 
         this.columnList.stream().map(cell -> {
@@ -74,7 +80,7 @@ public class Column {
 
     private void resetPositions() {
         if (!hasTopEdge.get()) {
-            this.play();
+            this.columnList.forEach(Cell::animateReset);
         }
     }
 }
