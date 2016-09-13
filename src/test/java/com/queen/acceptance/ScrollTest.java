@@ -8,9 +8,10 @@ import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.VerticalDirection;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.junit.Before;
@@ -19,8 +20,10 @@ import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;
@@ -51,143 +54,143 @@ public class ScrollTest extends CounterAppIT {
                 // @formatter:off
                 // Seconds UP
                 {sequence(
-                        expected(60, "14", 240, "11", 0, "18", 180, "14"),
+                        expected(1, "14", 4, "11", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 1)
                 )},
                 {sequence(
-                        expected(120, "14", 60, "15", 0, "18", 180, "14"),
+                        expected(2, "14", 1, "15", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 2)
                 )},
                 {sequence(
-                        expected(180, "14", 120, "15", 0, "18", 180, "14"),
+                        expected(3, "14", 2, "15", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 3)
                 )},
                 {sequence(
-                        expected(240, "14", 180, "15", 0, "18", 180, "14"),
+                        expected(4, "14", 3, "15", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 4)
                 )},
                 {sequence(
-                        expected(60, "18", 240, "15", 0, "18", 180, "14"),
+                        expected(1, "18", 4, "15", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 5)
                 )},
                 {sequence(
-                        expected(120, "18", 60, "19", 0, "18", 180, "14"),
+                        expected(2, "18", 1, "19", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 6)
                 )},
                 // Seconds DOWN
                 {sequence(
-                        expected(180, "10", 120, "11", 0, "18", 180, "14"),
+                        expected(3, "10", 2, "11", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
                 )},
                 {sequence(
-                        expected(120, "10", 60, "11", 0, "18", 180, "14"),
+                        expected(2, "10", 1, "11", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
                 )},
                 {sequence(
-                        expected(60, "10", 0, "11", 0, "18", 180, "14"),
+                        expected(1, "10", 0, "11", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 3)
                 )},
                 {sequence(
-                        expected(0, "10", 180, "7", 0, "18", 180, "14"),
+                        expected(0, "10", 3, "07", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 4)
                 )},
                 {sequence(
-                        expected(180, "6", 120, "7", 0, "18", 180, "14"),
+                        expected(3, "06", 2, "07", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 5)
                 )},
                 {sequence(
-                        expected(120, "6", 60, "7", 0, "18", 180, "14"),
+                        expected(2, "06", 1, "07", 0, "18", 3, "14"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 6)
                 )},
                 // Minutes UP
                 {sequence(
-                        expected(0, "14", 180, "11", 60, "18", 240, "15"),
+                        expected(0, "14", 3, "11", 1, "18", 4, "15"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 1)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 120, "18", 60, "19"),
+                        expected(0, "14", 3, "11", 2, "18", 1, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 2)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 180, "18", 120, "19"),
+                        expected(0, "14", 3, "11", 3, "18", 2, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 3)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 240, "18", 180, "19"),
+                        expected(0, "14", 3, "11", 4, "18", 3, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 4)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 60, "22", 240, "19"),
+                        expected(0, "14", 3, "11", 2, "22", 4, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 5)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 120, "22", 60, "23"),
+                        expected(0, "14", 3, "11", 2, "22", 1, "23"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 6)
                 )},
                 // Minutes DOWN
                 {sequence(
-                        expected(0, "14", 180, "11", 180, "14", 120, "15"),
+                        expected(0, "14", 3, "11", 3, "14", 2, "15"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 120, "14", 60, "15"),
+                        expected(0, "14", 3, "11", 2, "14", 1, "15"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 60, "14", 0, "15"),
+                        expected(0, "14", 3, "11", 1, "14", 0, "15"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 0, "14", 180, "11"),
+                        expected(0, "14", 3, "11", 0, "14", 3, "11"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 180, "10", 120, "11"),
+                        expected(0, "14", 3, "11", 3, "10", 2, "11"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 5)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 120, "10", 60, "11"),
+                        expected(0, "14", 3, "11", 2, "10", 1, "11"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 6)
                 )},
                 // Seconds and Minutes
                 {sequence(
-                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
+                        expected(2, "10", 1, "11", 3, "18", 2, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
                         step(ColumnType.MINUTES, VerticalDirection.UP, 3)
                 )},
                 {sequence(
-                        expected(120, "10", 60, "11", 180, "18", 120, "19"),
+                        expected(2, "10", 1, "11", 3, "18", 2, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
                         step(ColumnType.MINUTES, VerticalDirection.UP, 3)
                 )},
                 {sequence(
-                        expected(240, "14", 180, "15", 60, "14", 240, "11"),
+                        expected(4, "14", 3, "15", 1, "14", 4, "11"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 3),
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 4),
@@ -195,7 +198,7 @@ public class ScrollTest extends CounterAppIT {
                         step(ColumnType.MINUTES, VerticalDirection.UP, 1)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 0, "18", 180, "15"),
+                        expected(0, "14", 3, "11", 0, "18", 3, "15"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 1),
                         step(ColumnType.MINUTES, VerticalDirection.UP, 1),
@@ -203,7 +206,7 @@ public class ScrollTest extends CounterAppIT {
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
                 )},
                 {sequence(
-                        expected(0, "14", 180, "11", 120, "18", 60, "19"),
+                        expected(0, "14", 3, "11", 2, "18", 1, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.SECONDS, VerticalDirection.UP, 1),
                         step(ColumnType.MINUTES, VerticalDirection.UP, 1),
@@ -213,12 +216,11 @@ public class ScrollTest extends CounterAppIT {
                 )},
                 // Different clock start state
                 {sequence(
-                        expected(180, "2", 120, "3", 60, "58", 0, "59"),
+                        expected(3, "2", 2, "3", 1, "58", 0, "59"),
                         LocalTime.of(0, 0, 0),
                         step(ColumnType.SECONDS, VerticalDirection.UP, 2),
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 3),
                         step(ColumnType.SECONDS, VerticalDirection.UP, 1)
-
                 )}
                 //@formatter:on
         };
@@ -234,18 +236,63 @@ public class ScrollTest extends CounterAppIT {
         repository.create("start", sequence.clockStartState);
 
         Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
-        Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
-        Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
 
-        String topIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
-        String bottomIdSeconds = seconds.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
+        // Grab the bottom list of rectangles.
+        List<Node> secondsRectangles = seconds.getChildren().stream()
+                             .filter(n -> !n.getClass().equals(Rectangle.class))
+                             .map(v -> ((VBox) v).getChildren())
+                             .flatMap(Collection::stream)
+                             .filter(s -> s.getClass().equals(StackPane.class))
+                             .map(sl -> ((StackPane) sl).getChildren())
+                             .flatMap(Collection::stream)
+                             .filter(r -> r.getClass().equals(Rectangle.class))
+                             .collect(Collectors.toList());
 
-        String topIdMinutes = minutes.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
-        String bottomIdMinutes = minutes.getChildren().stream().filter(r -> r.getClass().equals(Rectangle.class)).filter(r -> r.getTranslateY() == BOTTOM_NODE_LOCATION).findAny().get().getId();
+        List<Node> secondsLabels = seconds.getChildren().stream()
+                .filter(n -> !n.getClass().equals(Rectangle.class))
+                .map(v -> ((VBox) v).getChildren())
+                .flatMap(Collection::stream)
+                .filter(s -> s.getClass().equals(StackPane.class))
+                .map(sl -> ((StackPane) sl).getChildren())
+                .flatMap(Collection::stream)
+                .filter(r -> r.getClass().equals(Text.class))
+                .collect(Collectors.toList());
+
+        List<Node> minutesRectangles = minutes.getChildren().stream()
+                .filter(n -> !n.getClass().equals(Rectangle.class))
+                .map(v -> ((VBox) v).getChildren())
+                .flatMap(Collection::stream)
+                .filter(s -> s.getClass().equals(StackPane.class))
+                .map(sl -> ((StackPane) sl).getChildren())
+                .flatMap(Collection::stream)
+                .filter(r -> r.getClass().equals(Rectangle.class))
+                .collect(Collectors.toList());
+
+        List<Node> minutesLabels = minutes.getChildren().stream()
+                .filter(n -> !n.getClass().equals(Rectangle.class))
+                .map(v -> ((VBox) v).getChildren())
+                .flatMap(Collection::stream)
+                .filter(s -> s.getClass().equals(StackPane.class))
+                .map(sl -> ((StackPane) sl).getChildren())
+                .flatMap(Collection::stream)
+                .filter(r -> r.getClass().equals(Text.class))
+                .collect(Collectors.toList());
+
+        // Current height
+        int height = (int) ((Rectangle) secondsRectangles.get(0)).getHeight();
+
+        String topIdSeconds = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
+        String bottomIdSeconds = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny().get().getId();
+        String topIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
+        String bottomIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny().get().getId();
 
         clickOn(reset);
         sequence.steps.forEach(step -> {
-            moveTo("#" + step.columnType.name().toLowerCase());
+            String type = step.columnType.name();
+            String paneName = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+            moveTo("#pane" + paneName);
             IntStream.range(0, step.scrollsNumber).forEach(i -> {
                 scroll(step.direction);
                 try {
@@ -254,36 +301,34 @@ public class ScrollTest extends CounterAppIT {
                     e.printStackTrace();
                 }
             });
-
         });
 
-        verifyThat("#seconds", (Group s) -> {
-            Optional<Node> exTopRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
-            Optional<Node> exBottomRectangle = seconds.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
+        verifyThat("#paneSeconds", (StackPane s) -> {
+            Optional<Node> exTopRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
+            Optional<Node> exBottomRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
             if (exTopRectangle.isPresent()) {
-                String label =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPositionSeconds && label.equals(sequence.expectedValues.topLabelSeconds);
+                String label =  secondsLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionSecondsMultiplier * height && label.equals(sequence.expectedValues.topLabelSeconds);
             }
 
             if (exBottomRectangle.isPresent()) {
-                String lb =  seconds.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getTranslateY() == sequence.expectedValues.bottomPositionSeconds && lb.equals(sequence.expectedValues.bottomLabelSeconds);
+                String label =  secondsLabels.stream().filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionSecondsMultiplier * height && label.equals(sequence.expectedValues.bottomLabelSeconds);
             }
-
             return false;
         });
 
-        verifyThat("#minutes", (Group m) -> {
-            Optional<Node> exTopRectangle = minutes.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
-            Optional<Node> exBottomRectangle = minutes.getChildren().stream().filter(rs -> rs.getClass().equals(Rectangle.class)).filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
+        verifyThat("#paneMinutes", (StackPane s) -> {
+            Optional<Node> exTopRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
+            Optional<Node> exBottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
             if (exTopRectangle.isPresent()) {
-                String label =  minutes.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPositionMinutes && label.equals(sequence.expectedValues.topLabelMinutes);
+                String label =  minutesLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier && label.equals(sequence.expectedValues.topLabelMinutes);
             }
 
             if (exBottomRectangle.isPresent()) {
-                String lb =  minutes.getChildren().stream().filter(rk -> rk.getClass().equals(Text.class)).filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getTranslateY() == sequence.expectedValues.bottomPositionMinutes && lb.equals(sequence.expectedValues.bottomLabelMinutes);
+                String label =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionMinutesMultiplier && label.equals(sequence.expectedValues.bottomLabelMinutes);
             }
 
             return false;
@@ -324,34 +369,34 @@ public class ScrollTest extends CounterAppIT {
     static class ExpectedValues {
         String topLabelSeconds;
         String bottomLabelSeconds;
-        Integer topPositionSeconds;
-        Integer bottomPositionSeconds;
+        Integer topPositionSecondsMultiplier;
+        Integer bottomPositionSecondsMultiplier;
 
         String topLabelMinutes;
         String bottomLabelMinutes;
-        Integer topPositionMinutes;
-        Integer bottomPositionMinutes;
+        Integer topPositionMinutesMultiplier;
+        Integer bottomPositionMinutesMultiplier;
 
         static ExpectedValues expected(
-                Integer topPositionSeconds,
+                Integer topPositionSecondsMultiplier,
                 String topLabelSeconds,
-                Integer bottomPositionSeconds,
+                Integer bottomPositionSecondsMultiplier,
                 String bottomLabelSeconds,
-                Integer topPositionMinutes,
+                Integer topPositionMinutesMultiplier,
                 String topLabelMinutes,
-                Integer bottomPositionMinutes,
+                Integer bottomPositionMinutesMultiplier,
                 String bottomLabelMinutes
         ) {
             ExpectedValues exp = new ExpectedValues();
             exp.bottomLabelSeconds = bottomLabelSeconds;
             exp.topLabelSeconds = topLabelSeconds;
-            exp.topPositionSeconds = topPositionSeconds;
-            exp.bottomPositionSeconds = bottomPositionSeconds;
+            exp.topPositionSecondsMultiplier = topPositionSecondsMultiplier;
+            exp.bottomPositionSecondsMultiplier = bottomPositionSecondsMultiplier;
 
             exp.bottomLabelMinutes = bottomLabelMinutes;
             exp.topLabelMinutes = topLabelMinutes;
-            exp.topPositionMinutes = topPositionMinutes;
-            exp.bottomPositionMinutes = bottomPositionMinutes;
+            exp.topPositionMinutesMultiplier = topPositionMinutesMultiplier;
+            exp.bottomPositionMinutesMultiplier = bottomPositionMinutesMultiplier;
 
             return exp;
         }

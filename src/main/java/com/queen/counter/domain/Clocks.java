@@ -33,13 +33,11 @@ public class Clocks {
         deltaStreams.get(0).subscribe(currentDelta -> {
             if (currentDelta != 0) {
                 int normalizedDelta = currentDelta / Math.abs(currentDelta);
-//                if (type.equals(ColumnType.SECONDS)) {
                 this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
                 this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
                 this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
                 if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
                     this.playMinutes.push(null);
-//                    }
                 }
             }
         });

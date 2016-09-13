@@ -134,7 +134,7 @@
                    <children>
                        <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                               <Rectangle id="notShow"/>
+                               <Rectangle />
                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white" />
                            </children>
                        </StackPane>
