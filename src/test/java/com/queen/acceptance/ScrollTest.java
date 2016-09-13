@@ -136,7 +136,7 @@ public class ScrollTest extends CounterAppIT {
                         step(ColumnType.MINUTES, VerticalDirection.UP, 4)
                 )},
                 {sequence(
-                        expected(0, "14", 3, "11", 2, "22", 4, "19"),
+                        expected(0, "14", 3, "11", 1, "22", 4, "19"),
                         DEFAULT_CLOCK_STATE,
                         step(ColumnType.MINUTES, VerticalDirection.UP, 5)
                 )},
@@ -216,7 +216,7 @@ public class ScrollTest extends CounterAppIT {
                 )},
                 // Different clock start state
                 {sequence(
-                        expected(3, "2", 2, "3", 1, "58", 0, "59"),
+                        expected(3, "02", 2, "03", 1, "58", 0, "59"),
                         LocalTime.of(0, 0, 0),
                         step(ColumnType.SECONDS, VerticalDirection.UP, 2),
                         step(ColumnType.MINUTES, VerticalDirection.DOWN, 3),
@@ -323,12 +323,12 @@ public class ScrollTest extends CounterAppIT {
             Optional<Node> exBottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
             if (exTopRectangle.isPresent()) {
                 String label =  minutesLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier && label.equals(sequence.expectedValues.topLabelMinutes);
+                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier * height && label.equals(sequence.expectedValues.topLabelMinutes);
             }
 
             if (exBottomRectangle.isPresent()) {
                 String label =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionMinutesMultiplier && label.equals(sequence.expectedValues.bottomLabelMinutes);
+                return exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionMinutesMultiplier * height && label.equals(sequence.expectedValues.bottomLabelMinutes);
             }
 
             return false;
