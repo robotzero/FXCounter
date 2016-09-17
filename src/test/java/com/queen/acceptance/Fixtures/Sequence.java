@@ -20,21 +20,21 @@ public class Sequence {
         this.clockStartState = builder.startClock;
     }
 
-    public static Sequence create(Function<AddStep, Close> configuration) {
+    public static Sequence create(Function<AddClockStart, Close> configuration) {
         return configuration.andThen(Close::create).apply(new SequenceBuilder());
     }
 
     public static interface AddStep {
-        AddExpectedValues addStep(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber);
-    }
-
-    public static interface AddClockStart {
-        AddClockStart withStartClock(LocalTime clock);
+        AddStep addStep(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber);
         Close close();
     }
 
+    public static interface AddClockStart {
+        AddExpectedValues withStartClock(LocalTime clock);
+    }
+
     public static interface AddExpectedValues {
-        AddClockStart withExpectedValues(
+        AddStep withExpectedValues(
                 Integer topPositionSecondsMultiplier,
                 String topLabelSeconds,
                 Integer bottomPositionSecondsMultiplier,
@@ -102,14 +102,14 @@ public class Sequence {
         private LocalTime startClock;
 
         @Override
-        public AddExpectedValues addStep(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
+        public AddStep addStep(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
             Step step = new Step(columnType, direction, scrollsNumber);
             steps.add(step);
             return this;
         }
 
         @Override
-        public AddClockStart withExpectedValues(
+        public AddStep withExpectedValues(
                 Integer topPositionSecondsMultiplier,
                 String topLabelSeconds,
                 Integer bottomPositionSecondsMultiplier,
@@ -134,7 +134,7 @@ public class Sequence {
         }
 
         @Override
-        public AddClockStart withStartClock(LocalTime clock) {
+        public AddExpectedValues withStartClock(LocalTime clock) {
             this.startClock = clock;
             return this;
         }
