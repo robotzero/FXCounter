@@ -4,15 +4,16 @@ import com.google.code.tempusfugit.temporal.WaitFor;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import javafx.beans.property.BooleanProperty;
-import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
+import java.util.List;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;
 import static com.google.code.tempusfugit.temporal.Timeout.timeout;
@@ -51,13 +52,15 @@ public class StartStopTest extends CounterAppIT {
             e.printStackTrace();
         }
 
-        verifyThat("#seconds", (Group seconds) -> {
-            boolean present = seconds.getChildren().stream().filter(node -> node.getClass().equals(Text.class)).filter(text -> ((Text) text).getText().equals("4")).findAny().isPresent();
+        verifyThat("#paneSeconds", (StackPane seconds) -> {
+            List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
+            boolean present = secondsLabels.stream().filter(text -> ((Text) text).getText().equals("04")).findAny().isPresent();
             return !present;
         });
 
-        verifyThat("#minutes", (Group minutes) -> {
-            boolean present = minutes.getChildren().stream().filter(node -> node.getClass().equals(Text.class)).filter(text -> ((Text) text).getText().equals("12")).findAny().isPresent();
+        verifyThat("#paneMinutes", (StackPane minutes) -> {
+            List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
+            boolean present = minutesLabels.stream().filter(text -> ((Text) text).getText().equals("12")).findAny().isPresent();
             return !present;
         });
     }

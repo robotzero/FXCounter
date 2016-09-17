@@ -20,11 +20,10 @@ public class CounterAppIT extends ApplicationTest {
     private final ApplicationContext injector = new AnnotationConfigApplicationContext(TestSpringApplicationConfiguration.class);
     final static int TIME_WAIT = 650;
     final static int TOP_NODE_LOCATION = 0;
-    final static int BOTTOM_NODE_LOCATION = 180;
     final static LocalTime DEFAULT_CLOCK_STATE = LocalTime.of(0, 16, 12);
-    protected final static NodeFinder nodeFinder = new NodeFinder();
+    final NodeFinder nodeFinder = new NodeFinder();
 
-    protected <T> T getBean(Class<T> c) {
+    <T> T getBean(Class<T> c) {
         return injector.getBean(c);
     }
 

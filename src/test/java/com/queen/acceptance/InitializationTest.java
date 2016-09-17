@@ -5,6 +5,8 @@ import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +26,7 @@ public class InitializationTest extends CounterAppIT {
 
     @DataProvider
     public static Object[][] getClockAndExpectedValues() {
-        String[] expectedLabels = {"2", "1", "0", "59"};
+        String[] expectedLabels = {"02", "01", "00", "59"};
         return new Object[][] {
                 { LocalTime.of(0, 0, 0), expectedLabels }
         };
@@ -43,10 +45,12 @@ public class InitializationTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", initialClock);
 
-        Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
-        Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
 
-        List<String> visibleSecondsLabels = seconds.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
+        List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
+        List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
+        List<String> visibleSecondsLabels = secondsLabels.stream()
                                       .map(text -> ((Text) text).getText())
                                       .collect(Collectors.toList());
 
@@ -54,9 +58,9 @@ public class InitializationTest extends CounterAppIT {
             Assert.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
         }
 
-        List<String> visibleMinutesLabels = minutes.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
-                .map(text -> ((Text) text).getText())
-                .collect(Collectors.toList());
+        List<String> visibleMinutesLabels = minutesLabels.stream()
+                                        .map(text -> ((Text) text).getText())
+                                        .collect(Collectors.toList());
 
         for (int i = 0; i < visibleMinutesLabels.size(); i++) {
             Assert.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
@@ -65,13 +69,16 @@ public class InitializationTest extends CounterAppIT {
 
     @Test
     public void it_initializes_clock_to_zero_values_when_history_is_empty() {
-        Group seconds = assertContext().getNodeFinder().lookup("#seconds").queryFirst();
-        Group minutes = assertContext().getNodeFinder().lookup("#minutes").queryFirst();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+
+        List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
+        List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
 
         Assert.assertNull(repository.selectLatest());
 
-        String[] expectedLabels = { "2", "1", "0", "59" };
-        List<String> visibleSecondsLabels = seconds.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
+        String[] expectedLabels = { "02", "01", "00", "59" };
+        List<String> visibleSecondsLabels = secondsLabels.stream()
                 .map(text -> ((Text) text).getText())
                 .collect(Collectors.toList());
 
@@ -79,7 +86,7 @@ public class InitializationTest extends CounterAppIT {
             Assert.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
         }
 
-        List<String> visibleMinutesLabels = minutes.getChildren().stream().filter(node -> node.getClass().equals(Text.class))
+        List<String> visibleMinutesLabels = minutesLabels.stream()
                 .map(text -> ((Text) text).getText())
                 .collect(Collectors.toList());
 
