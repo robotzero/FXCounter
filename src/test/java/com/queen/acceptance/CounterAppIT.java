@@ -1,11 +1,15 @@
 package com.queen.acceptance;
 
 import com.airhacks.afterburner.injection.Injector;
+import com.queen.acceptance.Fixtures.Sequence;
 import com.queen.acceptance.di.TestSpringApplicationConfiguration;
 import com.queen.counter.clock.ClockView;
+import com.queen.counter.domain.ColumnType;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

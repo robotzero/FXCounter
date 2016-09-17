@@ -50,10 +50,10 @@ public class Sequence {
         Sequence create();
     }
 
-    static class Step {
-        ColumnType columnType;
-        VerticalDirection direction;
-        Integer scrollsNumber;
+    public static class Step {
+        public ColumnType columnType;
+        public VerticalDirection direction;
+        public Integer scrollsNumber;
 
         Step (ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
             this.columnType = columnType;
@@ -62,16 +62,16 @@ public class Sequence {
         }
     }
 
-    static class ExpectedValues {
-        String topLabelSeconds;
-        String bottomLabelSeconds;
-        Integer topPositionSecondsMultiplier;
-        Integer bottomPositionSecondsMultiplier;
+    public static class ExpectedValues {
+        public String topLabelSeconds;
+        public String bottomLabelSeconds;
+        public Integer topPositionSecondsMultiplier;
+        public Integer bottomPositionSecondsMultiplier;
 
-        String topLabelMinutes;
-        String bottomLabelMinutes;
-        Integer topPositionMinutesMultiplier;
-        Integer bottomPositionMinutesMultiplier;
+        public String topLabelMinutes;
+        public String bottomLabelMinutes;
+        public Integer topPositionMinutesMultiplier;
+        public Integer bottomPositionMinutesMultiplier;
 
         ExpectedValues (
                 Integer topPositionSecondsMultiplier,

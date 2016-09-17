@@ -1,6 +1,7 @@
 package com.queen.acceptance;
 
 import com.google.code.tempusfugit.temporal.WaitFor;
+import com.queen.acceptance.Fixtures.Sequence;
 import com.queen.counter.domain.ColumnType;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.tngtech.java.junit.dataprovider.DataProvider;
@@ -18,8 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +27,6 @@ import java.util.stream.IntStream;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;
 import static com.google.code.tempusfugit.temporal.Timeout.timeout;
-import static com.queen.acceptance.ScrollTest.ExpectedValues.expected;
-import static com.queen.acceptance.ScrollTest.Sequence.sequence;
-import static com.queen.acceptance.ScrollTest.Step.step;
-import static java.util.Arrays.asList;
 import static org.testfx.api.FxAssert.assertContext;
 import static org.testfx.api.FxAssert.verifyThat;
 
@@ -53,175 +48,205 @@ public class ScrollTest extends CounterAppIT {
         return new Object[][]{
                 // @formatter:off
                 // Seconds UP
-                {sequence(
-                        expected(1, "14", 4, "11", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1)
-                )},
-                {sequence(
-                        expected(2, "14", 1, "15", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 2)
-                )},
-                {sequence(
-                        expected(3, "14", 2, "15", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(4, "14", 3, "15", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 4)
-                )},
-                {sequence(
-                        expected(1, "18", 4, "15", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 5)
-                )},
-                {sequence(
-                        expected(2, "18", 1, "19", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 6)
-                )},
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                            .addStep(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                            .withExpectedValues(1, "14", 4, "11", 0, "18", 3, "14")
+                            .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                            .addStep(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                            .withExpectedValues(2, "14", 1, "15", 0, "18", 3, "14")
+                            .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                            .addStep(ColumnType.SECONDS, VerticalDirection.UP, 3)
+                            .withExpectedValues(3, "14", 2, "15", 0, "18", 3, "14")
+                            .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.UP, 4)
+                           .withExpectedValues(4, "14", 3, "15", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.UP, 5)
+                           .withExpectedValues(1, "18", 4, "15", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.UP, 6)
+                           .withExpectedValues(2, "18", 1, "19", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
                 // Seconds DOWN
-                {sequence(
-                        expected(3, "10", 2, "11", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
-                )},
-                {sequence(
-                        expected(2, "10", 1, "11", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
-                )},
-                {sequence(
-                        expected(1, "10", 0, "11", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 3)
-                )},
-                {sequence(
-                        expected(0, "10", 3, "07", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 4)
-                )},
-                {sequence(
-                        expected(3, "06", 2, "07", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 5)
-                )},
-                {sequence(
-                        expected(2, "06", 1, "07", 0, "18", 3, "14"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 6)
-                )},
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                           .withExpectedValues(3, "10", 2, "11", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+                           .withExpectedValues(2, "10", 1, "11", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 3)
+                           .withExpectedValues(1, "10", 0, "11", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 4)
+                           .withExpectedValues(0, "10", 3, "07", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 5)
+                           .withExpectedValues(3, "06", 2, "07", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 6)
+                           .withExpectedValues(2, "06", 1, "07", 0, "18", 3, "14")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
                 // Minutes UP
-                {sequence(
-                        expected(0, "14", 3, "11", 1, "18", 4, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 2, "18", 1, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 2)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 3, "18", 2, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 4, "18", 3, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 4)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 1, "22", 4, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 5)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 2, "22", 1, "23"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 6)
-                )},
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                           .withExpectedValues(0, "14", 3, "11", 1, "18", 4, "15")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                           .withExpectedValues(0, "14", 3, "11", 2, "18", 1, "19")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.UP, 3)
+                           .withExpectedValues(0, "14", 3, "11", 3, "18", 2, "19")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.UP, 4)
+                           .withExpectedValues(0, "14", 3, "11", 4, "18", 3, "19")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.UP, 5)
+                           .withExpectedValues(0, "14", 3, "11", 1, "22", 4, "19")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.UP, 6)
+                           .withExpectedValues(0, "14", 3, "11", 2, "22", 1, "23")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
                 // Minutes DOWN
-                {sequence(
-                        expected(0, "14", 3, "11", 3, "14", 2, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 2, "14", 1, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 1, "14", 0, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 0, "14", 3, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 3, "10", 2, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 5)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 2, "10", 1, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 6)
-                )},
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                           .withExpectedValues(0, "14", 3, "11", 3, "14", 2, "15")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                           .withExpectedValues(0, "14", 3, "11", 2, "14", 1, "15")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
+                           .withExpectedValues(0, "14", 3, "11", 1, "14", 0, "15")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
+                           .withExpectedValues(0, "14", 3, "11", 0, "14", 3, "11")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.DOWN, 5)
+                           .withExpectedValues(0, "14", 3, "11", 3, "10", 2, "11")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
+                {
+                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+                           .addStep(ColumnType.MINUTES, VerticalDirection.DOWN, 6)
+                           .withExpectedValues(0, "14", 3, "11", 2, "10", 1, "11")
+                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+                },
                 // Seconds and Minutes
-                {sequence(
-                        expected(2, "10", 1, "11", 3, "18", 2, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(2, "10", 1, "11", 3, "18", 2, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
-                )},
-                {sequence(
-                        expected(4, "14", 3, "15", 1, "14", 4, "11"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 3),
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4),
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 0, "18", 3, "15"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-                )},
-                {sequence(
-                        expected(0, "14", 3, "11", 2, "18", 1, "19"),
-                        DEFAULT_CLOCK_STATE,
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
-                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1),
-                        step(ColumnType.MINUTES, VerticalDirection.UP, 2)
-                )},
-                // Different clock start state
-                {sequence(
-                        expected(3, "02", 2, "03", 1, "58", 0, "59"),
-                        LocalTime.of(0, 0, 0),
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 2),
-                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 3),
-                        step(ColumnType.SECONDS, VerticalDirection.UP, 1)
-                )}
+//                {
+//                    com.queen.acceptance.Fixtures.Sequence.create(config -> config
+//                           .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+//                           .withExpectedValues(0, "14", 3, "11", 2, "10", 1, "11")
+//                           .withStartClock(DEFAULT_CLOCK_STATE).close())
+//                },
+//                {sequence(
+//                        expected(2, "10", 1, "11", 3, "18", 2, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+//                )},
+//                {sequence(
+//                        expected(2, "10", 1, "11", 3, "18", 2, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 2),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 3)
+//                )},
+//                {sequence(
+//                        expected(4, "14", 3, "15", 1, "14", 4, "11"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 3),
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 4),
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 1)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 3, "11", 0, "18", 3, "15"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+//                )},
+//                {sequence(
+//                        expected(0, "14", 3, "11", 2, "18", 1, "19"),
+//                        DEFAULT_CLOCK_STATE,
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 1),
+//                        step(ColumnType.SECONDS, VerticalDirection.DOWN, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 1),
+//                        step(ColumnType.MINUTES, VerticalDirection.UP, 2)
+//                )},
+//                // Different clock start state
+//                {sequence(
+//                        expected(3, "02", 2, "03", 1, "58", 0, "59"),
+//                        LocalTime.of(0, 0, 0),
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 2),
+//                        step(ColumnType.MINUTES, VerticalDirection.DOWN, 3),
+//                        step(ColumnType.SECONDS, VerticalDirection.UP, 1)
+//                )}
                 //@formatter:on
         };
     }
@@ -337,68 +362,4 @@ public class ScrollTest extends CounterAppIT {
 
     // @TODO test ticking, including minutes are up when seconds are at 0
     // @TODO test that you can't move columns when time is ticking.
-
-    static class Step {
-        ColumnType columnType;
-        VerticalDirection direction;
-        Integer scrollsNumber;
-
-        static Step step(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
-            Step step = new Step();
-            step.columnType = columnType;
-            step.direction = direction;
-            step.scrollsNumber = scrollsNumber;
-            return step;
-        }
-    }
-
-    static class Sequence {
-        List<Step> steps = new ArrayList<>();
-        LocalTime clockStartState;
-        ExpectedValues expectedValues;
-
-        static Sequence sequence(ExpectedValues expectedValues, LocalTime clockStartState, Step ...step) {
-            Sequence sequence = new Sequence();
-            sequence.steps.addAll(asList(step));
-            sequence.expectedValues = expectedValues;
-            sequence.clockStartState = clockStartState;
-            return sequence;
-        }
-    }
-
-    static class ExpectedValues {
-        String topLabelSeconds;
-        String bottomLabelSeconds;
-        Integer topPositionSecondsMultiplier;
-        Integer bottomPositionSecondsMultiplier;
-
-        String topLabelMinutes;
-        String bottomLabelMinutes;
-        Integer topPositionMinutesMultiplier;
-        Integer bottomPositionMinutesMultiplier;
-
-        static ExpectedValues expected(
-                Integer topPositionSecondsMultiplier,
-                String topLabelSeconds,
-                Integer bottomPositionSecondsMultiplier,
-                String bottomLabelSeconds,
-                Integer topPositionMinutesMultiplier,
-                String topLabelMinutes,
-                Integer bottomPositionMinutesMultiplier,
-                String bottomLabelMinutes
-        ) {
-            ExpectedValues exp = new ExpectedValues();
-            exp.bottomLabelSeconds = bottomLabelSeconds;
-            exp.topLabelSeconds = topLabelSeconds;
-            exp.topPositionSecondsMultiplier = topPositionSecondsMultiplier;
-            exp.bottomPositionSecondsMultiplier = bottomPositionSecondsMultiplier;
-
-            exp.bottomLabelMinutes = bottomLabelMinutes;
-            exp.topLabelMinutes = topLabelMinutes;
-            exp.topPositionMinutesMultiplier = topPositionMinutesMultiplier;
-            exp.bottomPositionMinutesMultiplier = bottomPositionMinutesMultiplier;
-
-            return exp;
-        }
-    }
 }
