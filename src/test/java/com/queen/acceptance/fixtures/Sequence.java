@@ -1,4 +1,4 @@
-package com.queen.acceptance.Fixtures;
+package com.queen.acceptance.fixtures;
 
 import com.queen.counter.domain.ColumnType;
 import javafx.geometry.VerticalDirection;

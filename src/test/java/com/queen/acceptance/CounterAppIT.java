@@ -1,15 +1,12 @@
 package com.queen.acceptance;
 
 import com.airhacks.afterburner.injection.Injector;
-import com.queen.acceptance.Fixtures.Sequence;
 import com.queen.acceptance.di.TestSpringApplicationConfiguration;
+import com.queen.acceptance.helpers.NodeFinder;
 import com.queen.counter.clock.ClockView;
-import com.queen.counter.domain.ColumnType;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import javafx.geometry.VerticalDirection;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -25,6 +22,7 @@ public class CounterAppIT extends ApplicationTest {
     final static int TOP_NODE_LOCATION = 0;
     final static int BOTTOM_NODE_LOCATION = 180;
     final static LocalTime DEFAULT_CLOCK_STATE = LocalTime.of(0, 16, 12);
+    protected final static NodeFinder nodeFinder = new NodeFinder();
 
     protected <T> T getBean(Class<T> c) {
         return injector.getBean(c);
