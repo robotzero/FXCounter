@@ -66,8 +66,38 @@ public class StartStopTest extends CounterAppIT {
     }
 
     @Test
-    public void while_animation_running_stop_and_reset_buttons_are_disabled()
+    public void while_animation_is_running_stop_and_reset_buttons_are_disabled()
     {
+        resetOption.set(true);
+        repository.create("latest", LocalTime.of(0, 10, 3));
+        clickOn(resetButton);
+        clickOn(startButton);
 
+        try {
+            WaitFor.waitUntil(timeout(millis(1000)));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        clickOn(resetButton);
+        clickOn(startButton);
+
+        try {
+            WaitFor.waitUntil(timeout(millis(3000)));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        verifyThat("#paneSeconds", (StackPane seconds) -> {
+            List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
+            boolean present = secondsLabels.stream().filter(text -> ((Text) text).getText().equals("04")).findAny().isPresent();
+            return !present;
+        });
+
+        verifyThat("#paneMinutes", (StackPane minutes) -> {
+            List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
+            boolean present = minutesLabels.stream().filter(text -> ((Text) text).getText().equals("12")).findAny().isPresent();
+            return !present;
+        });
     }
 }
