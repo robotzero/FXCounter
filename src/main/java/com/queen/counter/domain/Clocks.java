@@ -4,6 +4,8 @@ import org.reactfx.EventSource;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Clocks {
 
@@ -19,6 +21,16 @@ public class Clocks {
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
 
+    private BiFunction<LocalTime, Integer, LocalTime> pS = LocalTime::plusSeconds;
+    private BiFunction<LocalTime, Integer, LocalTime> pM = LocalTime::plusMinutes;
+    private BiFunction<LocalTime, Integer, LocalTime> pH = LocalTime::plusMinutes;
+
+    private Function<LocalTime, LocalTime> mainClockF = (c) -> c.withSecond(scrollSecondsClock.getSecond())
+                                                                .withMinute(scrollMinutesClock.getMinute())
+                                                                .withHour(scrollHoursClock.getHour());
+
+    private Function<Integer, Integer> normalizeDelta = delta -> delta / Math.abs(delta);
+
     private final int MIN = 59;
     private final int HR  = 23;
 
@@ -32,10 +44,9 @@ public class Clocks {
 
         deltaStreams.get(0).subscribe(currentDelta -> {
             if (currentDelta != 0) {
-                int normalizedDelta = currentDelta / Math.abs(currentDelta);
-                this.scrollSecondsClock = scrollSecondsClock.plusSeconds(normalizedDelta);
-                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.eventSeconds.push(scrollSecondsClock.plusSeconds(normalizedDelta).getSecond());
+                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta));
+                this.mainClock = mainClockF.apply(mainClock);
+                this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta)).getSecond());
                 if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
                     this.playMinutes.push(null);
                 }
@@ -44,10 +55,9 @@ public class Clocks {
 
         deltaStreams.get(1).subscribe(currentDelta -> {
             if (currentDelta != 0) {
-                int normalizedDelta = currentDelta / Math.abs(currentDelta);
-                this.scrollMinutesClock = scrollMinutesClock.plusMinutes(normalizedDelta);
-                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizedDelta).getMinute());
+                this.scrollMinutesClock = pM.apply(this.scrollMinutesClock, normalizeDelta.apply(currentDelta));
+                this.mainClock = mainClockF.apply(mainClock);
+                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizeDelta.apply(currentDelta)).getMinute());
 
                 if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
                     this.playHours.push(null);
@@ -57,10 +67,9 @@ public class Clocks {
 
         deltaStreams.get(2).subscribe(currentDelta -> {
             if (currentDelta != 0) {
-                int normalizedDelta = currentDelta / Math.abs(currentDelta);
-                this.scrollHoursClock = scrollHoursClock.plusHours(normalizedDelta);
-                this.mainClock = mainClock.withSecond(scrollSecondsClock.getSecond()).withMinute(scrollMinutesClock.getMinute());
-                this.eventHours.push(scrollHoursClock.plusHours(normalizedDelta).getHour());
+                this.scrollHoursClock = pH.apply(this.scrollHoursClock, normalizeDelta.apply(currentDelta));
+                this.mainClock = mainClockF.apply(mainClock);
+                this.eventHours.push(scrollHoursClock.plusHours(normalizeDelta.apply(currentDelta)).getHour());
             }
         });
     }
@@ -83,9 +92,4 @@ public class Clocks {
     public LocalTime getMainClock() {
         return this.mainClock;
     }
-
-//    BiFunction<Integer, Void, Tuple2<Integer, Optional<String>>> countdown =
-//            (s, i) -> s == 1
-//                    ? t(3, Optional.of("COUNTDOWN REACHED"))
-//                    : t(s-1, Optional.empty());
 }
