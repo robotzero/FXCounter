@@ -13,6 +13,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import java.time.LocalTime;
+import java.util.stream.IntStream;
 
 public class Cell {
 
@@ -188,37 +189,21 @@ public class Cell {
     public void resetMultiplayer(boolean hasTopEdge) {
 
         if (hasTopEdge) {
-            if (translateTransition.fromYProperty().get() == currentSize.get()) {
-                this.currentMultiplayer.set(0);
-            }
-
-            if (translateTransition.fromYProperty().get() == currentSize.get() * 2) {
-                this.currentMultiplayer.set(1);
-            }
-
-            if (translateTransition.fromYProperty().get() == currentSize.get() * 3) {
-                this.currentMultiplayer.set(2);
-            }
-
-            if (translateTransition.fromYProperty().get() == currentSize.get() * 4) {
-                this.currentMultiplayer.set(3);
-            }
+            IntStream.range(1, 4).forEach(i -> {
+                if (translateTransition.fromYProperty().get() == currentSize.get() * i) {
+                    this.currentMultiplayer.set(i - 1);
+                }
+            });
         } else {
-            if (translateTransition.fromYProperty().get() == currentSize.get()) {
-                this.currentMultiplayer.set(1);
-            }
-
-            if (translateTransition.fromYProperty().get() == currentSize.get() * 2) {
-                this.currentMultiplayer.set(2);
-            }
-
-            if (translateTransition.fromYProperty().get() == currentSize.get() * 3) {
-                this.currentMultiplayer.set(3);
-            }
-
-            if (translateTransition.fromYProperty().get() == currentSize.get() * 4) {
-                this.currentMultiplayer.set(0);
-            }
+            IntStream.range(1, 5).forEach(i -> {
+                if (translateTransition.fromYProperty().get() == currentSize.get() * i) {
+                    if (i == 4) {
+                        this.currentMultiplayer.set(0);
+                    } else {
+                        this.currentMultiplayer.set(i);
+                    }
+                }
+            });
         }
     }
 }
