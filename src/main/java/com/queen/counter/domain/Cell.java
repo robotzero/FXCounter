@@ -189,7 +189,7 @@ public class Cell {
     public void resetMultiplayer(boolean hasTopEdge) {
 
         if (hasTopEdge) {
-            IntStream.range(1, 4).forEach(i -> {
+            IntStream.range(1, 5).forEach(i -> {
                 if (translateTransition.fromYProperty().get() == currentSize.get() * i) {
                     this.currentMultiplayer.set(i - 1);
                 }
