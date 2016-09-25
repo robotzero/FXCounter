@@ -1,6 +1,5 @@
 package com.queen.counter.clock;
 
-import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.Column;
 import com.queen.counter.domain.SavedTimer;
@@ -21,7 +20,6 @@ import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;

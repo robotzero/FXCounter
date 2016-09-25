@@ -1,20 +1,16 @@
 package com.queen.counter;
 
 import com.airhacks.afterburner.injection.Injector;
-import com.googlecode.totallylazy.time.Clock;
-import com.queen.configuration.SceneConfiguration;
-import com.queen.counter.clock.ClockView;
 import com.queen.counter.service.StageController;
 import com.queen.di.SpringApplicationConfiguration;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Counter extends Application {
 
-    private final ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
+    private ApplicationContext injector;
 
     public static void main(String[] args) {
         launch(args);
@@ -22,6 +18,9 @@ public class Counter extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
+
         Injector.setConfigurationSource(null);
 
         Injector.setInstanceSupplier(new Injector.InstanceProvider() {
@@ -44,8 +43,6 @@ public class Counter extends Application {
         StageController stageController = (StageController) injector.getBean("stageController");
         stageController.setStage(primaryStage);
         stageController.setView();
-//        ClockView clockView = (ClockView) injector.getBean("clockView");
-//        Scene clockScene = new Scene(clockView.getView());
 
         primaryStage.setTitle("Count Me Bubbles!");
         primaryStage.setX(2000);

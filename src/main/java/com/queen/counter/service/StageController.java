@@ -24,11 +24,17 @@ public class StageController {
 
     @PostConstruct
     public void init() {
-//        sceneConfiguration.getHeightObject().bind(mainView.getView().getScene().heightProperty());
-//        sceneConfiguration.getWidthObject().bind(mainView.getView().getScene().widthProperty());
-//        sceneConfiguration.getHeightObject().bind(optionsView.getView().getScene().heightProperty());
-//        sceneConfiguration.getWidthObject().bind(optionsView.getView().getScene().widthProperty());
+        mainView.getViewAsync(rootNode -> {
+            sceneConfiguration.getHeightObject().bind(rootNode.getScene().heightProperty());
+            sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
+        });
+
+        optionsView.getViewAsync(rootNode -> {
+            sceneConfiguration.getHeightObject().bind(rootNode.getScene().heightProperty());
+            sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
+        });
     }
+
     public void setView() {
         if (this.currentView != null && this.currentView.equals(mainView)) {
             this.currentView = this.optionsView;
