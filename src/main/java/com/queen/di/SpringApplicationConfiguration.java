@@ -30,10 +30,6 @@ import java.util.List;
 public class SpringApplicationConfiguration {
 
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
-    private FXMLView clockView = new ClockView();
-    private FXMLView optionsView = new OptionsView();
-    private Scene clockScene = new Scene(clockView.getView());
-    private Scene optionsScene = new Scene(optionsView.getView());
 
     private UIService uiService = new UIService();
     private EventSource seconds = new EventSource();
@@ -47,19 +43,18 @@ public class SpringApplicationConfiguration {
     private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
     private EventSource<Integer> deltaStreamMinutes = new EventSource<>();
     private EventSource<Integer> deltaStreamHours = new EventSource<>();
-    private SceneConfiguration sceneConfiguration = new SceneConfiguration();
 
     @Bean
     public FXMLView clockView() {
-        return clockView;
+        return new ClockView();
     }
 
     @Bean
-    public FXMLView optionsView() { return optionsView; }
+    public FXMLView optionsView() { return new OptionsView(); }
 
     @Bean
     public StageController stageController() {
-        return new StageController(sceneConfiguration, this.clockScene, this.optionsScene);
+        return new StageController(sceneConfiguration(), clockView(), optionsView());
     }
 
     @Bean
@@ -72,10 +67,10 @@ public class SpringApplicationConfiguration {
         return new OptionsPresenter();
     }
 
-//    @Bean
-//    public SceneConfiguration sceneConfiguration() {
-//        return new SceneConfiguration();
-//    }
+    @Bean
+    public SceneConfiguration sceneConfiguration() {
+        return new SceneConfiguration();
+    }
 
     @Bean
     public EventSource<Void> PlayMinutes() {

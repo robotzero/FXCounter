@@ -91,8 +91,8 @@ public class ClockPresenter implements Initializable {
     @Qualifier("DeltaStreamHours")
     private EventSource<Integer> deltaStreamHours;
 
-//    @Inject
-//    private StageController stageController;
+    @Inject
+    private StageController stageController;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
@@ -179,7 +179,7 @@ public class ClockPresenter implements Initializable {
 //        });
 
         optionClicks.subscribe(click -> {
-//            stageController.setView();
+            stageController.setView();
         });
 
         resetClicks.subscribe(click -> {

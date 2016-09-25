@@ -12,22 +12,22 @@ public class StageController {
     private Stage primaryStage;
 
     private SceneConfiguration sceneConfiguration;
-    private Scene mainView;
-    private Scene optionsView;
-    private Scene currentView = null;
+    private FXMLView mainView;
+    private FXMLView optionsView;
+    private FXMLView currentView = null;
 
-    public StageController(SceneConfiguration sceneConfiguration, Scene ...scenes) {
-        this.mainView = scenes[0];
-        this.optionsView = scenes[1];
+    public StageController(SceneConfiguration sceneConfiguration, FXMLView ...views) {
         this.sceneConfiguration = sceneConfiguration;
+        this.mainView = views[0];
+        this.optionsView = views[1];
     }
 
     @PostConstruct
     public void init() {
-        sceneConfiguration.getHeightObject().bind(mainView.heightProperty());
-        sceneConfiguration.getWidthObject().bind(mainView.widthProperty());
-        sceneConfiguration.getHeightObject().bind(optionsView.heightProperty());
-        sceneConfiguration.getWidthObject().bind(optionsView.widthProperty());
+//        sceneConfiguration.getHeightObject().bind(mainView.getView().getScene().heightProperty());
+//        sceneConfiguration.getWidthObject().bind(mainView.getView().getScene().widthProperty());
+//        sceneConfiguration.getHeightObject().bind(optionsView.getView().getScene().heightProperty());
+//        sceneConfiguration.getWidthObject().bind(optionsView.getView().getScene().widthProperty());
     }
     public void setView() {
         if (this.currentView != null && this.currentView.equals(mainView)) {
@@ -35,7 +35,7 @@ public class StageController {
         } else {
             this.currentView = this.mainView;
         }
-        this.primaryStage.setScene(currentView);
+        this.primaryStage.setScene(new Scene(currentView.getView()));
     }
 
     public void setStage(Stage stage) {
