@@ -59,3 +59,6 @@
                                                         rgba(0, 0, 0, 0.9) 92%,
                                                         rgba(0, 0, 0, 1) 100%);
 }
+.hiddenContainer {
+   -fx-background-color: transparent;
+}

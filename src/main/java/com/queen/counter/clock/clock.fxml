@@ -10,6 +10,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import org.controlsfx.control.HiddenSidesPane?>
+<?import javafx.scene.control.Label?>
 <GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="gridPane" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.queen.counter.clock.ClockPresenter">
   <!--<columnConstraints>-->
     <!--<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />-->
@@ -193,5 +195,14 @@
             <Font size="20.0" />
          </font>
       </Text>
+      <StackPane GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" GridPane.rowSpan="1" styleClass="hiddenContainer">
+          <children>
+              <HiddenSidesPane>
+                  <top>
+                      <Label fx:id="pinLabel" style="-fx-background-color: rgba(0,255,0,.25);" text="(Click to pin / unpin)" alignment="CENTER" prefHeight="50.0" prefWidth="50.0" />
+                  </top>
+              </HiddenSidesPane>
+          </children>
+      </StackPane>
    </children>
 </GridPane>

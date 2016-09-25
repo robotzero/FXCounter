@@ -98,6 +98,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>8.40.12</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.totallylazy</groupId>
             <artifactId>totallylazy</artifactId>
             <version>1.81</version>
