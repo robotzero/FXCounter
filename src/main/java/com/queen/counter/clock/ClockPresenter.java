@@ -6,11 +6,13 @@ import com.queen.counter.domain.Column;
 import com.queen.counter.domain.SavedTimer;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
+import com.queen.counter.service.StageController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
@@ -19,6 +21,7 @@ import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
@@ -52,8 +55,8 @@ public class ClockPresenter implements Initializable {
     @FXML
     Text textHours;
 
-    @Inject
-    private SceneConfiguration sceneConfiguration;
+    @FXML
+    Label optionsLabel;
 
     @Inject
     private Populator populator;
@@ -64,7 +67,7 @@ public class ClockPresenter implements Initializable {
     @Inject
     private SavedTimerRepository savedTimerRepository;
 
-    // Temp option simulating options screen
+    // Temp options simulating options screen
     @Inject
     private BooleanProperty fetchFromDatabase;
 
@@ -87,6 +90,9 @@ public class ClockPresenter implements Initializable {
     @Inject
     @Qualifier("DeltaStreamHours")
     private EventSource<Integer> deltaStreamHours;
+
+//    @Inject
+//    private StageController stageController;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
@@ -116,6 +122,8 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
+        EventStream<MouseEvent> optionClicks = EventStreams.eventsOf(optionsLabel, MouseEvent.MOUSE_CLICKED);
+
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
         Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStreamMinutes.push(-60);
@@ -169,6 +177,10 @@ public class ClockPresenter implements Initializable {
 //            playM.unsubscribe();
 //            playH.unsubscribe();
 //        });
+
+        optionClicks.subscribe(click -> {
+//            stageController.setView();
+        });
 
         resetClicks.subscribe(click -> {
             this.fetchFromDatabase.setValue(true);

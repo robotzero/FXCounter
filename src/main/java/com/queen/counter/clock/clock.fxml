@@ -199,7 +199,7 @@
           <children>
               <HiddenSidesPane>
                   <top>
-                      <Label fx:id="pinLabel" style="-fx-background-color: rgba(0,255,0,.25);" text="(Click to pin / unpin)" alignment="CENTER" prefHeight="50.0" prefWidth="50.0" />
+                      <Label fx:id="optionsLabel" style="-fx-background-color: rgba(0,255,0,1);" text="Options" alignment="CENTER" prefHeight="50.0" prefWidth="50.0" />
                   </top>
               </HiddenSidesPane>
           </children>

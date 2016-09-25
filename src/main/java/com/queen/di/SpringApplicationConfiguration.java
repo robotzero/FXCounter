@@ -5,13 +5,17 @@ import com.queen.configuration.SceneConfiguration;
 import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
+import com.queen.counter.clock.options.OptionsPresenter;
 import com.queen.counter.domain.Clocks;
 import com.queen.counter.domain.UIService;
+import com.queen.counter.clock.options.OptionsView;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.repository.SavedTimerSqlliteJdbcRepository;
 import com.queen.counter.service.Populator;
+import com.queen.counter.service.StageController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Scene;
 import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +31,10 @@ public class SpringApplicationConfiguration {
 
     private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
     private FXMLView clockView = new ClockView();
+    private FXMLView optionsView = new OptionsView();
+    private Scene clockScene = new Scene(clockView.getView());
+    private Scene optionsScene = new Scene(optionsView.getView());
+
     private UIService uiService = new UIService();
     private EventSource seconds = new EventSource();
     private EventSource minutes = new EventSource();
@@ -39,10 +47,19 @@ public class SpringApplicationConfiguration {
     private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
     private EventSource<Integer> deltaStreamMinutes = new EventSource<>();
     private EventSource<Integer> deltaStreamHours = new EventSource<>();
+    private SceneConfiguration sceneConfiguration = new SceneConfiguration();
 
     @Bean
     public FXMLView clockView() {
         return clockView;
+    }
+
+    @Bean
+    public FXMLView optionsView() { return optionsView; }
+
+    @Bean
+    public StageController stageController() {
+        return new StageController(sceneConfiguration, this.clockScene, this.optionsScene);
     }
 
     @Bean
@@ -51,9 +68,14 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public SceneConfiguration sceneConfiguration() {
-        return new SceneConfiguration();
+    public OptionsPresenter optionPresenter() {
+        return new OptionsPresenter();
     }
+
+//    @Bean
+//    public SceneConfiguration sceneConfiguration() {
+//        return new SceneConfiguration();
+//    }
 
     @Bean
     public EventSource<Void> PlayMinutes() {
