@@ -15,6 +15,8 @@ public class StageController {
     private FXMLView mainView;
     private FXMLView optionsView;
     private FXMLView currentView = null;
+    private Scene clockScene;
+    private Scene optionsScene;
 
     public StageController(SceneConfiguration sceneConfiguration, FXMLView ...views) {
         this.sceneConfiguration = sceneConfiguration;
@@ -36,12 +38,21 @@ public class StageController {
     }
 
     public void setView() {
+        if (this.clockScene == null) {
+            this.clockScene = new Scene(this.mainView.getView());
+        }
+
+        if (this.optionsScene == null) {
+            this.optionsScene = new Scene(this.optionsView.getView());
+        }
+
         if (this.currentView != null && this.currentView.equals(mainView)) {
             this.currentView = this.optionsView;
+            this.primaryStage.setScene(optionsScene);
         } else {
             this.currentView = this.mainView;
+            this.primaryStage.setScene(clockScene);
         }
-        this.primaryStage.setScene(new Scene(currentView.getView()));
     }
 
     public void setStage(Stage stage) {

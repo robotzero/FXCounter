@@ -15,7 +15,6 @@ import com.queen.counter.service.Populator;
 import com.queen.counter.service.StageController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.Scene;
 import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -176,9 +176,7 @@ public class ClockPresenter implements Initializable {
 //            playH.unsubscribe();
 //        });
 
-        optionClicks.subscribe(click -> {
-            stageController.setView();
-        });
+        optionClicks.subscribe(click -> stageController.setView());
 
         resetClicks.subscribe(click -> {
             this.fetchFromDatabase.setValue(true);
