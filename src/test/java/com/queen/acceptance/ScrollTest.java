@@ -12,7 +12,6 @@ import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.junit.Before;
@@ -20,10 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;

@@ -44,6 +44,27 @@ public class Sequence {
                 Integer bottomPositionMinutesMultiplier,
                 String bottomLabelMinutes
         );
+
+        AddStep withExpectedValues(
+                Integer topPositionSecondsMultiplier,
+                String topLabelSeconds,
+                Integer middlePositionSecondsMultiplier,
+                String middleLabelSeconds,
+                Integer bottomPositionSecondsMultiplier,
+                String bottomLabelSeconds,
+                Integer topPositionMinutesMultiplier,
+                String topLabelMinutes,
+                Integer middlePositionMinutesMultiplier,
+                String middleLabelMinutes,
+                Integer bottomPositionMinutesMultiplier,
+                String bottomLabelMinutes,
+                Integer topPositionHoursMultiplier,
+                String topLabelHours,
+                Integer middlePositionHoursMultiplier,
+                String middleLabelHours,
+                Integer bottomPositionHoursMultiplier,
+                String bottomLabelHours
+        );
     }
 
     public static interface Close {
@@ -181,6 +202,51 @@ public class Sequence {
                     topLabelMinutes,
                     bottomPositionMinutesMultiplier,
                     bottomLabelMinutes
+            );
+
+            return this;
+        }
+
+        @Override
+        public AddStep withExpectedValues(
+                Integer topPositionSecondsMultiplier,
+                String topLabelSeconds,
+                Integer middlePositionSecondsMultiplier,
+                String middleLabelSeconds,
+                Integer bottomPositionSecondsMultiplier,
+                String bottomLabelSeconds,
+                Integer topPositionMinutesMultiplier,
+                String topLabelMinutes,
+                Integer middlePositionMinutesMultiplier,
+                String middleLabelMinutes,
+                Integer bottomPositionMinutesMultiplier,
+                String bottomLabelMinutes,
+                Integer topPositionHoursMultiplier,
+                String topLabelHours,
+                Integer middlePositionHoursMultiplier,
+                String middleLabelHours,
+                Integer bottomPositionHoursMultiplier,
+                String bottomLabelHours
+        ) {
+            this.expectedValues = new ExpectedValues(
+                    topPositionSecondsMultiplier,
+                    topLabelSeconds,
+                    middlePositionSecondsMultiplier,
+                    middleLabelSeconds,
+                    bottomPositionSecondsMultiplier,
+                    bottomLabelSeconds,
+                    topPositionMinutesMultiplier,
+                    topLabelMinutes,
+                    middlePositionMinutesMultiplier,
+                    middleLabelMinutes,
+                    bottomPositionMinutesMultiplier,
+                    bottomLabelMinutes,
+                    topPositionHoursMultiplier,
+                    topLabelHours,
+                    middlePositionHoursMultiplier,
+                    middleLabelHours,
+                    bottomPositionHoursMultiplier,
+                    bottomLabelHours
             );
 
             return this;
