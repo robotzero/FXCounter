@@ -64,14 +64,25 @@ public class Sequence {
 
     public static class ExpectedValues {
         public String topLabelSeconds;
+        public String middleLabelSeconds;
         public String bottomLabelSeconds;
         public Integer topPositionSecondsMultiplier;
+        public Integer middlePositionSecondsMultiplier;
         public Integer bottomPositionSecondsMultiplier;
 
         public String topLabelMinutes;
+        public String middleLabelMinutes;
         public String bottomLabelMinutes;
         public Integer topPositionMinutesMultiplier;
+        public Integer middlePositionMinutesMultiplier;
         public Integer bottomPositionMinutesMultiplier;
+
+        public String topLabelHours;
+        public String middleLabelHours;
+        public String bottomLabelHours;
+        public Integer topPositionHoursMultiplier;
+        public Integer middlePositionHoursMultiplier;
+        public Integer bottomPositionHoursMultiplier;
 
         ExpectedValues (
                 Integer topPositionSecondsMultiplier,
@@ -92,6 +103,48 @@ public class Sequence {
             this.topLabelMinutes = topLabelMinutes;
             this.topPositionMinutesMultiplier = topPositionMinutesMultiplier;
             this.bottomPositionMinutesMultiplier = bottomPositionMinutesMultiplier;
+        }
+
+        ExpectedValues (
+                Integer topPositionSecondsMultiplier,
+                String topLabelSeconds,
+                Integer middlePositionSecondsMultiplier,
+                String middleLabelSeconds,
+                Integer bottomPositionSecondsMultiplier,
+                String bottomLabelSeconds,
+                Integer topPositionMinutesMultiplier,
+                String topLabelMinutes,
+                Integer middlePositionMinutesMultiplier,
+                String middleLabelMinutes,
+                Integer bottomPositionMinutesMultiplier,
+                String bottomLabelMinutes,
+                Integer topPositionHoursMultiplier,
+                String topLabelHours,
+                Integer middlePositionHoursMultiplier,
+                String middleLabelHours,
+                Integer bottomPositionHoursMultiplier,
+                String bottomLabelHours
+        ) {
+            this.bottomLabelSeconds = bottomLabelSeconds;
+            this.middleLabelSeconds = middleLabelSeconds;
+            this.topLabelSeconds = topLabelSeconds;
+            this.topPositionSecondsMultiplier = topPositionSecondsMultiplier;
+            this.middlePositionSecondsMultiplier = middlePositionSecondsMultiplier;
+            this.bottomPositionSecondsMultiplier = bottomPositionSecondsMultiplier;
+
+            this.bottomLabelMinutes = bottomLabelMinutes;
+            this.middleLabelMinutes = middleLabelMinutes;
+            this.topLabelMinutes = topLabelMinutes;
+            this.topPositionMinutesMultiplier = topPositionMinutesMultiplier;
+            this.middlePositionMinutesMultiplier = middlePositionMinutesMultiplier;
+            this.bottomPositionMinutesMultiplier = bottomPositionMinutesMultiplier;
+
+            this.bottomLabelHours = bottomLabelHours;
+            this.middleLabelHours = middleLabelHours;
+            this.topLabelHours = topLabelHours;
+            this.topPositionHoursMultiplier = topPositionHoursMultiplier;
+            this.middlePositionHoursMultiplier = middlePositionHoursMultiplier;
+            this.bottomPositionHoursMultiplier = bottomPositionHoursMultiplier;
         }
     }
 
