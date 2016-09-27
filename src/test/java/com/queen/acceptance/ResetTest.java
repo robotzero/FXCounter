@@ -54,6 +54,41 @@ public class ResetTest extends CounterAppIT {
                                 .addStep(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
 
                 },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 11, 10))
+                                .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
+                                .addStep(ColumnType.SECONDS, VerticalDirection.UP, 5).close())
+
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 11, 10))
+                                .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
+                                .addStep(ColumnType.SECONDS, VerticalDirection.UP, 10).close())
+
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 11, 10))
+                                .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
+                                .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
+
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 11, 10))
+                                .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
+                                .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 7).close())
+
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 11, 10))
+                                .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
+                                .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 11).close())
+
+                },
                 //@formatter:on
         };
     }
@@ -81,14 +116,6 @@ public class ResetTest extends CounterAppIT {
         // Current height
         int height = (int) ((Rectangle) secondsRectangles.get(0)).getHeight();
 
-        String topIdSeconds = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height).findAny().get().getId();
-        String middleIdSeconds = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 2).findAny().get().getId();
-        String bottomIdSeconds = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny().get().getId();
-
-        String topIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height).findAny().get().getId();
-        String middleIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 2).findAny().get().getId();
-        String bottomIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny().get().getId();
-
         clickOn(reset);
 
         sequence.steps.forEach(step -> {
@@ -114,14 +141,14 @@ public class ResetTest extends CounterAppIT {
         }
 
         verifyThat("#paneSeconds", (StackPane s) -> {
-            Optional<Node> topRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
-            Optional<Node> middleRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(middleIdSeconds)).findAny();
-            Optional<Node> bottomRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
+            Optional<Node> topRectangle = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height).findAny();
+            Optional<Node> middleRectangle = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 2).findAny();
+            Optional<Node> bottomRectangle = secondsRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny();
 
             if (topRectangle.isPresent() && middleRectangle.isPresent() && bottomRectangle.isPresent()) {
                 String labelS =  secondsLabels.stream().filter(tr -> tr.getId().equals(topRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
                 String labelM =  secondsLabels.stream().filter(tr -> tr.getId().equals(middleRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                String labelB =  secondsLabels.stream().filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
+                String labelB =  secondsLabels.stream().filter(tr -> tr.getId().equals(bottomRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
 
                 return
                         topRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionSecondsMultiplier * height
@@ -136,15 +163,15 @@ public class ResetTest extends CounterAppIT {
         });
 
         verifyThat("#paneMinutes", (StackPane s) -> {
-            Optional<Node> topRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
-            Optional<Node> middleRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(middleIdMinutes)).findAny();
-            Optional<Node> bottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
+            Optional<Node> topRectangle = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height).findAny();
+            Optional<Node> middleRectangle = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 2).findAny();
+            Optional<Node> bottomRectangle = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny();
 
             if (topRectangle.isPresent() && middleRectangle.isPresent() && bottomRectangle.isPresent()) {
 
                 String labelS =  minutesLabels.stream().filter(tr -> tr.getId().equals(topRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
                 String labelM =  minutesLabels.stream().filter(tr -> tr.getId().equals(middleRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                String labelB =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
+                String labelB =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
 
                 return
                         topRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier * height
