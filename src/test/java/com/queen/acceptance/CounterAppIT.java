@@ -18,7 +18,7 @@ import java.time.LocalTime;
 public class CounterAppIT extends ApplicationTest {
 
     private final ApplicationContext injector = new AnnotationConfigApplicationContext(TestSpringApplicationConfiguration.class);
-    final static int TIME_WAIT = 650;
+    public final static int TIME_WAIT = 650;
     final static int TOP_NODE_LOCATION = 0;
     final static LocalTime DEFAULT_CLOCK_STATE = LocalTime.of(0, 16, 12);
     final NodeFinder nodeFinder = new NodeFinder();

@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static com.google.code.tempusfugit.temporal.Duration.millis;
 import static com.google.code.tempusfugit.temporal.Timeout.timeout;
@@ -51,43 +50,43 @@ public class ResetTest extends CounterAppIT {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addStep(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
-
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addReset().close())
                 },
                 {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addStep(ColumnType.SECONDS, VerticalDirection.UP, 5).close())
-
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 5)
+                                .addReset().close())
                 },
                 {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addStep(ColumnType.SECONDS, VerticalDirection.UP, 10).close())
-
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 10)
+                                .addReset().close())
                 },
                 {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
-
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                .addReset().close())
                 },
                 {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 7).close())
-
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 7)
+                                .addReset().close())
                 },
                 {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addStep(ColumnType.SECONDS, VerticalDirection.DOWN, 11).close())
-
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 11)
+                                .addReset().close())
                 },
                 //@formatter:on
         };
@@ -118,21 +117,7 @@ public class ResetTest extends CounterAppIT {
 
         clickOn(reset);
 
-        sequence.steps.forEach(step -> {
-            String type = step.columnType.name();
-            String paneName = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
-            moveTo("#pane" + paneName);
-            IntStream.range(0, step.scrollsNumber).forEach(i -> {
-                scroll(step.direction);
-                try {
-                    WaitFor.waitUntil(timeout(millis(TIME_WAIT)));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-        });
-
-        clickOn(reset);
+        sequence.steps.forEach(step -> step.execute(this));
 
         try {
             WaitFor.waitUntil(timeout(millis(TIME_WAIT)));

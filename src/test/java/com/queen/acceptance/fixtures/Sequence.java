@@ -1,12 +1,21 @@
 package com.queen.acceptance.fixtures;
 
+import com.google.code.tempusfugit.temporal.WaitFor;
+import com.queen.acceptance.CounterAppIT;
 import com.queen.counter.domain.ColumnType;
 import javafx.geometry.VerticalDirection;
+import javafx.scene.control.Button;
+import org.testfx.api.FxRobot;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.IntStream;
+
+import static com.google.code.tempusfugit.temporal.Duration.millis;
+import static com.google.code.tempusfugit.temporal.Timeout.timeout;
+import static org.testfx.api.FxAssert.assertContext;
 
 public class Sequence {
 
@@ -25,7 +34,8 @@ public class Sequence {
     }
 
     public static interface AddStep {
-        AddStep addStep(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber);
+        AddStep addScroll(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber);
+        AddStep addReset();
         Close close();
     }
 
@@ -71,15 +81,42 @@ public class Sequence {
         Sequence create();
     }
 
-    public static class Step {
+    public static interface Step {
+        public void execute(FxRobot fxRobot);
+    }
+
+    public static class ScrollStep implements Step {
         public ColumnType columnType;
         public VerticalDirection direction;
         public Integer scrollsNumber;
 
-        Step (ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
+        ScrollStep (ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
             this.columnType = columnType;
             this.direction = direction;
             this.scrollsNumber = scrollsNumber;
+        }
+
+        @Override
+        public void execute(FxRobot fxrobot) {
+            String type = this.columnType.name();
+            String paneName = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+            fxrobot.moveTo("#pane" + paneName);
+            IntStream.range(0, this.scrollsNumber).forEach(i -> {
+                fxrobot.scroll(this.direction);
+                try {
+                    WaitFor.waitUntil(timeout(millis(CounterAppIT.TIME_WAIT)));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    public static class ResetStep implements Step {
+
+        @Override
+        public void execute(FxRobot fxrobot) {
+            fxrobot.clickOn((Button)assertContext().getNodeFinder().lookup("#reset").queryFirst());
         }
     }
 
@@ -176,8 +213,15 @@ public class Sequence {
         private LocalTime startClock;
 
         @Override
-        public AddStep addStep(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
-            Step step = new Step(columnType, direction, scrollsNumber);
+        public AddStep addScroll(ColumnType columnType, VerticalDirection direction, Integer scrollsNumber) {
+            Step step = new ScrollStep(columnType, direction, scrollsNumber);
+            steps.add(step);
+            return this;
+        }
+
+        @Override
+        public AddStep addReset() {
+            Step step = new ResetStep();
             steps.add(step);
             return this;
         }
