@@ -375,6 +375,4 @@ public class ScrollTest extends CounterAppIT {
             return false;
         });
     }
-
-    // @TODO test ticking, including minutes are up when seconds are at 0
 }

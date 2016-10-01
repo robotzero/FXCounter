@@ -47,9 +47,12 @@ public class Clocks {
                 this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta));
                 this.mainClock = mainClockF.apply(mainClock);
                 this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta)).getSecond());
-                if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
+                if (this.scrollSecondsClock.getSecond() == MIN) {
                     this.playMinutes.push(null);
                 }
+//                if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
+//                    this.playMinutes.push(null);
+//                }
             }
         });
 
@@ -59,7 +62,7 @@ public class Clocks {
                 this.mainClock = mainClockF.apply(mainClock);
                 this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizeDelta.apply(currentDelta)).getMinute());
 
-                if (this.scrollMinutesClock.minusMinutes(1).getMinute() == HR) {
+                if (this.scrollMinutesClock.getMinute() == HR) {
                     this.playHours.push(null);
                 }
             }

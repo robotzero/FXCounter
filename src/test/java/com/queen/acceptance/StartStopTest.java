@@ -90,13 +90,13 @@ public class StartStopTest extends CounterAppIT {
 
         verifyThat("#paneSeconds", (StackPane seconds) -> {
             List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
-            boolean present = secondsLabels.stream().filter(text -> ((Text) text).getText().equals("04")).findAny().isPresent();
+            boolean present = secondsLabels.stream().anyMatch(text -> ((Text) text).getText().equals("04"));
             return !present;
         });
 
         verifyThat("#paneMinutes", (StackPane minutes) -> {
             List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
-            boolean present = minutesLabels.stream().filter(text -> ((Text) text).getText().equals("12")).findAny().isPresent();
+            boolean present = minutesLabels.stream().anyMatch(text -> ((Text) text).getText().equals("12"));
             return !present;
         });
     }
