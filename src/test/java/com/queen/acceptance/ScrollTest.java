@@ -45,74 +45,74 @@ public class ScrollTest extends CounterAppIT {
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(1, "14", 4, "11", 0, "18", 3, "14")
+                            .withExpectedValues(1, "14", 4, "11", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(2, "14", 1, "15", 0, "18", 3, "14")
+                            .withExpectedValues(2, "14", 1, "15", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(3, "14", 2, "15", 0, "18", 3, "14")
+                            .withExpectedValues(3, "14", 2, "15", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(4, "14", 3, "15", 0, "18", 3, "14")
+                            .withExpectedValues(4, "14", 3, "15", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 4).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(1, "18", 4, "15", 0, "18", 3, "14")
+                            .withExpectedValues(1, "18", 4, "15", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 5).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(2, "18", 1, "19", 0, "18", 3, "14")
+                            .withExpectedValues(2, "18", 1, "19", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 6).close())
                 },
                 // Seconds DOWN
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(3, "10", 2, "11", 0, "18", 3, "14")
+                            .withExpectedValues(3, "10", 2, "11", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(2, "10", 1, "11", 0, "18", 3, "14")
+                            .withExpectedValues(2, "10", 1, "11", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(1, "10", 0, "11", 0, "18", 3, "14")
+                            .withExpectedValues(1, "10", 0, "11", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 3).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(0, "10", 3, "07", 0, "18", 3, "14")
+                            .withExpectedValues(0, "10", 3, "07", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 4).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(3, "06", 2, "07", 0, "18", 3, "14")
+                            .withExpectedValues(3, "06", 2, "07", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 5).close())
                 },
                 {
                     com.queen.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(2, "06", 1, "07", 0, "18", 3, "14")
+                            .withExpectedValues(2, "06", 1, "07", 0, "18", 3, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 6).close())
                 },
                 // Minutes UP
@@ -209,7 +209,7 @@ public class ScrollTest extends CounterAppIT {
                 {
                    com.queen.acceptance.fixtures.Sequence.create(config -> config
                            .withStartClock(DEFAULT_CLOCK_STATE)
-                           .withExpectedValues(0, "14", 3, "11", 0, "18", 4, "15")
+                           .withExpectedValues(0, "14", 3, "11", 0, "18", 3, "15")
                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
@@ -273,29 +273,29 @@ public class ScrollTest extends CounterAppIT {
         verifyThat("#paneSeconds", (StackPane s) -> {
             Optional<Node> exTopRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(topIdSeconds)).findAny();
             Optional<Node> exBottomRectangle = secondsRectangles.stream().filter(rt -> rt.getId().equals(bottomIdSeconds)).findAny();
-            if (exTopRectangle.isPresent()) {
-                String label =  secondsLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionSecondsMultiplier * height && label.equals(sequence.expectedValues.topLabelSeconds);
+            if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
+                String labelTop =  secondsLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                String labelBottom =  secondsLabels.stream().filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
+                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionSecondsMultiplier * height
+                        && labelTop.equals(sequence.expectedValues.topLabelSeconds)
+                        && exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionSecondsMultiplier * height
+                        && labelBottom.equals(sequence.expectedValues.bottomLabelSeconds);
             }
 
-            if (exBottomRectangle.isPresent()) {
-                String label =  secondsLabels.stream().filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionSecondsMultiplier * height && label.equals(sequence.expectedValues.bottomLabelSeconds);
-            }
             return false;
         });
 
         verifyThat("#paneMinutes", (StackPane s) -> {
             Optional<Node> exTopRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
             Optional<Node> exBottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
-            if (exTopRectangle.isPresent()) {
-                String label =  minutesLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier * height && label.equals(sequence.expectedValues.topLabelMinutes);
-            }
+            if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
+                String labelTop =  minutesLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                String labelBottom =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
 
-            if (exBottomRectangle.isPresent()) {
-                String label =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
-                return exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionMinutesMultiplier * height && label.equals(sequence.expectedValues.bottomLabelMinutes);
+                return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier * height
+                        && labelTop.equals(sequence.expectedValues.topLabelMinutes)
+                        && exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionMinutesMultiplier * height
+                        && labelBottom.equals(sequence.expectedValues.bottomLabelMinutes);
             }
 
             return false;
