@@ -50,9 +50,6 @@ public class Clocks {
                 if (this.scrollSecondsClock.getSecond() == MIN) {
                     this.playMinutes.push(null);
                 }
-//                if (this.scrollSecondsClock.minusSeconds(1).getSecond() == MIN) {
-//                    this.playMinutes.push(null);
-//                }
             }
         });
 
