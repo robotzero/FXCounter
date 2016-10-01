@@ -44,7 +44,7 @@ public class ResetTest extends CounterAppIT {
     public static Object[][] resets() {
         return new Object[][]{
                 // @formatter:off
-                // Seconds UP
+                // Seconds
                 {
                         // topPosSec, topLblSec, middlPosSec, middlLabelSec
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
@@ -57,7 +57,7 @@ public class ResetTest extends CounterAppIT {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 5)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 4)
                                 .addReset().close())
                 },
                 {
@@ -85,8 +85,215 @@ public class ResetTest extends CounterAppIT {
                         com.queen.acceptance.fixtures.Sequence.create(config -> config
                                 .withStartClock(LocalTime.of(12, 11, 10))
                                 .withExpectedValues(1, "11", 2, "10", 3, "09", 1, "12", 2, "11", 3, "10", 1, "13", 3, "14",  1, "11")
-                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 11)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 10)
                                 .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 3, 59))
+                                .withExpectedValues(1, "00", 2, "59", 3, "58", 1, "04", 2, "03", 3, "02", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 3, 59))
+                                .withExpectedValues(1, "00", 2, "59", 3, "58", 1, "04", 2, "03", 3, "02", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 3, 59))
+                                .withExpectedValues(1, "00", 2, "59", 3, "58", 1, "04", 2, "03", 3, "02", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "01", 2, "00", 3, "59", 1, "01", 2, "00", 3, "59", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 3)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addReset().close())
+                },
+                // Minutes
+                {
+                        // topPosSec, topLblSec, middlPosSec, middlLabelSec
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 8, 6))
+                                .withExpectedValues(1, "07", 2, "06", 3, "05", 1, "09", 2, "08", 3, "07", 1, "13", 3, "14",  1, "11")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 8, 6))
+                                .withExpectedValues(1, "07", 2, "06", 3, "05", 1, "09", 2, "08", 3, "07", 1, "13", 3, "14",  1, "11")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 5)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 8, 6))
+                                .withExpectedValues(1, "07", 2, "06", 3, "05", 1, "09", 2, "08", 3, "07", 1, "13", 3, "14",  1, "11")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 10)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 8, 6))
+                                .withExpectedValues(1, "07", 2, "06", 3, "05", 1, "09", 2, "08", 3, "07", 1, "13", 3, "14",  1, "11")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 8, 6))
+                                .withExpectedValues(1, "07", 2, "06", 3, "05", 1, "09", 2, "08", 3, "07", 1, "13", 3, "14",  1, "11")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 7)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(12, 8, 6))
+                                .withExpectedValues(1, "07", 2, "06", 3, "05", 1, "09", 2, "08", 3, "07", 1, "13", 3, "14",  1, "11")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 11)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 59, 58))
+                                .withExpectedValues(1, "59", 2, "58", 3, "57", 1, "00", 2, "59", 3, "58", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 59, 58))
+                                .withExpectedValues(1, "59", 2, "58", 3, "57", 1, "00", 2, "59", 3, "58", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 59, 58))
+                                .withExpectedValues(1, "59", 2, "58", 3, "57", 1, "00", 2, "59", 3, "58", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "01", 2, "00", 3, "59", 1, "01", 2, "00", 3, "59", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                                .addReset().close())
+                },
+                // Minutes and Seconds
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "01", 2, "00", 3, "59", 1, "01", 2, "00", 3, "59", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "01", 2, "00", 3, "59", 1, "01", 2, "00", 3, "59", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "01", 2, "00", 3, "59", 1, "01", 2, "00", 3, "59", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addReset().close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 58, 1))
+                                .withExpectedValues(1, "02", 2, "01", 3, "00", 1, "59", 2, "58", 3, "57", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addReset().close())
+                },
+                // Scroll after reset
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "02", 2, "01", 3, "00", 1, "02", 2, "01", 3, "00", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addReset()
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "02", 2, "01", 3, "00", 1, "02", 2, "01", 3, "00", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                .addReset()
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 0, 0))
+                                .withExpectedValues(1, "01", 2, "00", 3, "59", 1, "59", 2, "58", 3, "57", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2)
+                                .addReset()
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2)
+                                .close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(9, 58, 1))
+                                .withExpectedValues(1, "04", 2, "03", 3, "02", 1, "55", 2, "54", 3, "53", 1, "10", 2, "09",  1, "08")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
+                                .addReset()
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .close())
                 },
                 //@formatter:on
         };
