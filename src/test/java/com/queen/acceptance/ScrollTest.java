@@ -1,5 +1,6 @@
 package com.queen.acceptance;
 
+import com.google.code.tempusfugit.temporal.WaitFor;
 import com.queen.acceptance.fixtures.Sequence;
 import com.queen.counter.domain.ColumnType;
 import com.queen.counter.repository.SavedTimerRepository;
@@ -20,7 +21,10 @@ import org.junit.runner.RunWith;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
+import static com.google.code.tempusfugit.temporal.Duration.millis;
+import static com.google.code.tempusfugit.temporal.Timeout.timeout;
 import static org.testfx.api.FxAssert.assertContext;
 import static org.testfx.api.FxAssert.verifyThat;
 
@@ -234,6 +238,22 @@ public class ScrollTest extends CounterAppIT {
                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
                 },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(0, 0, 0))
+                                .withExpectedValues(2, "02", 1, "03", 3, "58", 2, "59")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
+                },
+                {
+                        com.queen.acceptance.fixtures.Sequence.create(config -> config
+                                .withStartClock(LocalTime.of(0, 59, 56))
+                                .withExpectedValues(1, "58", 0, "59", 3, "57", 2, "58")
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
+                },
                 //@formatter:on
         };
     }
@@ -276,6 +296,7 @@ public class ScrollTest extends CounterAppIT {
             if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
                 String labelTop =  secondsLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
                 String labelBottom =  secondsLabels.stream().filter(tr -> tr.getId().equals(bottomIdSeconds)).map(tt -> ((Text) tt).getText()).findAny().get();
+
                 return exTopRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.topPositionSecondsMultiplier * height
                         && labelTop.equals(sequence.expectedValues.topLabelSeconds)
                         && exBottomRectangle.get().getParent().getParent().getTranslateY() == sequence.expectedValues.bottomPositionSecondsMultiplier * height
@@ -302,6 +323,58 @@ public class ScrollTest extends CounterAppIT {
         });
     }
 
+    @Test
+    public void unable_to_scroll_after_pressing_start()
+    {
+        // Should we check the database for new clock data.
+        resetOption.setValue(true);
+        // Prepare clock state;
+        repository.create("start", DEFAULT_CLOCK_STATE);
+
+        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
+        Button start = assertContext().getNodeFinder().lookup("#start").queryFirst();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+
+        // Grab the bottom list of rectangles and labels
+        List<Node> minutesRectangles = nodeFinder.getRectangles(minutes).get();
+        List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
+
+        // Current height
+        int height = (int) ((Rectangle) minutesRectangles.get(0)).getHeight();
+
+        String topIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == TOP_NODE_LOCATION).findAny().get().getId();
+        String bottomIdMinutes = minutesRectangles.stream().filter(r -> r.getParent().getParent().getTranslateY() == height * 3).findAny().get().getId();
+
+        clickOn(reset);
+        clickOn(start);
+
+        moveTo("#paneMinutes");
+
+        IntStream.range(0, 3).forEach(i -> {
+            scroll(VerticalDirection.DOWN);
+            try {
+                WaitFor.waitUntil(timeout(millis(CounterAppIT.TIME_WAIT)));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        verifyThat("#paneMinutes", (StackPane s) -> {
+            Optional<Node> exTopRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
+            Optional<Node> exBottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
+            if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
+                String labelTop =  minutesLabels.stream().filter(tr -> tr.getId().equals(exTopRectangle.get().getId())).map(tt -> ((Text) tt).getText()).findAny().get();
+                String labelBottom =  minutesLabels.stream().filter(tr -> tr.getId().equals(bottomIdMinutes)).map(tt -> ((Text) tt).getText()).findAny().get();
+
+                return exTopRectangle.get().getParent().getParent().getTranslateY() == 0
+                        && labelTop.equals("18")
+                        && exBottomRectangle.get().getParent().getParent().getTranslateY() == 3 * height
+                        && labelBottom.equals("15");
+            }
+
+            return false;
+        });
+    }
+
     // @TODO test ticking, including minutes are up when seconds are at 0
-    // @TODO test that you can't move columns when time is ticking.
 }
