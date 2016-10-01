@@ -23,7 +23,7 @@ import static org.testfx.api.FxAssert.verifyThat;
 @RunWith(DataProviderRunner.class)
 public class StartStopTest extends CounterAppIT {
 
-    private Button startButton, stopButton, resetButton;
+    private Button startButton, resetButton;
     private BooleanProperty resetOption;
     private SavedTimerRepository repository;
 
@@ -31,7 +31,6 @@ public class StartStopTest extends CounterAppIT {
     public void setUp() {
 
         startButton = assertContext().getNodeFinder().lookup("#start").queryFirst();
-        stopButton = assertContext().getNodeFinder().lookup("#stop").queryFirst();
         resetButton = assertContext().getNodeFinder().lookup("#reset").queryFirst();
 
         resetOption = this.getBean(BooleanProperty.class);
@@ -54,13 +53,13 @@ public class StartStopTest extends CounterAppIT {
 
         verifyThat("#paneSeconds", (StackPane seconds) -> {
             List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
-            boolean present = secondsLabels.stream().filter(text -> ((Text) text).getText().equals("04")).findAny().isPresent();
+            boolean present = secondsLabels.stream().anyMatch(text -> ((Text) text).getText().equals("04"));
             return !present;
         });
 
         verifyThat("#paneMinutes", (StackPane minutes) -> {
             List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
-            boolean present = minutesLabels.stream().filter(text -> ((Text) text).getText().equals("12")).findAny().isPresent();
+            boolean present = minutesLabels.stream().anyMatch(text -> ((Text) text).getText().equals("12"));
             return !present;
         });
     }
