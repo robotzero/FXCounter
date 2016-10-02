@@ -144,13 +144,16 @@ public class ClockPresenter implements Initializable {
                 EventStreams.eventsOf(paneHours, ScrollEvent.SCROLL).suppressWhen(hoursColumn.isRunning())
         );
 
-//        stopCountdown.subscribe(v -> {
-//            System.out.println("BEEP");
-//        });
+        stopCountdown.subscribe(v -> {
+            System.out.println("BEEP");
+        });
 
         // If start button is clicked mute scroll event until stop button is clicked.
         StateMachine.init(scrollMuteProperty)
                 .on(startClicks).transition((wasMuted, event) -> {
+                    if (clocks.getMainClock().compareTo(LocalTime.of(0, 0, 0)) == 0) {
+                        return scrollMuteProperty;
+                    }
                     scrollMuteProperty.set(true);
                     return scrollMuteProperty;
                 })
