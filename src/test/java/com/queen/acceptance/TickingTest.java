@@ -134,7 +134,7 @@ public class TickingTest extends CounterAppIT {
         // Should we check the database for new clock data.
         resetOption.setValue(true);
         // Prepare clock state;
-        repository.create("start", LocalTime.of(2, 0, 4));
+        repository.create("start", LocalTime.of(0, 0, 4));
 
         Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
         Button start = assertContext().getNodeFinder().lookup("#start").queryFirst();
