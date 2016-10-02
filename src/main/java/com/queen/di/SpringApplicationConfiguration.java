@@ -37,6 +37,7 @@ public class SpringApplicationConfiguration {
 
     private EventSource<Void> playMinutes = new EventSource<>();
     private EventSource<Void> playHours = new EventSource<>();
+    private EventSource<Void> stopCountdown = new EventSource<>();
 
     private EventSource<Integer> deltaEvent = new EventSource<>();
     private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
@@ -79,6 +80,11 @@ public class SpringApplicationConfiguration {
     @Bean
     public EventSource<Void> PlayHours() {
         return playHours;
+    }
+
+    @Bean
+    public EventSource<Void> StopCountdown() {
+        return stopCountdown;
     }
 
     @Bean
@@ -153,6 +159,7 @@ public class SpringApplicationConfiguration {
             List<EventSource<Void>> plays = new ArrayList<>();
             plays.add(playMinutes);
             plays.add(playHours);
+            plays.add(stopCountdown);
 
             List<EventSource<Integer>> deltaStreams = new ArrayList<>();
             deltaStreams.add(deltaStreamSeconds);

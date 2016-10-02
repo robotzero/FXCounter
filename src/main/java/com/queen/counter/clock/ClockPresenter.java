@@ -78,6 +78,10 @@ public class ClockPresenter implements Initializable {
     private EventSource<Void> playHours;
 
     @Inject
+    @Qualifier("StopCountdown")
+    private EventSource<Void> stopCountdown;
+
+    @Inject
     @Qualifier("DeltaStreamSeconds")
     private EventSource<Integer> deltaStreamSeconds;
 
@@ -140,6 +144,9 @@ public class ClockPresenter implements Initializable {
                 EventStreams.eventsOf(paneHours, ScrollEvent.SCROLL).suppressWhen(hoursColumn.isRunning())
         );
 
+        stopCountdown.subscribe(v -> {
+            System.out.println("STOP!");
+        });
         // If start button is clicked mute scroll event until stop button is clicked.
         StateMachine.init(scrollMuteProperty)
                 .on(startClicks).transition((wasMuted, event) -> {

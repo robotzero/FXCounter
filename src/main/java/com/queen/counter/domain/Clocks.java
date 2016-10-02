@@ -15,6 +15,7 @@ public class Clocks {
 
     private final EventSource<Void> playMinutes;
     private final EventSource<Void> playHours;
+    private final EventSource<Void> stopCountdown;
 
     private LocalTime mainClock          = LocalTime.of(0, 0, 0);
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
@@ -41,12 +42,18 @@ public class Clocks {
 
         this.playMinutes = playSources.get(0);
         this.playHours = playSources.get(1);
+        this.stopCountdown = playSources.get(2);
 
         deltaStreams.get(0).subscribe(currentDelta -> {
             if (currentDelta != 0) {
                 this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta));
                 this.mainClock = mainClockF.apply(mainClock);
                 this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta)).getSecond());
+
+                // Count down has ended.
+                if (this.mainClock == LocalTime.of(0, 0, 0)) {
+                    this.stopCountdown.push(null);
+                }
                 if (this.scrollSecondsClock.getSecond() == MIN) {
                     this.playMinutes.push(null);
                 }
@@ -73,6 +80,7 @@ public class Clocks {
             }
         });
     }
+
     public void initializeClocks(final LocalTime mainClock) {
         this.mainClock = LocalTime.of(
                 mainClock.getHour(),
