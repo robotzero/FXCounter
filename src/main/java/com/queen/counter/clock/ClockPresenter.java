@@ -10,6 +10,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -116,6 +117,7 @@ public class ClockPresenter implements Initializable {
         minutesColumn = populator.create(paneMinutes);
         hoursColumn = populator.create(paneHours);
 
+        GridPane.setMargin(start, new Insets(20, 20, 20, 20));
 //        GridPane.setMargin(textSeconds, new Insets(320, 0, 320, 0));
 //        GridPane.setMargin(textMinutes, new Insets(320, 0, 320, 0));
 //        GridPane.setMargin(textHours, new Insets(320, 0, 320, 0));

@@ -12,7 +12,7 @@
 
 <?import org.controlsfx.control.HiddenSidesPane?>
 <?import javafx.scene.control.Label?>
-<GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="gridPane" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.queen.counter.clock.ClockPresenter">
+<GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="gridPane" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.queen.counter.clock.ClockPresenter">
   <!--<columnConstraints>-->
     <!--<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />-->
     <!--<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />-->
@@ -28,9 +28,9 @@
         <ColumnConstraints hgrow="SOMETIMES" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="100" vgrow="NEVER" />
+        <RowConstraints percentHeight="15" vgrow="NEVER" />
         <RowConstraints vgrow="SOMETIMES" />
-        <RowConstraints vgrow="NEVER" />
+        <RowConstraints percentHeight="15" vgrow="NEVER" />
     </rowConstraints>
    <children>
       <StackPane id="paneSeconds" fx:id="paneSeconds" alignment="TOP_CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -177,7 +177,7 @@
                <Rectangle id="strokeInsideDarkHours" arcHeight="20" arcWidth="20" height="60" width="60" styleClass="insideGradient" />
            </children>
        </StackPane>
-      <Button id="start" fx:id="start" mnemonicParsing="false" styleClass="green" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+      <Button id="start" fx:id="start" mnemonicParsing="false" maxHeight="Infinity" maxWidth="Infinity" text="Start" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button id="stop" fx:id="stop" mnemonicParsing="false" text="Stop" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Button id="reset" fx:id="reset" mnemonicParsing="false" text="Reset" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
       <Text fill="white" id="textMinutes" fx:id="textMinutes" layoutX="10.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Minutes" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER">
