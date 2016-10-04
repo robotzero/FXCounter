@@ -118,9 +118,6 @@ public class ClockPresenter implements Initializable {
         hoursColumn = populator.create(paneHours);
 
         GridPane.setMargin(start, new Insets(20, 20, 20, 20));
-//        GridPane.setMargin(textSeconds, new Insets(320, 0, 320, 0));
-//        GridPane.setMargin(textMinutes, new Insets(320, 0, 320, 0));
-//        GridPane.setMargin(textHours, new Insets(320, 0, 320, 0));
 
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
@@ -137,7 +134,7 @@ public class ClockPresenter implements Initializable {
             hoursColumn.play();
         }));
 
-        start.disableProperty().bind(scrollMuteProperty);
+//        start.disableProperty().bind(scrollMuteProperty);
         stop.disableProperty().bind(scrollMuteProperty.not());
         reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
@@ -153,16 +150,22 @@ public class ClockPresenter implements Initializable {
         // If start button is clicked mute scroll event until stop button is clicked.
         StateMachine.init(scrollMuteProperty)
                 .on(startClicks).transition((wasMuted, event) -> {
+                    if (wasMuted.get()) {
+                        scrollMuteProperty.set(false);
+                        return scrollMuteProperty;
+                    }
+
                     if (clocks.getMainClock().compareTo(LocalTime.of(0, 0, 0)) == 0) {
                         return scrollMuteProperty;
                     }
                     scrollMuteProperty.set(true);
+                    savedTimerRepository.create("latest", clocks.getMainClock());
                     return scrollMuteProperty;
                 })
-                .on(stopClicks).transition((wasMuted, event) -> {
-                    scrollMuteProperty.set(false);
-                    return scrollMuteProperty;
-                })
+//                .on(stopClicks).transition((wasMuted, event) -> {
+//                    scrollMuteProperty.set(false);
+//                    return scrollMuteProperty;
+//                })
                 .on(stopCountdown).transition((wasMuted, event) -> {
                     scrollMuteProperty.set(false);
                     return scrollMuteProperty;
@@ -185,7 +188,11 @@ public class ClockPresenter implements Initializable {
             secondsColumn.play();
         });
 
-        startClicks.subscribe(click -> savedTimerRepository.create("latest", clocks.getMainClock()));
+//        startClicks.subscribe(click -> {
+//            if (!scrollMuteProperty.get()) {
+//                savedTimerRepository.create("latest", clocks.getMainClock());
+//            }
+//        });
 
 //        stopClicks.subscribe(click -> {
 ////            this.subscribe.unsubscribe();

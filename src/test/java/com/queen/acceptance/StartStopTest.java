@@ -170,4 +170,9 @@ public class StartStopTest extends CounterAppIT {
             return false;
         });
     }
+
+    @Test
+    public void start_button_changes_to_pause_after_clicking_start() {
+
+    }
 }
