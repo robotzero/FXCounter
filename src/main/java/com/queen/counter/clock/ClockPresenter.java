@@ -11,7 +11,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -35,7 +34,7 @@ public class ClockPresenter implements Initializable {
     GridPane gridPane;
 
     @FXML
-    Button start, stop, reset;
+    Button start, reset;
 
     @FXML
     StackPane paneSeconds;
@@ -119,11 +118,8 @@ public class ClockPresenter implements Initializable {
         minutesColumn = populator.create(paneMinutes);
         hoursColumn = populator.create(paneHours);
 
-        GridPane.setMargin(start, new Insets(20, 20, 20, 20));
-
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
-        EventStream<MouseEvent> stopClicks = EventStreams.eventsOf(stop, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> optionClicks = EventStreams.eventsOf(optionsLabel, MouseEvent.MOUSE_CLICKED);
 
@@ -136,8 +132,6 @@ public class ClockPresenter implements Initializable {
             hoursColumn.play();
         }));
 
-//        start.disableProperty().bind(scrollMuteProperty);
-        stop.disableProperty().bind(scrollMuteProperty.not());
         reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
                 EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
@@ -165,10 +159,6 @@ public class ClockPresenter implements Initializable {
                     savedTimerRepository.create("latest", clocks.getMainClock());
                     return scrollMuteProperty;
                 })
-//                .on(stopClicks).transition((wasMuted, event) -> {
-//                    scrollMuteProperty.set(false);
-//                    return scrollMuteProperty;
-//                })
                 .on(stopCountdown).transition((wasMuted, event) -> {
                     scrollMuteProperty.set(false);
                     return scrollMuteProperty;
@@ -196,12 +186,6 @@ public class ClockPresenter implements Initializable {
                 savedTimerRepository.create("latest", clocks.getMainClock());
             }
         });
-
-//        stopClicks.subscribe(click -> {
-////            this.subscribe.unsubscribe();
-//            playM.unsubscribe();
-//            playH.unsubscribe();
-//        });
 
         optionClicks.subscribe(click -> stageController.setView());
 
