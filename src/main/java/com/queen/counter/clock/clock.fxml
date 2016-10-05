@@ -14,7 +14,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Insets?>
-<GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="-Infinity"
+<GridPane id="gridPane" fx:id="gridPane" alignment="TOP_CENTER" gridLinesVisible="false" maxHeight="-Infinity"
           maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
           styleClass="gridPane" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="com.queen.counter.clock.ClockPresenter">
