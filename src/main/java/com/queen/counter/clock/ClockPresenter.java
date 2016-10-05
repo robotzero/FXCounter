@@ -6,6 +6,7 @@ import com.queen.counter.domain.SavedTimer;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.service.Populator;
 import com.queen.counter.service.StageController;
+import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -113,6 +114,7 @@ public class ClockPresenter implements Initializable {
             return savedTimer;
         }).getSavedTimer());
 
+        start.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         secondsColumn = populator.create(paneSeconds);
         minutesColumn = populator.create(paneMinutes);
         hoursColumn = populator.create(paneHours);
@@ -158,6 +160,7 @@ public class ClockPresenter implements Initializable {
                     if (clocks.getMainClock().compareTo(LocalTime.of(0, 0, 0)) == 0) {
                         return scrollMuteProperty;
                     }
+
                     scrollMuteProperty.set(true);
                     savedTimerRepository.create("latest", clocks.getMainClock());
                     return scrollMuteProperty;
@@ -188,11 +191,11 @@ public class ClockPresenter implements Initializable {
             secondsColumn.play();
         });
 
-//        startClicks.subscribe(click -> {
-//            if (!scrollMuteProperty.get()) {
-//                savedTimerRepository.create("latest", clocks.getMainClock());
-//            }
-//        });
+        startClicks.subscribe(click -> {
+            if (scrollMuteProperty.get()) {
+                savedTimerRepository.create("latest", clocks.getMainClock());
+            }
+        });
 
 //        stopClicks.subscribe(click -> {
 ////            this.subscribe.unsubscribe();

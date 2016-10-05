@@ -172,7 +172,23 @@ public class StartStopTest extends CounterAppIT {
     }
 
     @Test
-    public void start_button_changes_to_pause_after_clicking_start() {
+    public void start_button_changes_to_pause_after_clicking_start_and_back_to_start() {
 
+        // Should we check the database for new clock data.
+        resetOption.setValue(true);
+        // Prepare clock state;
+        repository.create("start", LocalTime.of(2, 2, 0));
+
+        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
+        Button start = assertContext().getNodeFinder().lookup("#start").queryFirst();
+
+        clickOn(reset);
+        clickOn(start);
+
+        verifyThat("#start", (Button b) -> b.textProperty().get().equals("Pause"));
+
+        clickOn(start);
+
+        verifyThat("#start", (Button b) -> b.textProperty().get().equals("Start"));
     }
 }
