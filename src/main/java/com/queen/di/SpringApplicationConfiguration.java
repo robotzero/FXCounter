@@ -40,9 +40,9 @@ public class SpringApplicationConfiguration {
     private EventSource<Void> stopCountdown = new EventSource<>();
 
     private EventSource<Integer> deltaEvent = new EventSource<>();
-    private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
-    private EventSource<Integer> deltaStreamMinutes = new EventSource<>();
-    private EventSource<Integer> deltaStreamHours = new EventSource<>();
+//    private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
+//    private EventSource<Integer> deltaStreamMinutes = new EventSource<>();
+//    private EventSource<Integer> deltaStreamHours = new EventSource<>();
 
     @Bean
     public FXMLView clockView() {
@@ -89,25 +89,25 @@ public class SpringApplicationConfiguration {
 
     @Bean
     public EventSource<Integer> DeltaStreamSeconds() {
-        return deltaStreamSeconds;
+        return new EventSource<>();
     }
 
     @Bean
     public EventSource<Integer> DeltaStreamMinutes() {
-        return deltaStreamMinutes;
+        return new EventSource<>();
     }
 
     @Bean
     public EventSource<Integer> DeltaStreamHours() {
-        return deltaStreamHours;
+        return new EventSource<>();
     }
 
     @Bean
     public Populator populator() {
         List<EventSource<Integer>> deltaStreams = new ArrayList<>();
-        deltaStreams.add(deltaStreamSeconds);
-        deltaStreams.add(deltaStreamMinutes);
-        deltaStreams.add(deltaStreamHours);
+        deltaStreams.add(DeltaStreamSeconds());
+        deltaStreams.add(DeltaStreamMinutes());
+        deltaStreams.add(DeltaStreamHours());
         Populator populator = new Populator(configureClocks(), deltaStreams, seconds, minutes, hours);
 
         return populator;
@@ -162,9 +162,9 @@ public class SpringApplicationConfiguration {
             plays.add(stopCountdown);
 
             List<EventSource<Integer>> deltaStreams = new ArrayList<>();
-            deltaStreams.add(deltaStreamSeconds);
-            deltaStreams.add(deltaStreamMinutes);
-            deltaStreams.add(deltaStreamHours);
+            deltaStreams.add(DeltaStreamSeconds());
+            deltaStreams.add(DeltaStreamMinutes());
+            deltaStreams.add(DeltaStreamHours());
             clocks = new Clocks(plays, deltaStreams, seconds, minutes, hours);
         }
 
