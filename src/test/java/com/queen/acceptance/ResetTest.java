@@ -308,9 +308,9 @@ public class ResetTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", sequence.clockStartState);
 
-        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+        Button reset = assertContext().getNodeFinder().lookup("#reset").query();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
 //        StackPane hours = assertContext().getNodeFinder().lookup("#paneHours").queryFirst();
 
         // Grab the bottom list of rectangles and labels

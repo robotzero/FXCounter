@@ -32,8 +32,8 @@ public class StartStopTest extends CounterAppIT {
     @Before
     public void setUp() {
 
-        startButton = assertContext().getNodeFinder().lookup("#start").queryFirst();
-        resetButton = assertContext().getNodeFinder().lookup("#reset").queryFirst();
+        startButton = assertContext().getNodeFinder().lookup("#start").query();
+        resetButton = assertContext().getNodeFinder().lookup("#reset").query();
 
         resetOption = this.getBean(BooleanProperty.class);
         repository = this.getBean(SavedTimerRepository.class);
@@ -109,10 +109,10 @@ public class StartStopTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", LocalTime.of(0, 0, 0));
 
-        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
-        Button start = assertContext().getNodeFinder().lookup("#start").queryFirst();
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+        Button reset = assertContext().getNodeFinder().lookup("#reset").query();
+        Button start = assertContext().getNodeFinder().lookup("#start").query();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
 
         // Grab the bottom list of rectangles and labels
         List<Node> secondsRectangles = nodeFinder.getRectangles(seconds).get();
@@ -179,8 +179,8 @@ public class StartStopTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", LocalTime.of(2, 2, 0));
 
-        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
-        Button start = assertContext().getNodeFinder().lookup("#start").queryFirst();
+        Button reset = assertContext().getNodeFinder().lookup("#reset").query();
+        Button start = assertContext().getNodeFinder().lookup("#start").query();
 
         clickOn(reset);
         clickOn(start);

@@ -267,9 +267,9 @@ public class ScrollTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", sequence.clockStartState);
 
-        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+        Button reset = assertContext().getNodeFinder().lookup("#reset").query();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
 
         // Grab the bottom list of rectangles and labels
         List<Node> secondsRectangles = nodeFinder.getRectangles(seconds).get();
@@ -331,9 +331,9 @@ public class ScrollTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", DEFAULT_CLOCK_STATE);
 
-        Button reset = assertContext().getNodeFinder().lookup("#reset").queryFirst();
-        Button start = assertContext().getNodeFinder().lookup("#start").queryFirst();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+        Button reset = assertContext().getNodeFinder().lookup("#reset").query();
+        Button start = assertContext().getNodeFinder().lookup("#start").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
 
         // Grab the bottom list of rectangles and labels
         List<Node> minutesRectangles = nodeFinder.getRectangles(minutes).get();

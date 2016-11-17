@@ -116,7 +116,7 @@ public class Sequence {
 
         @Override
         public void execute(FxRobot fxrobot) {
-            fxrobot.clickOn((Button)assertContext().getNodeFinder().lookup("#reset").queryFirst());
+            fxrobot.clickOn((Button)assertContext().getNodeFinder().lookup("#reset").query());
         }
     }
 

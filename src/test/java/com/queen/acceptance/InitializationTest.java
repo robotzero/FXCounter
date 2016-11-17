@@ -44,8 +44,8 @@ public class InitializationTest extends CounterAppIT {
         // Prepare clock state;
         repository.create("start", initialClock);
 
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
 
         List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
         List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
@@ -68,8 +68,8 @@ public class InitializationTest extends CounterAppIT {
 
     @Test
     public void it_initializes_clock_to_zero_values_when_history_is_empty() {
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").queryFirst();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").queryFirst();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
 
         List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
         List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
