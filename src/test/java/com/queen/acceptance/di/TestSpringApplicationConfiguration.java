@@ -2,11 +2,13 @@ package com.queen.acceptance.di;
 
 import com.queen.di.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
 
-public class TestSpringApplicationConfiguration extends SpringApplicationConfiguration {
+@Import(SpringApplicationConfiguration.class)
+public class TestSpringApplicationConfiguration {
 
     @Bean
     public DataSource jdbcDataSource() {

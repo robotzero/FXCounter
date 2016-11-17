@@ -4,17 +4,14 @@ import com.airhacks.afterburner.injection.Injector;
 import com.queen.acceptance.di.TestSpringApplicationConfiguration;
 import com.queen.acceptance.helpers.NodeFinder;
 import com.queen.counter.clock.ClockView;
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.time.LocalTime;
 
-@RunWith(DataProviderRunner.class)
 public class CounterAppIT extends ApplicationTest {
 
     private final ApplicationContext injector = new AnnotationConfigApplicationContext(TestSpringApplicationConfiguration.class);

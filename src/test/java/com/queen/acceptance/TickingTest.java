@@ -35,9 +35,9 @@ public class TickingTest extends CounterAppIT {
                 // time, time wait, multi sec top, label top, multi sec bottom, label bottom... minutes.
         return new Object[][] {
                 { LocalTime.of(12, 10, 1), 1300, 0, "02", 2, "00", 1, "11", 3, "09" },
-//                { LocalTime.of(12, 10, 0), 900, 0, "01", 2, "59", 0, "11", 2, "09" },
-//                { LocalTime.of(12, 10, 59), 900, 0, "00", 2, "58", 1, "11", 3, "09" },
-//                { LocalTime.of(12, 10, 3), 3600, 1, "00", 3, "58", 0, "11", 2, "09" },
+                { LocalTime.of(12, 10, 0), 900, 0, "01", 2, "59", 0, "11", 2, "09" },
+                { LocalTime.of(12, 10, 59), 900, 0, "00", 2, "58", 1, "11", 3, "09" },
+                { LocalTime.of(12, 10, 3), 3600, 1, "00", 3, "58", 0, "11", 2, "09" },
         };
     }
 

@@ -40,9 +40,6 @@ public class SpringApplicationConfiguration {
     private EventSource<Void> stopCountdown = new EventSource<>();
 
     private EventSource<Integer> deltaEvent = new EventSource<>();
-//    private EventSource<Integer> deltaStreamSeconds = new EventSource<>();
-//    private EventSource<Integer> deltaStreamMinutes = new EventSource<>();
-//    private EventSource<Integer> deltaStreamHours = new EventSource<>();
 
     @Bean
     public FXMLView clockView() {
