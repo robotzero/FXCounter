@@ -2,12 +2,10 @@ package com.queen.di;
 
 import com.airhacks.afterburner.views.FXMLView;
 import com.queen.configuration.SceneConfiguration;
-import com.queen.counter.cache.InMemoryCachedServiceLocator;
 import com.queen.counter.clock.ClockPresenter;
 import com.queen.counter.clock.ClockView;
 import com.queen.counter.clock.options.OptionsPresenter;
 import com.queen.counter.domain.Clocks;
-import com.queen.counter.domain.UIService;
 import com.queen.counter.clock.options.OptionsView;
 import com.queen.counter.repository.SavedTimerRepository;
 import com.queen.counter.repository.SavedTimerSqlliteJdbcRepository;
@@ -27,19 +25,6 @@ import java.util.List;
 
 @Configuration
 public class SpringApplicationConfiguration {
-
-    private InMemoryCachedServiceLocator cache = new InMemoryCachedServiceLocator();
-
-    private UIService uiService = new UIService();
-    private EventSource seconds = new EventSource();
-    private EventSource minutes = new EventSource();
-    private EventSource hours = new EventSource();
-
-    private EventSource<Void> playMinutes = new EventSource<>();
-    private EventSource<Void> playHours = new EventSource<>();
-    private EventSource<Void> stopCountdown = new EventSource<>();
-
-    private EventSource<Integer> deltaEvent = new EventSource<>();
 
     @Bean
     public FXMLView clockView() {
@@ -70,18 +55,33 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
+    public EventSource seconds() {
+        return new EventSource();
+    }
+
+    @Bean
+    public EventSource minutes() {
+        return new EventSource();
+    }
+
+    @Bean
+    public EventSource hours() {
+        return new EventSource();
+    }
+
+    @Bean
     public EventSource<Void> PlayMinutes() {
-        return playMinutes;
+        return new EventSource<>();
     }
 
     @Bean
     public EventSource<Void> PlayHours() {
-        return playHours;
+        return new EventSource<>();
     }
 
     @Bean
     public EventSource<Void> StopCountdown() {
-        return stopCountdown;
+        return new EventSource<>();
     }
 
     @Bean
@@ -105,24 +105,14 @@ public class SpringApplicationConfiguration {
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
-        Populator populator = new Populator(configureClocks(), deltaStreams, seconds, minutes, hours);
+        Populator populator = new Populator(configureClocks(), deltaStreams, seconds(), minutes(), hours());
 
         return populator;
     }
 
     @Bean
-    public InMemoryCachedServiceLocator serviceLocator() {
-        return cache;
-    }
-
-    @Bean
     public Clocks clocks() {
         return configureClocks();
-    }
-
-    @Bean
-    public UIService uiService() {
-        return uiService;
     }
 
     @Bean
@@ -154,15 +144,15 @@ public class SpringApplicationConfiguration {
     public Clocks configureClocks() {
         if (clocks == null) {
             List<EventSource<Void>> plays = new ArrayList<>();
-            plays.add(playMinutes);
-            plays.add(playHours);
-            plays.add(stopCountdown);
+            plays.add(PlayMinutes());
+            plays.add(PlayHours());
+            plays.add(StopCountdown());
 
             List<EventSource<Integer>> deltaStreams = new ArrayList<>();
             deltaStreams.add(DeltaStreamSeconds());
             deltaStreams.add(DeltaStreamMinutes());
             deltaStreams.add(DeltaStreamHours());
-            clocks = new Clocks(plays, deltaStreams, seconds, minutes, hours);
+            clocks = new Clocks(plays, deltaStreams, seconds(), minutes(), hours());
         }
 
         return clocks;
