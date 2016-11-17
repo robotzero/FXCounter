@@ -5,12 +5,9 @@ import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
 
@@ -46,14 +43,8 @@ public class Populator {
                 rect.translateYProperty().bind(cellSize);
             }
 
-            if (rect.getId() != null && (rect.getId().contains("topDark") || rect.getId().contains("topWhiteSeconds"))) {
-                rect.setFill(Color.TRANSPARENT);
-            }
-
             if (rect.getId() != null && (rect.getId().contains("strokeInsideDark"))) {
-                rect.setStrokeType(StrokeType.INSIDE);
                 rect.strokeWidthProperty().bind(rect.widthProperty().multiply(0.02));
-                rect.setFill(Color.TRANSPARENT);
                 rect.heightProperty().bind(cellSize.multiply(3));
                 rect.translateYProperty().bind(cellSize.add(1));
             }
@@ -62,11 +53,8 @@ public class Populator {
         });
 
         List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
-            stack.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(0), new Insets(0, 0, 0, 0))));
             Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
-                ((VBox) vbox).setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(0), new Insets(0, 0, 0, 0))));
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
-
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
                 String id = "";
                 EventSource<Integer> deltaStream = new EventSource<>();
@@ -90,7 +78,6 @@ public class Populator {
                 cellSize.bind(rectangle.heightProperty());
                 text.translateYProperty().bind(rectangle.heightProperty().subtract(fontSize).multiply(0.23));
                 fontSize.bind(rectangle.widthProperty().add(rectangle.heightProperty()).divide(4.5));
-                rectangle.setFill(Color.TRANSPARENT);
                 if (stack.getId().equals("paneSeconds")) {
                     text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
                             ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"));
