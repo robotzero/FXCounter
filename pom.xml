@@ -76,8 +76,8 @@
         </dependency>
         <dependency>
             <groupId>com.airhacks</groupId>
-            <artifactId>afterburner-topgun.fx</artifactId>
-            <version>1.6.2</version>
+            <artifactId>afterburner.fx</artifactId>
+            <version>1.7.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -197,9 +197,9 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
+                <!--<includes>-->
+                    <!--<include>**/*.xml</include>-->
+                <!--</includes>-->
             </resource>
         </resources>
     </build>

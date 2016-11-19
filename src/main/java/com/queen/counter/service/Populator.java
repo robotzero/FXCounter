@@ -10,7 +10,6 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

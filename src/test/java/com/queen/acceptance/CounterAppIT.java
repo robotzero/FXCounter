@@ -26,24 +26,9 @@ public class CounterAppIT extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
+
+        Injector.setInstanceSupplier(injector::getBean);
         Injector.setConfigurationSource(null);
-        Injector.setInstanceSupplier(new Injector.InstanceProvider() {
-            @Override
-            public boolean isInjectionAware() {
-                return true;
-            }
-
-            @Override
-            public boolean isScopeAware() {
-                return true;
-            }
-
-            @Override
-            public Object instantiate(Class<?> c) {
-                return injector.getBean(c);
-            }
-        });
-
         ClockView clockView = new ClockView();
         Scene scene = new Scene(clockView.getView(), 800, 600);
 

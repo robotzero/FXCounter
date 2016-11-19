@@ -10,7 +10,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class Counter extends Application {
 
-    private ApplicationContext injector;
+    private ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
 
     public static void main(String[] args) {
         launch(args);
@@ -19,31 +19,13 @@ public class Counter extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
-
+        Injector.setInstanceSupplier(injector::getBean);
         Injector.setConfigurationSource(null);
 
-        Injector.setInstanceSupplier(new Injector.InstanceProvider() {
-            @Override
-            public boolean isInjectionAware() {
-                return true;
-            }
-
-            @Override
-            public boolean isScopeAware() {
-                return true;
-            }
-
-            @Override
-            public Object instantiate(Class<?> c) {
-                return injector.getBean(c);
-            }
-        });
-
-        StageController stageController = (StageController) injector.getBean("stageController");
+        StageController stageController = injector.getBean(StageController.class);
         stageController.setStage(primaryStage);
         stageController.setView();
-
+        stageController.afterPropertiesSet();
         primaryStage.setTitle("Count Me Bubbles!");
         primaryStage.setX(2000);
         primaryStage.setY(100);

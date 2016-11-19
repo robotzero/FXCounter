@@ -111,11 +111,6 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Clocks clocks() {
-        return configureClocks();
-    }
-
-    @Bean
     public DataSource jdbcDataSource() {
         SingleConnectionDataSource ds = new SingleConnectionDataSource();
         ds.setDriverClassName("org.sqlite.JDBC");

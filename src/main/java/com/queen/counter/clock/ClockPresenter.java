@@ -19,9 +19,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.reactfx.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
@@ -57,44 +56,44 @@ public class ClockPresenter implements Initializable {
     @FXML
     Label optionsLabel;
 
-    @Inject
+    @Autowired
     private Populator populator;
 
-    @Inject
+    @Autowired
     private Clocks clocks;
 
-    @Inject
+    @Autowired
     private SavedTimerRepository savedTimerRepository;
 
     // Temp options simulating options screen
-    @Inject
+    @Autowired
     private BooleanProperty fetchFromDatabase;
 
-    @Inject
+    @Autowired
     @Qualifier("PlayMinutes")
     private EventSource<Void> playMinutes;
 
-    @Inject
+    @Autowired
     @Qualifier("PlayHours")
     private EventSource<Void> playHours;
 
-    @Inject
+    @Autowired
     @Qualifier("StopCountdown")
     private EventSource<Void> stopCountdown;
 
-    @Inject
+    @Autowired
     @Qualifier("DeltaStreamSeconds")
     private EventSource<Integer> deltaStreamSeconds;
 
-    @Inject
+    @Autowired
     @Qualifier("DeltaStreamMinutes")
     private EventSource<Integer> deltaStreamMinutes;
 
-    @Inject
+    @Autowired
     @Qualifier("DeltaStreamHours")
     private EventSource<Integer> deltaStreamHours;
 
-    @Inject
+    @Autowired
     private StageController stageController;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);

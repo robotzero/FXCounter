@@ -5,8 +5,6 @@ import com.queen.configuration.SceneConfiguration;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import javax.annotation.PostConstruct;
-
 public class StageController {
 
     private Stage primaryStage;
@@ -22,19 +20,6 @@ public class StageController {
         this.sceneConfiguration = sceneConfiguration;
         this.mainView = views[0];
         this.optionsView = views[1];
-    }
-
-    @PostConstruct
-    public void init() {
-        mainView.getViewAsync(rootNode -> {
-            sceneConfiguration.getHeightObject().bind(rootNode.getScene().heightProperty());
-            sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
-        });
-
-        optionsView.getViewAsync(rootNode -> {
-            sceneConfiguration.getHeightObject().bind(rootNode.getScene().heightProperty());
-            sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
-        });
     }
 
     public void setView() {
@@ -59,5 +44,17 @@ public class StageController {
         this.primaryStage = stage;
         this.primaryStage.setHeight(sceneConfiguration.getInitHeight());
         this.primaryStage.setWidth(sceneConfiguration.getInitWidth());
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        mainView.getViewAsync(rootNode -> {
+            sceneConfiguration.getHeightObject().bind(rootNode.getScene().heightProperty());
+            sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
+        });
+
+        optionsView.getViewAsync(rootNode -> {
+            sceneConfiguration.getHeightObject().bind(rootNode.getScene().heightProperty());
+            sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
+        });
     }
 }
