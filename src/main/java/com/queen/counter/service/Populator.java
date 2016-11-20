@@ -57,33 +57,34 @@ public class Populator {
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
                 String id = "";
                 EventSource<Integer> deltaStream = new EventSource<>();
-                if (stack.getId().equals("paneSeconds")) {
-                    deltaStream = deltaStreamSeconds;
-                    id = vbox.getId() + "seconds";
-                }
-
-                if (stack.getId().equals("paneMinutes")) {
-                    deltaStream = deltaStreamMinutes;
-                    id = vbox.getId() + "minutes";
-                }
-
-                if (stack.getId().equals("paneHours")) {
-                    deltaStream = deltaStreamHours;
-                    id = vbox.getId() + "hours";
-                }
 
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
                 rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
                 cellSize.bind(rectangle.heightProperty());
                 text.translateYProperty().bind(rectangle.heightProperty().subtract(fontSize).multiply(0.23));
                 fontSize.bind(rectangle.widthProperty().add(rectangle.heightProperty()).divide(4.5));
+
                 if (stack.getId().equals("paneSeconds")) {
+                    deltaStream = deltaStreamSeconds;
+                    id = vbox.getId() + "seconds";
                     text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
                             ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"));
-                } else {
+                }
+
+                if (stack.getId().equals("paneMinutes")) {
+                    deltaStream = deltaStreamMinutes;
+                    id = vbox.getId() + "minutes";
                     text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
                             ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"));
                 }
+
+                if (stack.getId().equals("paneHours")) {
+                    deltaStream = deltaStreamHours;
+                    id = vbox.getId() + "hours";
+                    text.styleProperty().bind(Bindings.concat("-fx-font-size: ", fontSize.asString(), ";"
+                            ,"-fx-base: rgb(255,255,255);", "-fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"));
+                }
+
                 text.setId(id);
                 rectangle.setId(id);
                 TranslateTransition translateTransition = new TranslateTransition();
