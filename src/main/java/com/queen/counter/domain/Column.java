@@ -42,11 +42,7 @@ public class Column {
         resetClicked.noes()
                     .subscribe(cellList -> this.columnList.forEach(
                             cell -> {
-                                if (!hasTopEdge.get()) {
-                                    cell.resetMultiplayer(true);
-                                } else {
-                                    cell.resetMultiplayer(false);
-                                }
+                                cell.resetMultiplayer(!hasTopEdge.get());
                                 cell.setLabel(clocks.getMainClock(), columnType);
                             })
                     );
