@@ -1,23 +1,40 @@
 package com.queen.counter.domain;
 
-import javafx.geometry.Point2D;
+import javafx.beans.property.IntegerProperty;
 
 public class Location {
 
-    private final Point2D current;
-
-    public Location(Point2D current)
+    double calculateFromY(IntegerProperty currentCellSize, Integer delta, double translateY)
     {
-        this.current = current;
+        if (delta <= 0) {
+            if (translateY <= 0) {
+                return currentCellSize.multiply(4).get();
+            } else {
+                return translateY;
+            }
+        } else {
+            if (translateY == currentCellSize.multiply(4).get()) {
+                return 0;
+            } else {
+                return translateY;
+            }
+        }
     }
 
-    public Location move(Direction direction)
+    double calculateToY(IntegerProperty currentCellSize, Integer delta, double translateY)
     {
-        Point2D point = new Point2D(this.current.getX() + direction.getxOffset(), this.current.getY() + direction.getyOffset());
-        return new Location(point);
-    }
-
-    public Point2D getCurrent() {
-        return this.current;
+        if (delta <= 0) {
+            if (translateY <= 0) {
+                return currentCellSize.multiply(3).get();
+            } else {
+                return translateY - currentCellSize.get();
+            }
+        } else {
+            if (translateY == currentCellSize.multiply(4).get()) {
+                return currentCellSize.get();
+            } else {
+                return translateY + currentCellSize.get();
+            }
+        }
     }
 }

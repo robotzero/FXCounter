@@ -50,6 +50,7 @@ public class Cell {
         ));
         EventStream<Number> translateY = EventStreams.valuesOf(rectangle.translateYProperty());
         EventStream<Change<Number>> cellSize = EventStreams.changesOf(currentSize);
+
         currentDelta.bind(deltaStream.toBinding(0));
 
         EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
@@ -61,39 +62,13 @@ public class Cell {
         combo.map(change -> {
             Integer currDelta = change.get1();
             Double transY = change.get2();
-
-            if (currDelta == 0 || currDelta < 0) {
-                if (transY == 0 || transY < 0) {
-                    return currentSize.multiply(4).get();
-                } else {
-                    return transY;
-                }
-            } else {
-                if (transY == currentSize.multiply(4).get()) {
-                    return 0;
-                } else {
-                    return transY;
-                }
-            }
+            return location.calculateFromY(currentSize, currDelta, transY);
         }).feedTo(translateTransition.fromYProperty());
 
         combo.map(change -> {
             Integer currDelta = change.get1();
             Double transY = change.get2();
-
-            if (currDelta == 0 || currDelta < 0) {
-                if (transY == 0 || transY < 0) {
-                    return currentSize.multiply(3).get();
-                } else {
-                    return transY - currentSize.get();
-                }
-            } else {
-                if (transY == currentSize.multiply(4).get()) {
-                    return currentSize.get();
-                } else {
-                    return transY + currentSize.get();
-                }
-            }
+            return location.calculateToY(currentSize, currDelta, transY);
         }).feedTo(translateTransition.toYProperty());
     }
 

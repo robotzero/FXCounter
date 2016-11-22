@@ -90,7 +90,7 @@ public class Populator {
                 TranslateTransition translateTransition = new TranslateTransition();
                 translateTransition.setNode(vbox);
 
-                return new Cell((VBox) vbox, new Location(new Point2D(rectangle.getTranslateX(), rectangle.getTranslateY())), text, translateTransition, deltaStream, cellSize);
+                return new Cell((VBox) vbox, new Location(), text, translateTransition, deltaStream, cellSize);
             }).findFirst().get();
 
             return cell;
