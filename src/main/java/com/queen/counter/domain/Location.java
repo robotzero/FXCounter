@@ -4,7 +4,7 @@ import javafx.beans.property.IntegerProperty;
 
 public class Location {
 
-    double calculateFromY(IntegerProperty currentCellSize, Integer delta, double translateY)
+    public double calculateFromY(IntegerProperty currentCellSize, Integer delta, double translateY)
     {
         if (delta <= 0) {
             if (translateY <= 0) {
@@ -21,7 +21,7 @@ public class Location {
         }
     }
 
-    double calculateToY(IntegerProperty currentCellSize, Integer delta, double translateY)
+    public double calculateToY(IntegerProperty currentCellSize, Integer delta, double translateY)
     {
         if (delta <= 0) {
             if (translateY <= 0) {
