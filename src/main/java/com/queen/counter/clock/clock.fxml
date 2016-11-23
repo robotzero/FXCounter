@@ -35,25 +35,37 @@
         <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="2" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="3" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="4" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
-                <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"/>
+                <Rectangle fill="transparent" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                />
             </StackPane>
         </VBox>
         <Rectangle id="topWhiteSeconds" arcHeight="20" arcWidth="20" height="60" width="60" stroke="#494849"
@@ -67,25 +79,37 @@
         <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="2" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="3" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="4" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <Rectangle styleClass="rectDark" height="60" width="60" arcHeight="20" arcWidth="20"/>
@@ -100,25 +124,37 @@
         <VBox id="1" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="2" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="3" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <VBox id="4" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
             <StackPane alignment="TOP_CENTER" prefHeight="150.0" prefWidth="200.0">
                 <Rectangle fill="transparent"/>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"/>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
+                      style="-fx-base: rgb(255,255,255);
+                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                />
             </StackPane>
         </VBox>
         <Rectangle height="60" width="60" arcWidth="20" arcHeight="20" styleClass="rectDark"/>
