@@ -1,6 +1,7 @@
 package com.queen.counter.domain;
 
 import javafx.animation.Animation;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -32,11 +33,16 @@ public class Column {
                            .reduce(BooleanExpression::or)
                            .ifPresent(running -> this.running.bind(running));
 
-        // Could be brittle in second map.
-        columnList.stream().map(Cell::hasTopEdgeRectangle)
-                           .map(hasEdge -> hasEdge.or(hasEdge))
-                           .reduce(BooleanExpression::or)
-                           .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop));
+        columnList.forEach(column -> columnList.stream().map(Cell::hasTopEdgeRectangle)
+                .map(c2 -> c2.or(column.hasTopEdgeRectangle()))
+                .reduce(BooleanExpression::or)
+                .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop)));
+
+//         Could be brittle in second map.
+//        columnList.stream().map(Cell::hasTopEdgeRectangle)
+//                           .map(hasEdge -> hasEdge.or(hasEdge))
+//                           .reduce(BooleanExpression::or)
+//                           .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop));
 
         // When we are in reset mode / button reset has been clicked set new value of the each cell.
         resetClicked.noes()
