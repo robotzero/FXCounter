@@ -41,13 +41,13 @@
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-core</artifactId>
-            <version>4.0.4-alpha</version>
+            <version>4.0.8-alpha</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit</artifactId>
-            <version>4.0.4-alpha</version>
+            <version>4.0.8-alpha</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.tngtech.java</groupId>
             <artifactId>junit-dataprovider</artifactId>
-            <version>1.12.0</version>
+            <version>1.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -83,13 +83,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.4.RELEASE</version>
+            <version>5.0.0.RELEASE</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>4.3.4.RELEASE</version>
+            <version>5.0.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.reactfx</groupId>
@@ -148,7 +148,7 @@
                                 <argument>-createjar</argument>
                                 <argument>-nocss2bin</argument>
                                 <argument>-appclass</argument>
-                                <argument>com.queen.counter</argument>
+                                <argument>com.robotzero.counter</argument>
                                 <argument>-srcdir</argument>
                                 <argument>${project.build.directory}/classes</argument>
                                 <argument>-outdir</argument>
