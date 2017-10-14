@@ -6,6 +6,8 @@ import com.robotzero.counter.domain.SavedTimer;
 import com.robotzero.counter.repository.SavedTimerRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -27,6 +29,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class ClockPresenter implements Initializable {
 
@@ -123,6 +126,9 @@ public class ClockPresenter implements Initializable {
         EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
         EventStream<MouseEvent> optionClicks = EventStreams.eventsOf(optionsLabel, MouseEvent.MOUSE_CLICKED);
 
+        Flowable<Long> ticksReact =  Flowable.interval(1, TimeUnit.SECONDS).skipWhile(time -> {
+            return scrollMuteProperty.not().get();
+        });
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
         Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStreamMinutes.push(-60);
@@ -176,10 +182,16 @@ public class ClockPresenter implements Initializable {
                     }
                 });
 
-        this.subscribe = ticks.subscribe(nullEvent -> {
-            this.deltaStreamSeconds.push(-60);
-            secondsColumn.play();
-        });
+//        this.subscribe = ticks.subscribe(nullEvent -> {
+//            this.deltaStreamSeconds.push(-60);
+//            secondsColumn.play();
+//        });
+
+        ticksReact.subscribe(
+            v -> {this.deltaStreamSeconds.push(-60); this.secondsColumn.play();},
+            e -> System.out.println("Error: " + e),
+            () -> System.out.println("Completed")
+        );
 
         startClicks.subscribe(click -> {
             if (scrollMuteProperty.get()) {
