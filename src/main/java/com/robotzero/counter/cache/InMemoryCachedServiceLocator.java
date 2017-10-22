@@ -18,7 +18,7 @@ public class InMemoryCachedServiceLocator implements ServiceLocator {
     @Override
     public Object get(Class clazz, Object reference) throws ServiceConfigurationError {
         if (clazz.getName().contains("AnimationMetadata")) {
-            if (objectReferences.stream().filter(o -> o.getClass().getName().contains("AnimationMetadata")).count() > 0) {
+            if (objectReferences.stream().anyMatch(o -> o.getClass().getName().contains("AnimationMetadata"))) {
                 Optional optional = objectReferences.stream().filter(o -> {
                     if (o.getClass().getName().contains("AnimationMetadata")) {
                         AnimationMetadata am = (AnimationMetadata) o;
@@ -38,7 +38,7 @@ public class InMemoryCachedServiceLocator implements ServiceLocator {
         }
 
         if (clazz.getName().contains("TranslateTransition")) {
-            if (objectReferences.stream().filter(o -> o.getClass().getName().contains("TranslateTransition")).count() > 0) {
+            if (objectReferences.stream().anyMatch(o -> o.getClass().getName().contains("TranslateTransition"))) {
                 Optional optional = objectReferences.stream().filter(o -> {
                     if (o.getClass().getName().contains("TranslateTransition")) {
                         TranslateTransition trt = (TranslateTransition) o;
