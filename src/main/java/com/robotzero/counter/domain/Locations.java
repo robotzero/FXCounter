@@ -14,11 +14,11 @@ public class Locations {
 
     @PostConstruct
     public void initialize() {
-        this.secondsLocations = IntStream.range(0, 3)
-                .mapToObj(index -> index * 60)
-                .map(to -> new Point2D(0, to))
-                .collect(Collectors.toCollection(() -> new ArrayList<Integer>() {
-                }));
+//        this.secondsLocations = IntStream.range(0, 3)
+//                .mapToObj(index -> index * 60)
+//                .map(to -> new Point2D(0, to))
+//                .collect(Collectors.toCollection(() -> new ArrayList<Integer>() {
+//                }));
 
 
 

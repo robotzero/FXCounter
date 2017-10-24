@@ -37,7 +37,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
                 />
             </StackPane>
         </VBox>
@@ -46,7 +46,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
                 />
             </StackPane>
         </VBox>
@@ -55,7 +55,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
                 />
             </StackPane>
         </VBox>
@@ -64,7 +64,7 @@
                 <Rectangle fill="transparent" />
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(255, 255, 255, 0.3), 1, 0.0, 1, 1 );"
                 />
             </StackPane>
         </VBox>
@@ -81,7 +81,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -90,7 +90,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -99,7 +99,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -108,7 +108,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -126,7 +126,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -135,7 +135,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -144,7 +144,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>
@@ -153,7 +153,7 @@
                 <Rectangle fill="transparent"/>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fill="white"
                       style="-fx-base: rgb(255,255,255);
-                             -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
+                              -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );"
                 />
             </StackPane>
         </VBox>

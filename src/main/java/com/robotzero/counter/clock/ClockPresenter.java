@@ -205,6 +205,7 @@ public class ClockPresenter implements Initializable {
             this.fetchFromDatabase.setValue(true);
             if (fetchFromDatabase.get()) {
                 this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
+//                this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
                     SavedTimer savedTimer = new SavedTimer();
                     savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
                     return savedTimer;

@@ -22,12 +22,13 @@ public class SavedTimerSqlliteJdbcRepository implements SavedTimerRepository {
 
     @Override
     public SavedTimer selectLatest() {
-        List result = jdbcTemplate.query("SELECT * FROM timers WHERE created=(SELECT MAX (created) FROM timers)", new SavedTimerRowMapper());
-        return result.isEmpty() ? null : (SavedTimer) result.get(0);
+        return null;
+//        List result = jdbcTemplate.query("SELECT * FROM timers WHERE created=(SELECT MAX (created) FROM timers)", new SavedTimerRowMapper());
+//        return result.isEmpty() ? null : (SavedTimer) result.get(0);
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update("DELETE FROM timers");
+//        jdbcTemplate.update("DELETE FROM timers");
     }
 }
