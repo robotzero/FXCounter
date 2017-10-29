@@ -11,6 +11,8 @@ import com.robotzero.counter.repository.SavedTimerRepository;
 import com.robotzero.counter.repository.SavedTimerSqlliteJdbcRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.EventSource;
@@ -85,29 +87,27 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public EventSource<Integer> DeltaStreamSeconds() {
-        return new EventSource<>();
+    public Subject<Integer> DeltaStreamSeconds() {
+        return BehaviorSubject.create();
     }
 
     @Bean
-    public EventSource<Integer> DeltaStreamMinutes() {
-        return new EventSource<>();
+    public Subject<Integer> DeltaStreamMinutes() {
+        return BehaviorSubject.create();
     }
 
     @Bean
-    public EventSource<Integer> DeltaStreamHours() {
-        return new EventSource<>();
+    public Subject<Integer> DeltaStreamHours() {
+        return BehaviorSubject.create();
     }
 
     @Bean
     public Populator populator() {
-        List<EventSource<Integer>> deltaStreams = new ArrayList<>();
+        List<Subject<Integer>> deltaStreams = new ArrayList<>();
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
-        Populator populator = new Populator(configureClocks(), deltaStreams, seconds(), minutes(), hours());
-
-        return populator;
+        return new Populator(configureClocks(), deltaStreams, seconds(), minutes(), hours());
     }
 
     @Bean
@@ -140,7 +140,7 @@ public class SpringApplicationConfiguration {
         plays.add(PlayHours());
         plays.add(StopCountdown());
 
-        List<EventSource<Integer>> deltaStreams = new ArrayList<>();
+        List<Subject<Integer>> deltaStreams = new ArrayList<>();
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());

@@ -39,8 +39,6 @@ public class OptionsPresenter implements Initializable {
         vbox.setSpacing(10);
         rootNode.getChildren().add(vbox);
 
-
-
         Tile timeTile1 = TileBuilder.create()
             .prefSize(60, 60)
             .skinType(Tile.SkinType.CUSTOM)

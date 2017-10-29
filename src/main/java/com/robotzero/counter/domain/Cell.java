@@ -1,7 +1,13 @@
 package com.robotzero.counter.domain;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.rxjavafx.observables.JavaFxObservable;
+import io.reactivex.rxjavafx.observers.JavaFxObserver;
+import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
+import javafx.beans.binding.Binding;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.layout.VBox;
@@ -13,6 +19,7 @@ import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple2;
 
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class Cell {
@@ -23,9 +30,9 @@ public class Cell {
     private TranslateTransition translateTransition;
     private BooleanProperty isCellOnTop = new SimpleBooleanProperty(false);
     private BooleanProperty isCellLabelToChange = new SimpleBooleanProperty(false);
-    private IntegerProperty currentDelta = new SimpleIntegerProperty(0);
+    private Binding<Integer> currentDelta;
     private IntegerProperty currentSize;
-    private EventSource deltaStream;
+    private Subject<Integer> deltaStream;
     private IntegerProperty currentMultiplayer = new SimpleIntegerProperty(0);
 
     public Cell(
@@ -33,14 +40,14 @@ public class Cell {
             Location location,
             Text label,
             TranslateTransition translateTransition,
-            EventSource<Integer> deltaStream,
+            Optional<Subject<Integer>> deltaStream,
             IntegerProperty currentSize
     ) {
         this.rectangle = rectangle;
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
-        this.deltaStream = deltaStream;
+        this.deltaStream = deltaStream.orElseThrow(() -> new RuntimeException("Delta streams not initialized."));
         this.currentSize = currentSize;
         this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
 
@@ -48,11 +55,16 @@ public class Cell {
         this.isCellLabelToChange.bind(new When(rectangle.translateYProperty().greaterThan(currentSize.multiply(3)).and(rectangle.translateYProperty().lessThan(currentSize.multiply(4))).and(currentDelta.lessThan(0))).then(true).otherwise(
                 new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(currentSize)).and(currentDelta.greaterThan(0))).then(true).otherwise(false)
         ));
-        EventStream<Number> currentYposition = EventStreams.valuesOf(rectangle.translateYProperty());
+//        EventStream<Number> currentYposition = EventStreams.valuesOf(rectangle.translateYProperty());
+        Observable<Number> currentYposition = JavaFxObservable.valuesOf(rectangle.translateYProperty());
+
         EventStream<Change<Number>> currentCellSize = EventStreams.changesOf(currentSize);
 
-        currentDelta.bind(deltaStream.toBinding(0));
-
+        //@TODO remove that.
+        currentDelta = JavaFxObserver.toBinding(deltaStream.get());
+//        currentDelta.bind(deltaStream.get()..toBinding(0));
+        
+        this.deltaStream.mergeWith(currentYposition);
         EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
                 this.deltaStream, currentYposition
         );

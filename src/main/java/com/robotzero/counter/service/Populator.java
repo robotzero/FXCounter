@@ -1,6 +1,7 @@
 package com.robotzero.counter.service;
 
 import com.robotzero.counter.domain.*;
+import io.reactivex.subjects.Subject;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -12,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Populator {
@@ -19,12 +21,12 @@ public class Populator {
     private IntegerProperty cellSize = new SimpleIntegerProperty(60);
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
-    private final EventSource<Integer> deltaStreamSeconds;
-    private final EventSource<Integer> deltaStreamMinutes;
-    private final EventSource<Integer> deltaStreamHours;
+    private final Subject<Integer> deltaStreamSeconds;
+    private final Subject<Integer> deltaStreamMinutes;
+    private final Subject<Integer> deltaStreamHours;
     private ObjectProperty<Font> fontTracking = new SimpleObjectProperty<>(Font.getDefault());
 
-    public Populator(final Clocks clocks, final List<EventSource<Integer>> deltaStreams, EventSource ...clocksEvents) {
+    public Populator(final Clocks clocks, final List<Subject<Integer>> deltaStreams, EventSource ...clocksEvents) {
         this.clocks = clocks;
         this.clocksEvents = clocksEvents;
         this.deltaStreamSeconds = deltaStreams.get(0);
@@ -57,7 +59,7 @@ public class Populator {
                 Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
                 Text text = (Text) ((StackPane) sp).getChildren().get(1);
                 String id = "";
-                EventSource<Integer> deltaStream = new EventSource<>();
+                Subject<Integer> deltaStream = null;
 
                 rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
                 rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
@@ -87,7 +89,7 @@ public class Populator {
                 TranslateTransition translateTransition = new TranslateTransition();
                 translateTransition.setNode(vbox);
 
-                return new Cell((VBox) vbox, new Location(), text, translateTransition, deltaStream, cellSize);
+                return new Cell((VBox) vbox, new Location(), text, translateTransition, Optional.ofNullable(deltaStream), cellSize);
             }).findFirst().get();
 
             return cell;

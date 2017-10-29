@@ -1,5 +1,6 @@
 package com.robotzero.counter.domain;
 
+import io.reactivex.subjects.Subject;
 import org.reactfx.EventSource;
 import org.reactfx.EventStreams;
 
@@ -36,7 +37,7 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(List<EventSource<Void>> playSources, List<EventSource<Integer>> deltaStreams, EventSource<Integer> ...eventSources) {
+    public Clocks(List<EventSource<Void>> playSources, List<Subject<Integer>> deltaStreams, EventSource<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
