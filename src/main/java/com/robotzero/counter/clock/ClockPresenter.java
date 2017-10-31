@@ -8,6 +8,7 @@ import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.subjects.Subject;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -87,15 +88,15 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     @Qualifier("DeltaStreamSeconds")
-    private EventSource<Integer> deltaStreamSeconds;
+    private Subject<Integer> deltaStreamSeconds;
 
     @Autowired
     @Qualifier("DeltaStreamMinutes")
-    private EventSource<Integer> deltaStreamMinutes;
+    private Subject<Integer> deltaStreamMinutes;
 
     @Autowired
     @Qualifier("DeltaStreamHours")
-    private EventSource<Integer> deltaStreamHours;
+    private Subject<Integer> deltaStreamHours;
 
     @Autowired
     private StageController stageController;
@@ -131,10 +132,10 @@ public class ClockPresenter implements Initializable {
         });
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
         Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
-            this.deltaStreamMinutes.push(-60);
+            this.deltaStreamMinutes.onNext(-60);
             minutesColumn.play();
         }), playHours.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
-            this.deltaStreamHours.push(-60);
+            this.deltaStreamHours.onNext(-60);
             hoursColumn.play();
         }));
 
@@ -172,12 +173,12 @@ public class ClockPresenter implements Initializable {
                 .on(merged).emit((muted, t) -> muted.get() ? Optional.empty() : Optional.of(t))
                 .toEventStream().subscribe(event -> {
                     if (((StackPane) event.getSource()).getId().contains("Seconds")) {
-                        this.deltaStreamSeconds.push((int)event.getDeltaY());
+                        this.deltaStreamSeconds.onNext((int)event.getDeltaY());
                         secondsColumn.play();
                     }
 
                     if (((StackPane) event.getSource()).getId().contains("Minutes")) {
-                        this.deltaStreamMinutes.push((int)event.getDeltaY());
+                        this.deltaStreamMinutes.onNext((int)event.getDeltaY());
                         minutesColumn.play();
                     }
                 });
@@ -188,7 +189,7 @@ public class ClockPresenter implements Initializable {
 //        });
 
         ticksReact.subscribe(
-            v -> {this.deltaStreamSeconds.push(-60); this.secondsColumn.play();},
+            v -> {this.deltaStreamSeconds.onNext(-60); this.secondsColumn.play();},
             e -> System.out.println("Error: " + e),
             () -> System.out.println("Completed")
         );
@@ -213,9 +214,9 @@ public class ClockPresenter implements Initializable {
             } else {
                 this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
             }
-            this.deltaStreamSeconds.push(0);
-            this.deltaStreamMinutes.push(0);
-            this.deltaStreamHours.push(0);
+            this.deltaStreamSeconds.onNext(0);
+            this.deltaStreamMinutes.onNext(0);
+            this.deltaStreamHours.onNext(0);
             secondsColumn.setLabels();
             minutesColumn.setLabels();
             hoursColumn.setLabels();
