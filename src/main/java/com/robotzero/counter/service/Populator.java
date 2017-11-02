@@ -13,7 +13,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Populator {
@@ -35,14 +34,14 @@ public class Populator {
     }
 
     public Column create(StackPane stack) {
-        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).map(reg -> reg).forEach(r -> {
+        stack.getChildren().stream().filter(child -> child.getClass().equals(Rectangle.class)).forEach(r -> {
             Rectangle rect = (Rectangle) r;
             if (rect.getId() != null && rect.getId().equals("bottomWhite")) {
-                rect.heightProperty().bind(cellSize.multiply(3).subtract(10));
-                rect.translateYProperty().bind(cellSize.add(5));
+//                rect.heightProperty().bind(cellSize.multiply(3).subtract(10));
+//                rect.translateYProperty().bind(cellSize.add(5));
             } else {
-                rect.heightProperty().bind(cellSize.multiply(3));
-                rect.translateYProperty().bind(cellSize);
+//                rect.heightProperty().bind(cellSize.multiply(3));
+//                rect.translateYProperty().bind(cellSize);
             }
 
             if (rect.getId() != null && (rect.getId().contains("strokeInsideDark"))) {
@@ -54,46 +53,43 @@ public class Populator {
             rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
         });
 
-        List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).map(vbox -> {
-            Cell cell = ((VBox) vbox).getChildren().stream().map(sp -> {
-                Rectangle rectangle = (Rectangle) ((StackPane) sp).getChildren().get(0);
-                Text text = (Text) ((StackPane) sp).getChildren().get(1);
-                String id = "";
-                Subject<Integer> deltaStream = null;
+        List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).flatMap(vBox -> ((VBox)vBox).getChildren().stream()).map(stackPane -> {
+            Rectangle rectangle = (Rectangle) ((StackPane) stackPane).getChildren().get(0);
+            Text text = (Text) ((StackPane) stackPane).getChildren().get(1);
+            String id = "";
+            Subject<Integer> deltaStream = null;
 
-                rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
-                rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
-                cellSize.bind(rectangle.heightProperty());
-                text.translateYProperty().bind(rectangle.heightProperty().subtract(fontTracking.get().getSize()).multiply(0.23));
+            rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
+            rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
+            cellSize.bind(rectangle.heightProperty());
+            text.translateYProperty().bind(rectangle.heightProperty().subtract(fontTracking.get().getSize()).multiply(0.23));
 
-                rectangle.widthProperty().addListener((observableValue, oldWidth, newWidth) -> fontTracking.set(Font.font(newWidth.doubleValue() / 3)));
+            rectangle.widthProperty().addListener((observableValue, oldWidth, newWidth) -> fontTracking.set(Font.font(newWidth.doubleValue() / 3)));
 
-                text.fontProperty().bind(fontTracking);
-                if (stack.getId().equals("paneSeconds")) {
-                    deltaStream = deltaStreamSeconds;
-                    id = vbox.getId() + "seconds";
-                }
+            text.fontProperty().bind(fontTracking);
+            if (stack.getId().equals("paneSeconds")) {
+                deltaStream = deltaStreamSeconds;
+                id = stackPane.getParent().getId() + "seconds";
+            }
 
-                if (stack.getId().equals("paneMinutes")) {
-                    deltaStream = deltaStreamMinutes;
-                    id = vbox.getId() + "minutes";
-                }
+            if (stack.getId().equals("paneMinutes")) {
+                deltaStream = deltaStreamMinutes;
+                id = stackPane.getParent().getId() + "minutes";
+            }
 
-                if (stack.getId().equals("paneHours")) {
-                    deltaStream = deltaStreamHours;
-                    id = vbox.getId() + "hours";
-                }
+            if (stack.getId().equals("paneHours")) {
+                deltaStream = deltaStreamHours;
+                id = stackPane.getParent().getId() + "hours";
+            }
 
-                text.setId(id);
-                rectangle.setId(id);
-                TranslateTransition translateTransition = new TranslateTransition();
-                translateTransition.setNode(vbox);
+            text.setId(id);
+            rectangle.setId(id);
+            TranslateTransition translateTransition = new TranslateTransition();
+            translateTransition.setNode(stackPane.getParent());
 
-                return new Cell((VBox) vbox, new Location(), text, translateTransition, deltaStream, cellSize);
-            }).findFirst().get();
+            return new Cell((VBox) stackPane.getParent(), new Location(), text, translateTransition, deltaStream, cellSize);
+            }).collect(Collectors.toList());
 
-            return cell;
-        }).collect(Collectors.toList());
 
         Rectangle clipRectangle = new Rectangle();
         clipRectangle.heightProperty().bind(cellSize.multiply(3).add(2));
