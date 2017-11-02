@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Populator {
@@ -57,7 +58,7 @@ public class Populator {
             Rectangle rectangle = (Rectangle) ((StackPane) stackPane).getChildren().get(0);
             Text text = (Text) ((StackPane) stackPane).getChildren().get(1);
             String id = "";
-            Subject<Integer> deltaStream = null;
+            Optional<Subject<Integer>> deltaStream = Optional.empty();
 
             rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
             rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
@@ -68,17 +69,17 @@ public class Populator {
 
             text.fontProperty().bind(fontTracking);
             if (stack.getId().equals("paneSeconds")) {
-                deltaStream = deltaStreamSeconds;
+                deltaStream = Optional.ofNullable(deltaStreamSeconds);
                 id = stackPane.getParent().getId() + "seconds";
             }
 
             if (stack.getId().equals("paneMinutes")) {
-                deltaStream = deltaStreamMinutes;
+                deltaStream = Optional.ofNullable(deltaStreamMinutes);
                 id = stackPane.getParent().getId() + "minutes";
             }
 
             if (stack.getId().equals("paneHours")) {
-                deltaStream = deltaStreamHours;
+                deltaStream = Optional.ofNullable(deltaStreamHours);
                 id = stackPane.getParent().getId() + "hours";
             }
 
@@ -87,7 +88,7 @@ public class Populator {
             TranslateTransition translateTransition = new TranslateTransition();
             translateTransition.setNode(stackPane.getParent());
 
-            return new Cell((VBox) stackPane.getParent(), new Location(), text, translateTransition, deltaStream, cellSize);
+            return new Cell((VBox) stackPane.getParent(), new Location(), text, translateTransition, deltaStream.orElseThrow(() -> new RuntimeException("No delta steam available.")), cellSize);
             }).collect(Collectors.toList());
 
 
