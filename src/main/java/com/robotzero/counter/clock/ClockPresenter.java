@@ -200,7 +200,7 @@ public class ClockPresenter implements Initializable {
             }
         });
 
-        optionClicks.subscribe(click -> stageController.setView());
+//        optionClicks.subscribe(click -> stageController.setView());
 
         resetClicks.subscribe(click -> {
             this.fetchFromDatabase.setValue(true);
