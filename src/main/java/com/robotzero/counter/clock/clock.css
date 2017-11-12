@@ -1,65 +1,21 @@
-#start {
-    -fx-background-color:
-        linear-gradient(#f0ff35, #a9ff00),
-        radial-gradient(center 50% -40%, radius 200%, #b8ee36 45%, #80c800 50%);
-    -fx-background-radius: 4, 3;
-    -fx-background-insets: 0, 1;
-    -fx-text-fill: white;
-}
-
-#reset {
-    -fx-background-color:
-        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
-        linear-gradient(#020b02, #3a3a3a),
-        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
-        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
-        linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
-    -fx-background-insets: 0,1,2,3,4;
-    -fx-background-radius: 9,8,5,4,3;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
-}
-
-#start LabeledText {
-    -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 10, 0.0, 1, 1 );
-}
-
-#reset LabeledText {
-    -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 10, 0.0, 1, 1 );
-}
-
 .gridPane {
     -fx-background-color: radial-gradient(center 50% 50%, radius 90%, #313031, #000000)
 }
 
-.stackPane {
-    -fx-border-radius: 10 10 0 0;
-    -fx-background-radius: 10 10 0 0;
-}
-
-.paneSeconds {
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%,
-                                          rgba(0, 0, 0, 255) 0%,
-                                          rgba(0, 0, 0, 255) 18%,
-                                          rgba(0, 0, 0, 0) 40%,
-                                          rgba(0, 0, 0, 0) 60%,
-                                          rgba(0, 0, 0, 255) 68%,
-                                          rgba(0, 0, 0, 255) 100%);
-}
-.rectWhite {
+.rectangleWhiteSeconds {
     -fx-fill: linear-gradient(from 0% 0% to 0% 100%,
                                                         rgba(0, 0, 0, 1) 0%,
-                                                        rgba(0, 0, 0, 1) 2%,
-                                                        rgba(0, 0, 0, 0.2) 33%,
-                                                        rgba(0, 0, 0, 0.05) 47%,
+                                                        rgba(0, 0, 0, 0.9) 7%,
+                                                        rgba(0, 0, 0, 0.1) 33%,
+                                                        rgba(0, 0, 0, 0.0) 47%,
                                                         rgba(0, 0, 0, 0.0) 50%,
-                                                        rgba(0, 0, 0, 0.05) 53%,
-                                                        rgba(0, 0, 0, 0.2) 67%,
-                                                        rgba(0, 0, 0, 1) 98%,
+                                                        rgba(0, 0, 0, 0.0) 53%,
+                                                        rgba(0, 0, 0, 0.1) 67%,
+                                                        rgba(0, 0, 0, 0.9) 93%,
                                                         rgba(0, 0, 0, 1) 100%);
 }
 
-.rectDark {
+.rectangleDarkMinutes {
     -fx-fill: linear-gradient(from 0% 0% to 0% 100%,
                                                         rgba(0, 0, 0, 1) 0%,
                                                         rgba(0, 0, 0, 0.9) 8%,
@@ -70,7 +26,7 @@
                                                         rgba(0, 0, 0, 1) 100%);
 }
 
-.insideGradient {
+.insideGradientMinutes {
    -fx-stroke: linear-gradient(from 0% 0% to 0% 100%,
                                                         rgba(0, 0, 0, 1) 0%,
                                                         rgba(0, 0, 0, 0.9) 8%,
@@ -79,27 +35,4 @@
                                                         rgba(90, 93, 90, 0.9) 62%,
                                                         rgba(0, 0, 0, 0.9) 92%,
                                                         rgba(0, 0, 0, 1) 100%);
-}
-.hiddenContainer {
-   -fx-background-color: transparent;
-}
-
-.buttonFonts {
-   -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 2, 2 );
-   -fx-text-fill: white;
-}
-
-#textSeconds {
-    -fx-base: rgb(255,255,255);
-    -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 3, 3 );
-}
-
-#textMinutes {
-    -fx-base: rgb(255,255,255);
-    -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 3, 3 );
-}
-
-#textHours {
-    -fx-base: rgb(255,255,255);
-    -fx-effect: dropshadow( three-pass-box , rgba(0, 0, 0, 1.6), 1, 0.0, 3, 3 );
 }

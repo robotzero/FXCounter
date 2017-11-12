@@ -5,28 +5,44 @@ import com.robotzero.configuration.SceneConfiguration;
 import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
+import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.Clocks;
 import com.robotzero.counter.clock.options.OptionsView;
+import com.robotzero.counter.domain.Column;
+import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.repository.SavedTimerRepository;
 import com.robotzero.counter.repository.SavedTimerSqlliteJdbcRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.reactfx.EventSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 public class SpringApplicationConfiguration {
+
+    @FXML
+    StackPane paneSeconds;
 
     @Bean
     public FXMLView clockView() {
@@ -145,5 +161,22 @@ public class SpringApplicationConfiguration {
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
         return new Clocks(plays, deltaStreams, seconds(), minutes(), hours());
+    }
+
+    @Bean
+    public Column configureSeconds(ClockView clockView) {
+        List<Cell> list = clockView.getView().getChildrenUnmodifiable()
+                .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("seconds"))
+                .stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    TranslateTransition translateTransition = new TranslateTransition();
+                    VBox vbox = (VBox) node;
+                    translateTransition.setNode(vbox);
+                    return new Cell(vbox, null, ((Text) vbox.getChildren().get(0)), translateTransition, DeltaStreamSeconds(), new SimpleIntegerProperty(90));
+                }).collect(Collectors.toList());
+
+        return new Column(list, configureClocks(), ColumnType.SECONDS, seconds());
     }
 }

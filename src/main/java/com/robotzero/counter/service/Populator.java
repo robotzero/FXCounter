@@ -46,12 +46,12 @@ public class Populator {
             }
 
             if (rect.getId() != null && (rect.getId().contains("strokeInsideDark"))) {
-                rect.strokeWidthProperty().bind(rect.widthProperty().multiply(0.02));
-                rect.heightProperty().bind(cellSize.multiply(3));
-                rect.translateYProperty().bind(cellSize.add(1));
+//                rect.strokeWidthProperty().bind(rect.widthProperty().multiply(0.02));
+//                rect.heightProperty().bind(cellSize.multiply(3));
+//                rect.translateYProperty().bind(cellSize.add(1));
             }
 
-            rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
+//            rect.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
         });
 
         List cc = stack.getChildren().stream().filter(child -> child.getClass().equals(VBox.class)).flatMap(vBox -> ((VBox)vBox).getChildren().stream()).map(stackPane -> {
@@ -60,14 +60,14 @@ public class Populator {
             String id = "";
             Optional<Subject<Integer>> deltaStream = Optional.empty();
 
-            rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
-            rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
-            cellSize.bind(rectangle.heightProperty());
-            text.translateYProperty().bind(rectangle.heightProperty().subtract(fontTracking.get().getSize()).multiply(0.23));
+//            rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
+//            rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
+//            cellSize.bind(rectangle.heightProperty());
+//            text.translateYProperty().bind(rectangle.heightProperty().subtract(fontTracking.get().getSize()).multiply(0.23));
 
-            rectangle.widthProperty().addListener((observableValue, oldWidth, newWidth) -> fontTracking.set(Font.font(newWidth.doubleValue() / 3)));
+//            rectangle.widthProperty().addListener((observableValue, oldWidth, newWidth) -> fontTracking.set(Font.font(newWidth.doubleValue() / 3)));
 
-            text.fontProperty().bind(fontTracking);
+//            text.fontProperty().bind(fontTracking);
             if (stack.getId().equals("paneSeconds")) {
                 deltaStream = Optional.ofNullable(deltaStreamSeconds);
                 id = stackPane.getParent().getId() + "seconds";
@@ -92,27 +92,27 @@ public class Populator {
             }).collect(Collectors.toList());
 
 
-        Rectangle clipRectangle = new Rectangle();
-        clipRectangle.heightProperty().bind(cellSize.multiply(3).add(2));
-        clipRectangle.widthProperty().bind(stack.widthProperty());
-        clipRectangle.setX(0);
-        clipRectangle.yProperty().bind(cellSize);
-        stack.setClip(clipRectangle);
+//        Rectangle clipRectangle = new Rectangle();
+//        clipRectangle.heightProperty().bind(cellSize.multiply(3).add(2));
+//        clipRectangle.widthProperty().bind(stack.widthProperty());
+//        clipRectangle.setX(0);
+//        clipRectangle.yProperty().bind(cellSize);
+//        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
             Column column = new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
-            column.setLabels();
+//            column.setLabels();
             return column;
         }
 
         if (stack.getId().contains("Minutes")) {
             Column column = new Column(cc, clocks, ColumnType.MINUTES, clocksEvents[1]);
-            column.setLabels();
+//            column.setLabels();
             return column;
         }
 
         Column column = new Column(cc, clocks, ColumnType.HOURS, clocksEvents[2]);
-        column.setLabels();
+//        column.setLabels();
         return column;
     }
 }
