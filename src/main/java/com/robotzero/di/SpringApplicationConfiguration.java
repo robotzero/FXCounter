@@ -5,11 +5,8 @@ import com.robotzero.configuration.SceneConfiguration;
 import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
-import com.robotzero.counter.domain.Cell;
-import com.robotzero.counter.domain.Clocks;
+import com.robotzero.counter.domain.*;
 import com.robotzero.counter.clock.options.OptionsView;
-import com.robotzero.counter.domain.Column;
-import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.repository.SavedTimerRepository;
 import com.robotzero.counter.repository.SavedTimerSqlliteJdbcRepository;
 import com.robotzero.counter.service.Populator;
@@ -35,7 +32,9 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -164,8 +163,8 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Column configureSeconds(ClockView clockView) {
-        List<Cell> list = clockView.getView().getChildrenUnmodifiable()
+    public Map<ColumnType, Column> timerColumns(ClockView clockView, Clocks clocks) {
+        List<Cell> seconds = clockView.getView().getChildrenUnmodifiable()
                 .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("seconds"))
                 .stream()
                 .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
@@ -174,9 +173,37 @@ public class SpringApplicationConfiguration {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    return new Cell(vbox, null, ((Text) vbox.getChildren().get(0)), translateTransition, DeltaStreamSeconds(), new SimpleIntegerProperty(90));
+                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, DeltaStreamSeconds(), new SimpleIntegerProperty(90));
                 }).collect(Collectors.toList());
 
-        return new Column(list, configureClocks(), ColumnType.SECONDS, seconds());
+        List<Cell> minutes = clockView.getView().getChildrenUnmodifiable()
+                .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("minutes"))
+                .stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    TranslateTransition translateTransition = new TranslateTransition();
+                    VBox vbox = (VBox) node;
+                    translateTransition.setNode(vbox);
+                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, DeltaStreamSeconds(), new SimpleIntegerProperty(90));
+                }).collect(Collectors.toList());
+
+        List<Cell> hours = clockView.getView().getChildrenUnmodifiable()
+                .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("hours"))
+                .stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    TranslateTransition translateTransition = new TranslateTransition();
+                    VBox vbox = (VBox) node;
+                    translateTransition.setNode(vbox);
+                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, DeltaStreamSeconds(), new SimpleIntegerProperty(90));
+                }).collect(Collectors.toList());
+
+        Map<ColumnType, Column> timerColumns = new HashMap<>();
+        timerColumns.put(ColumnType.SECONDS, new Column(seconds, clocks, ColumnType.SECONDS, seconds()));
+        timerColumns.put(ColumnType.MINUTES, new Column(minutes, clocks, ColumnType.MINUTES, minutes()));
+        timerColumns.put(ColumnType.HOURS, new Column(hours, clocks, ColumnType.HOURS, hours()));
+        return timerColumns;
     }
 }

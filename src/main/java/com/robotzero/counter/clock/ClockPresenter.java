@@ -2,12 +2,12 @@ package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.Clocks;
 import com.robotzero.counter.domain.Column;
+import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.SavedTimer;
 import com.robotzero.counter.repository.SavedTimerRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -105,9 +106,9 @@ public class ClockPresenter implements Initializable {
 
     private Subscription subscribe;
 
-    private Column secondsColumn;
-    private Column minutesColumn;
-    private Column hoursColumn;
+    @Autowired
+    private Map<ColumnType, Column> timerColumns;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -118,9 +119,9 @@ public class ClockPresenter implements Initializable {
         }).getSavedTimer());
 
         start.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
-        secondsColumn = populator.create(paneSeconds);
-        minutesColumn = populator.create(paneMinutes);
-        hoursColumn = populator.create(paneHours);
+//        secondsColumn = populator.create(paneSeconds);
+        //minutesColumn = populator.create(paneMinutes);
+        //hoursColumn = populator.create(paneHours);
 
         //@TODO merge them and then split/fork?
         EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
@@ -133,17 +134,17 @@ public class ClockPresenter implements Initializable {
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
         Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStreamMinutes.onNext(-60);
-            minutesColumn.play();
+            timerColumns.get(ColumnType.MINUTES).play();
         }), playHours.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
             this.deltaStreamHours.onNext(-60);
-            hoursColumn.play();
+            timerColumns.get(ColumnType.HOURS).play();
         }));
 
         reset.disableProperty().bind(scrollMuteProperty);
         EventStream<ScrollEvent> merged = EventStreams.merge(
-                EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(secondsColumn.isRunning()),
-                EventStreams.eventsOf(paneMinutes, ScrollEvent.SCROLL).suppressWhen(minutesColumn.isRunning()),
-                EventStreams.eventsOf(paneHours, ScrollEvent.SCROLL).suppressWhen(hoursColumn.isRunning())
+                EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(timerColumns.get(ColumnType.SECONDS).isRunning()),
+                EventStreams.eventsOf(paneMinutes, ScrollEvent.SCROLL).suppressWhen(timerColumns.get(ColumnType.MINUTES).isRunning()),
+                EventStreams.eventsOf(paneHours, ScrollEvent.SCROLL).suppressWhen(timerColumns.get(ColumnType.HOURS).isRunning())
         );
 
         stopCountdown.subscribe(v -> {
@@ -174,12 +175,12 @@ public class ClockPresenter implements Initializable {
                 .toEventStream().subscribe(event -> {
                     if (((StackPane) event.getSource()).getId().contains("Seconds")) {
                         this.deltaStreamSeconds.onNext((int)event.getDeltaY());
-                        secondsColumn.play();
+                        timerColumns.get(ColumnType.SECONDS).play();
                     }
 
                     if (((StackPane) event.getSource()).getId().contains("Minutes")) {
                         this.deltaStreamMinutes.onNext((int)event.getDeltaY());
-                        minutesColumn.play();
+                        timerColumns.get(ColumnType.MINUTES).play();
                     }
                 });
 
@@ -189,7 +190,7 @@ public class ClockPresenter implements Initializable {
 //        });
 
         ticksReact.subscribe(
-            v -> {this.deltaStreamSeconds.onNext(-60); this.secondsColumn.play();},
+            v -> {this.deltaStreamSeconds.onNext(-60); this.timerColumns.get(ColumnType.SECONDS).play();},
             e -> System.out.println("Error: " + e),
             () -> System.out.println("Completed")
         );
@@ -217,9 +218,10 @@ public class ClockPresenter implements Initializable {
             this.deltaStreamSeconds.onNext(0);
             this.deltaStreamMinutes.onNext(0);
             this.deltaStreamHours.onNext(0);
-            secondsColumn.setLabels();
-            minutesColumn.setLabels();
-            hoursColumn.setLabels();
+            timerColumns.forEach((columnType, column) -> {
+                column.setLabels();
+            });
+            timerColumns.get(ColumnType.SECONDS).setLabels();
         });
     }
 }

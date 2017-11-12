@@ -47,7 +47,8 @@ public class Cell {
         this.translateTransition = translateTransition;
         this.deltaStream = deltaStream;
         this.currentSize = currentSize;
-        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
+//        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
+        this.currentMultiplayer.set(0);
 
         //@TODO remove that.
         currentDelta = JavaFxObserver.toBinding(deltaStream.startWith(0));
