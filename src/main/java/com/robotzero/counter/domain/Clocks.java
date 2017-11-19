@@ -28,9 +28,11 @@ public class Clocks {
     private BiFunction<LocalTime, Integer, LocalTime> pM = LocalTime::plusMinutes;
     private BiFunction<LocalTime, Integer, LocalTime> pH = LocalTime::plusMinutes;
 
-    private Function<LocalTime, LocalTime> mainClockF = (c) -> c.withSecond(scrollSecondsClock.getSecond())
-                                                                .withMinute(scrollMinutesClock.getMinute())
-                                                                .withHour(scrollHoursClock.getHour());
+//    private Function<LocalTime, LocalTime> clockTick = (clock) -> clock.withSecond(scrollSecondsClock.getSecond())
+//                                                                .withMinute(scrollMinutesClock.getMinute())
+//                                                                .withHour(scrollHoursClock.getHour());
+
+    private Function<LocalTime, LocalTime> clockTick = (clock) -> clock.minusSeconds(1);
 
     private Function<Integer, Integer> normalizeDelta = delta -> delta / Math.abs(delta);
 
@@ -49,7 +51,8 @@ public class Clocks {
         deltaStreams.get(0).subscribe(currentDelta -> {
             if (currentDelta != 0) {
                 this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = mainClockF.apply(mainClock);
+                this.mainClock = clockTick.apply(mainClock);
+                System.out.println(mainClock);
                 this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta)).getSecond());
 
                 // Count down has ended.
@@ -65,7 +68,7 @@ public class Clocks {
         deltaStreams.get(1).subscribe(currentDelta -> {
             if (currentDelta != 0) {
                 this.scrollMinutesClock = pM.apply(this.scrollMinutesClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = mainClockF.apply(mainClock);
+                this.mainClock = clockTick.apply(mainClock);
                 this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizeDelta.apply(currentDelta)).getMinute());
 
                 if (this.scrollMinutesClock.getMinute() == HR) {
@@ -77,7 +80,7 @@ public class Clocks {
         deltaStreams.get(2).subscribe(currentDelta -> {
             if (currentDelta != 0) {
                 this.scrollHoursClock = pH.apply(this.scrollHoursClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = mainClockF.apply(mainClock);
+                this.mainClock = clockTick.apply(mainClock);
                 this.eventHours.push(scrollHoursClock.plusHours(normalizeDelta.apply(currentDelta)).getHour());
             }
         });

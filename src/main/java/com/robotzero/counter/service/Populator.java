@@ -1,5 +1,6 @@
 package com.robotzero.counter.service;
 
+import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.domain.*;
 import io.reactivex.subjects.Subject;
 import javafx.animation.TranslateTransition;
@@ -12,7 +13,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.reactfx.EventSource;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -115,4 +119,50 @@ public class Populator {
 //        column.setLabels();
         return column;
     }
+
+    public Map<ColumnType, Column> timerColumns(GridPane gridPane, Clocks clocks) {
+        List<Cell> seconds = gridPane.getChildrenUnmodifiable()
+                .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("seconds"))
+                .stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    TranslateTransition translateTransition = new TranslateTransition();
+                    VBox vbox = (VBox) node;
+                    translateTransition.setNode(vbox);
+                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, deltaStreamSeconds, new SimpleIntegerProperty(90));
+                }).collect(Collectors.toList());
+
+        List<Cell> minutes = gridPane.getChildrenUnmodifiable()
+                .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("minutes"))
+                .stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    TranslateTransition translateTransition = new TranslateTransition();
+                    VBox vbox = (VBox) node;
+                    translateTransition.setNode(vbox);
+                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, deltaStreamMinutes, new SimpleIntegerProperty(90));
+                }).collect(Collectors.toList());
+
+        List<Cell> hours = gridPane.getChildrenUnmodifiable()
+                .filtered(node -> node.getClass().equals(StackPane.class) && node.getId().equals("hours"))
+                .stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    TranslateTransition translateTransition = new TranslateTransition();
+                    VBox vbox = (VBox) node;
+                    translateTransition.setNode(vbox);
+                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, deltaStreamHours, new SimpleIntegerProperty(90));
+                }).collect(Collectors.toList());
+
+        Map<ColumnType, Column> timerColumns = new HashMap<>();
+        timerColumns.put(ColumnType.SECONDS, new Column(seconds, clocks, ColumnType.SECONDS, clocksEvents[0]));
+        timerColumns.put(ColumnType.MINUTES, new Column(minutes, clocks, ColumnType.MINUTES, clocksEvents[1]));
+        timerColumns.put(ColumnType.HOURS, new Column(hours, clocks, ColumnType.HOURS, clocksEvents[2]));
+
+        return timerColumns;
+    }
+
 }

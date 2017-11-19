@@ -10,7 +10,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class Counter extends Application {
 
-    private ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
+    private final ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
 
     public static void main(String[] args) {
         launch(args);
