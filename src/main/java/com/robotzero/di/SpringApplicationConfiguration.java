@@ -6,10 +6,10 @@ import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
-import com.robotzero.counter.domain.Clocks;
-import com.robotzero.counter.domain.SavedTimer;
-import com.robotzero.counter.repository.SavedTimerRepository;
-import com.robotzero.counter.repository.SavedTimerSqlliteJdbcRepository;
+import com.robotzero.counter.domain.clock.Clocks;
+import com.robotzero.counter.entity.Clock;
+import com.robotzero.counter.domain.clock.ClockRepository;
+import com.robotzero.counter.infrastructure.database.ClockDatabaseRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.subjects.BehaviorSubject;
@@ -110,7 +110,7 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Populator populator(SavedTimerRepository savedTimerRepository) {
+    public Populator populator(ClockRepository savedTimerRepository) {
         List<Subject<Integer>> deltaStreams = new ArrayList<>();
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
@@ -132,8 +132,8 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public SavedTimerRepository savedTimerRepository(JdbcTemplate jdbcTemplate) {
-        return new SavedTimerSqlliteJdbcRepository(jdbcTemplate);
+    public ClockRepository clockRepository(JdbcTemplate jdbcTemplate) {
+        return new ClockDatabaseRepository(jdbcTemplate);
     }
 
     @Bean
@@ -142,7 +142,7 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Clocks configureClocks(SavedTimerRepository savedTimerRepository) {
+    public Clocks configureClocks(ClockRepository clockRepository) {
         List<EventSource<Void>> plays = new ArrayList<>();
         plays.add(PlayMinutes());
         plays.add(PlayHours());
@@ -153,14 +153,6 @@ public class SpringApplicationConfiguration {
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
 
-        Clocks clocks = new Clocks(plays, deltaStreams, seconds(), minutes(), hours());
-
-        clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
-            SavedTimer savedTimer = new SavedTimer();
-            savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
-            return savedTimer;
-        }).getSavedTimer());
-
-        return clocks;
+        return new Clocks(clockRepository, plays, deltaStreams, seconds(), minutes(), hours());
     }
 }

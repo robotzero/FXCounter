@@ -1,7 +1,7 @@
 package com.robotzero.counter.service;
 
-import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.domain.*;
+import com.robotzero.counter.domain.clock.Clocks;
 import io.reactivex.subjects.Subject;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;

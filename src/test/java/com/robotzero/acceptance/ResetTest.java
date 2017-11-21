@@ -3,7 +3,7 @@ package com.robotzero.acceptance;
 import com.google.code.tempusfugit.temporal.WaitFor;
 import com.robotzero.acceptance.fixtures.Sequence;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.repository.SavedTimerRepository;
+import com.robotzero.counter.domain.clock.ClockRepository;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -30,13 +30,13 @@ import static org.testfx.api.FxAssert.verifyThat;
 @RunWith(DataProviderRunner.class)
 public class ResetTest extends CounterAppIT {
 
-    private SavedTimerRepository repository;
+    private ClockRepository repository;
     private BooleanProperty resetOption;
 
     @Before
     public void setUp() {
         resetOption = this.getBean(BooleanProperty.class);
-        repository = this.getBean(SavedTimerRepository.class);
+        repository = this.getBean(ClockRepository.class);
         repository.deleteAll();
     }
 

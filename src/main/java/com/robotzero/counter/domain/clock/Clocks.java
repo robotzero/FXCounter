@@ -1,16 +1,21 @@
-package com.robotzero.counter.domain;
+package com.robotzero.counter.domain.clock;
 
+import com.robotzero.counter.entity.Clock;
 import io.reactivex.subjects.Subject;
 import org.reactfx.EventSource;
 import org.reactfx.EventStreams;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Clocks {
 
+    private final ClockRepository clockRepository;
     private final EventSource<Integer> eventSeconds;
     private final EventSource<Integer> eventMinutes;
     private final EventSource<Integer> eventHours;
@@ -32,14 +37,23 @@ public class Clocks {
 //                                                                .withMinute(scrollMinutesClock.getMinute())
 //                                                                .withHour(scrollHoursClock.getHour());
 
-    private Function<LocalTime, LocalTime> clockTick = (clock) -> clock.minusSeconds(1);
+    private BiFunction<LocalTime, Integer, LocalTime> clockTick = (clock, delta) -> delta < 0 ? clock.minusSeconds(1) : clock.plusSeconds(1);
+    private Function<Integer, LocalTime> calculateLabel = delta -> {
+        LocalTime tempClock = LocalTime.of(this.mainClock.getSecond(), this.mainClock.getMinute(), this.mainClock.getHour());
+        return delta < 0 ? tempClock.plusSeconds(2) : tempClock.minusSeconds(2);
+    };
+
+    private Function<Integer, Predicate<Integer>> isGreaterThan = pivot -> {
+        return candidate -> candidate > pivot;
+    };
 
     private Function<Integer, Integer> normalizeDelta = delta -> delta / Math.abs(delta);
 
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(List<EventSource<Void>> playSources, List<Subject<Integer>> deltaStreams, EventSource<Integer> ...eventSources) {
+    public Clocks(ClockRepository clockRepository, List<EventSource<Void>> playSources, List<Subject<Integer>> deltaStreams, EventSource<Integer> ...eventSources) {
+        System.out.println(isGreaterThan.apply(30).test(10));
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
@@ -48,11 +62,12 @@ public class Clocks {
         this.playHours = playSources.get(1);
         this.stopCountdown = playSources.get(2);
 
+        this.clockRepository = clockRepository;
+
         deltaStreams.get(0).subscribe(currentDelta -> {
             if (currentDelta != 0) {
                 this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = clockTick.apply(mainClock);
-                System.out.println(mainClock);
+                this.mainClock = clockTick.apply(mainClock, currentDelta);
                 this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta)).getSecond());
 
                 // Count down has ended.
@@ -65,34 +80,39 @@ public class Clocks {
             }
         });
 
-        deltaStreams.get(1).subscribe(currentDelta -> {
-            if (currentDelta != 0) {
-                this.scrollMinutesClock = pM.apply(this.scrollMinutesClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = clockTick.apply(mainClock);
-                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizeDelta.apply(currentDelta)).getMinute());
+//        deltaStreams.get(1).subscribe(currentDelta -> {
+//            if (currentDelta != 0) {
+//                this.scrollMinutesClock = pM.apply(this.scrollMinutesClock, normalizeDelta.apply(currentDelta));
+//                this.mainClock = clockTick.apply(mainClock);
+//                this.eventMinutes.push(scrollMinutesClock.plusMinutes(normalizeDelta.apply(currentDelta)).getMinute());
+//
+//                if (this.scrollMinutesClock.getMinute() == HR) {
+//                    this.playHours.push(null);
+//                }
+//            }
+//        });
+//
+//        deltaStreams.get(2).subscribe(currentDelta -> {
+//            if (currentDelta != 0) {
+//                this.scrollHoursClock = pH.apply(this.scrollHoursClock, normalizeDelta.apply(currentDelta));
+//                this.mainClock = clockTick.apply(mainClock);
+//                this.eventHours.push(scrollHoursClock.plusHours(normalizeDelta.apply(currentDelta)).getHour());
+//            }
+//        });
+    }
 
-                if (this.scrollMinutesClock.getMinute() == HR) {
-                    this.playHours.push(null);
-                }
-            }
-        });
+    @PostConstruct
+    public void initialize() {
+        this.mainClock = Optional.ofNullable(clockRepository.selectLatest()).orElseGet(() -> {
+            Clock savedTimer = new Clock();
+            savedTimer.setSavedTimer(LocalTime.of(22, 10, 0));
+            return savedTimer;
+        }).getSavedTimer();
 
-        deltaStreams.get(2).subscribe(currentDelta -> {
-            if (currentDelta != 0) {
-                this.scrollHoursClock = pH.apply(this.scrollHoursClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = clockTick.apply(mainClock);
-                this.eventHours.push(scrollHoursClock.plusHours(normalizeDelta.apply(currentDelta)).getHour());
-            }
-        });
+        System.out.println(this.mainClock);
     }
 
     public void initializeClocks(final LocalTime mainClock) {
-        this.mainClock = LocalTime.of(
-                mainClock.getHour(),
-                mainClock.getMinute(),
-                mainClock.getSecond()
-        );
-
         this.scrollHoursClock   = LocalTime.of(mainClock.getHour(), MIN, MIN);
         this.scrollMinutesClock = LocalTime.of(HR, mainClock.getMinute(), MIN);
         this.scrollSecondsClock = LocalTime.of(HR, MIN, mainClock.getSecond());

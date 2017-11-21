@@ -1,6 +1,6 @@
 package com.robotzero.acceptance;
 
-import com.robotzero.counter.repository.SavedTimerRepository;
+import com.robotzero.counter.domain.clock.ClockRepository;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -21,7 +21,7 @@ import static org.testfx.api.FxAssert.assertContext;
 @RunWith(DataProviderRunner.class)
 public class InitializationTest extends CounterAppIT {
 
-    private SavedTimerRepository repository;
+    private ClockRepository repository;
 
     @DataProvider
     public static Object[][] getClockAndExpectedValues() {
@@ -33,7 +33,7 @@ public class InitializationTest extends CounterAppIT {
 
     @Before
     public void setUp() {
-        repository = this.getBean(SavedTimerRepository.class);
+        repository = this.getBean(ClockRepository.class);
         repository.deleteAll();
     }
 

@@ -1,7 +1,7 @@
 package com.robotzero.acceptance;
 
 import com.google.code.tempusfugit.temporal.WaitFor;
-import com.robotzero.counter.repository.SavedTimerRepository;
+import com.robotzero.counter.domain.clock.ClockRepository;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
@@ -27,7 +27,7 @@ public class StartStopTest extends CounterAppIT {
 
     private Button startButton, resetButton;
     private BooleanProperty resetOption;
-    private SavedTimerRepository repository;
+    private ClockRepository repository;
 
     @Before
     public void setUp() {
@@ -36,7 +36,7 @@ public class StartStopTest extends CounterAppIT {
         resetButton = assertContext().getNodeFinder().lookup("#reset").query();
 
         resetOption = this.getBean(BooleanProperty.class);
-        repository = this.getBean(SavedTimerRepository.class);
+        repository = this.getBean(ClockRepository.class);
         repository.deleteAll();
     }
 

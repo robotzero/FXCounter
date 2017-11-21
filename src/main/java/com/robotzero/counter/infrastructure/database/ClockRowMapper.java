@@ -1,17 +1,17 @@
-package com.robotzero.counter.repository;
+package com.robotzero.counter.infrastructure.database;
 
-import com.robotzero.counter.domain.SavedTimer;
+import com.robotzero.counter.entity.Clock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalTime;
 
-public class SavedTimerRowMapper implements org.springframework.jdbc.core.RowMapper {
+public class ClockRowMapper implements org.springframework.jdbc.core.RowMapper {
 
     @Override
     public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-        SavedTimer st = new SavedTimer();
+        Clock st = new Clock();
         st.setCreated(Instant.parse(rs.getString("created")));
         st.setName(rs.getString("name"));
         st.setSavedTimer(LocalTime.parse(rs.getString("saved_timer")));

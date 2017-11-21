@@ -1,9 +1,9 @@
-package com.robotzero.counter.domain;
+package com.robotzero.counter.entity;
 
 import java.time.Instant;
 import java.time.LocalTime;
 
-public class SavedTimer {
+public class Clock {
 
     private String name;
     private LocalTime savedTimer;

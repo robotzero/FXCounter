@@ -1,35 +1,24 @@
 package com.robotzero.counter.clock;
 
-import com.robotzero.counter.domain.Clocks;
+import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.SavedTimer;
-import com.robotzero.counter.repository.SavedTimerRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
 import io.reactivex.subjects.Subject;
-import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import org.reactfx.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
@@ -69,7 +58,7 @@ public class ClockPresenter implements Initializable {
     private Clocks clocks;
 //
 //    @Autowired
-//    private SavedTimerRepository savedTimerRepository;
+//    private ClockRepository savedTimerRepository;
 
     // Temp options simulating options screen
     @Autowired
@@ -203,7 +192,7 @@ public class ClockPresenter implements Initializable {
 //            if (fetchFromDatabase.get()) {
 //                this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
 ////                this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
-//                    SavedTimer savedTimer = new SavedTimer();
+//                    Clock savedTimer = new Clock();
 //                    savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
 //                    return savedTimer;
 //                }).getSavedTimer());
