@@ -1,5 +1,6 @@
 package com.robotzero.counter.domain.clock;
 
+import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.entity.Clock;
 import io.reactivex.subjects.Subject;
 import org.reactfx.EventSource;
@@ -52,8 +53,8 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(ClockRepository clockRepository, List<EventSource<Void>> playSources, List<Subject<Integer>> deltaStreams, EventSource<Integer> ...eventSources) {
-        System.out.println(isGreaterThan.apply(30).test(10));
+    public Clocks(ClockRepository clockRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, EventSource<Integer> ...eventSources) {
+//        System.out.println(isGreaterThan.apply(30).test(10));
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
@@ -65,10 +66,10 @@ public class Clocks {
         this.clockRepository = clockRepository;
 
         deltaStreams.get(0).subscribe(currentDelta -> {
-            if (currentDelta != 0) {
-                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta));
-                this.mainClock = clockTick.apply(mainClock, currentDelta);
-                this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta)).getSecond());
+            if (currentDelta.getDelta() != 0) {
+                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta()));
+//                this.mainClock = clockTick.apply(mainClock, currentDelta);
+                this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta())).getSecond());
 
                 // Count down has ended.
                 if (this.mainClock == LocalTime.of(0, 0, 0)) {
@@ -108,8 +109,6 @@ public class Clocks {
             savedTimer.setSavedTimer(LocalTime.of(22, 10, 0));
             return savedTimer;
         }).getSavedTimer();
-
-        System.out.println(this.mainClock);
     }
 
     public void initializeClocks(final LocalTime mainClock) {
@@ -120,6 +119,10 @@ public class Clocks {
         eventSeconds.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
         eventMinutes.push(this.scrollMinutesClock.plusMinutes(2).getMinute());
         eventHours.push(this.scrollHoursClock.plusHours(2).getHour());
+    }
+
+    public LocalTime mainClockTick(Direction direction) {
+        return this.clockTick.apply(this.mainClock, direction.getDelta());
     }
 
     public LocalTime getMainClock() {

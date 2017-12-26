@@ -1,16 +1,20 @@
 package com.robotzero.counter.clock;
 
+import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
+import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import org.reactfx.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +31,8 @@ public class ClockPresenter implements Initializable {
     @FXML
     GridPane gridPane;
 
-//    @FXML
-//    Button start, reset;
+    @FXML
+    Button start, reset;
 
 //    @FXML
 //    StackPane paneSeconds;
@@ -78,15 +82,15 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     @Qualifier("DeltaStreamSeconds")
-    private Subject<Integer> deltaStreamSeconds;
+    private Subject<Direction> deltaStreamSeconds;
 
     @Autowired
     @Qualifier("DeltaStreamMinutes")
-    private Subject<Integer> deltaStreamMinutes;
+    private Subject<Direction> deltaStreamMinutes;
 
     @Autowired
     @Qualifier("DeltaStreamHours")
-    private Subject<Integer> deltaStreamHours;
+    private Subject<Direction> deltaStreamHours;
 
     @Autowired
     private StageController stageController;
@@ -102,7 +106,27 @@ public class ClockPresenter implements Initializable {
 //        start.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
 
         this.timerColumns = this.populator.timerColumns(this.gridPane, clocks);
-        //@TODO merge them and then split/fork?
+
+        JavaFxObservable.eventsOf(start, MouseEvent.MOUSE_CLICKED).switchMap(mouseEvent -> {
+            return Flowable.interval(1, 1, TimeUnit.SECONDS).toObservable().skipWhile(time -> false);
+        }).doOnEach(
+                (value) -> {
+                    this.clocks.mainClockTick(Direction.DOWN);
+                    this.deltaStreamSeconds.onNext(Direction.DOWN);
+                }
+        ).subscribe(
+                (value) -> {
+                    if (this.start.getText().equals("Start")) {
+                        this.timerColumns.get(ColumnType.SECONDS).play();
+                    }
+
+                    if (this.start.getText().equals("Pause")) {
+
+                    }
+                },
+                (error) -> start.disableProperty().setValue(false),
+                () -> start.setText("Start")
+        );
 //        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
 //        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
 //        EventStream<MouseEvent> optionClicks = EventStreams.eventsOf(optionsLabel, MouseEvent.MOUSE_CLICKED);
@@ -110,7 +134,11 @@ public class ClockPresenter implements Initializable {
 //        Flowable<Long> ticksReact = Flowable.interval(1, TimeUnit.SECONDS).skipWhile(time -> {
 //            return scrollMuteProperty.not().get();
 //        });
-        Flowable<Long> ticksReact = Flowable.interval(1, TimeUnit.SECONDS);
+        Flowable<Long> ticksReact = Flowable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> {
+            return false;
+//            return scrollMuteProperty.not().get();
+        });
+
         EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
 //        Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
 //            this.deltaStreamMinutes.onNext(-60);
@@ -168,17 +196,6 @@ public class ClockPresenter implements Initializable {
 //            this.deltaStreamSeconds.push(-60);
 //            secondsColumn.play();
 //        });
-
-        ticksReact.subscribe(
-                (value) -> {
-                    System.out.println(value);
-                    this.deltaStreamSeconds.onNext(-1);
-                    this.timerColumns.get(ColumnType.SECONDS).play();
-                },
-                e -> System.out.println("Error: " + e),
-                () -> System.out.println("Completed, Play sound.")
-        );
-
 //        startClicks.subscribe(click -> {
 //            if (scrollMuteProperty.get()) {
 //                savedTimerRepository.create("latest", clocks.getMainClock());

@@ -61,6 +61,7 @@ public class Column {
             EventStreams.combine(changeText, clockEvent).subscribe(event -> {
                 Cell cell = event.get1();
                 Integer timeshift = event.get2();
+
                 if (cell.hasChangeTextRectangle().get() && cell.getDelta() != 0) {
                     cell.setLabel(timeshift);
                 }

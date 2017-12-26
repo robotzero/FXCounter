@@ -30,7 +30,7 @@ public class Cell {
     private BooleanProperty isCellLabelToChange = new SimpleBooleanProperty(false);
     private Binding<Integer> currentDelta;
     private IntegerProperty currentSize;
-    private Subject<Integer> deltaStream;
+    private Subject<Direction> deltaStream;
     private IntegerProperty currentMultiplayer = new SimpleIntegerProperty(0);
 
     public Cell(
@@ -38,7 +38,7 @@ public class Cell {
             Location location,
             Text label,
             TranslateTransition translateTransition,
-            Subject<Integer> deltaStream,
+            Subject<Direction> deltaStream,
             IntegerProperty currentSize
     ) {
         this.rectangle = rectangle;
@@ -51,7 +51,7 @@ public class Cell {
         this.currentMultiplayer.set(0);
 
         //@TODO remove that.
-        currentDelta = JavaFxObserver.toBinding(deltaStream.startWith(0));
+        currentDelta = JavaFxObserver.toBinding(deltaStream.startWith(Direction.DOWN).map(Direction::getDelta));
         IntegerProperty s = new SimpleIntegerProperty(currentDelta.getValue() == null ? 0 : currentDelta.getValue());
         this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(0L).or(rectangle.translateYProperty().lessThan(0L))).then(true).otherwise(false));
         this.isCellLabelToChange.bind(new When(rectangle.translateYProperty().greaterThan(currentSize.multiply(3)).and(rectangle.translateYProperty().lessThan(currentSize.multiply(4))).and(s.lessThan(0))).then(true).otherwise(
@@ -64,7 +64,7 @@ public class Cell {
         EventStream<Change<Number>> currentCellSize = EventStreams.changesOf(currentSize);
 
 //        currentDelta.bind(deltaStream.get()..toBinding(0));
-        Observable<Tuple2<Integer, Integer>> combo = Observable.combineLatest(
+        Observable<Tuple2<Direction, Integer>> combo = Observable.combineLatest(
                 this.deltaStream,
                 currentYposition,
                 Tuples::t
@@ -75,13 +75,13 @@ public class Cell {
         currentCellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
 
         translateTransition.fromYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
-            Integer currDelta = change.get1();
+            Integer currDelta = change.get1().getDelta();
             Integer transY = change.get2();
             return location.calculateFromY(currentSize, currDelta, transY);
         })));
 
         translateTransition.toYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
-            Integer currDelta = change.get1();
+            Integer currDelta = change.get1().getDelta();
             Integer transY = change.get2();
             return location.calculateToY(currentSize, currDelta, transY);
         })));
@@ -109,9 +109,9 @@ public class Cell {
     }
 
     public void setLabel(int newLabel) {
-        if (label.getId().contains(rectangle.getId())) {
-//            this.label.setText(String.format("%02d", newLabel));
-        }
+//        if (label.getId().contains(rectangle.getId())) {
+            this.label.setText(String.format("%02d", newLabel));
+//        }
     }
 
     public void setLabel(LocalTime clock, ColumnType columnType) {

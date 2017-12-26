@@ -1,25 +1,16 @@
 package com.robotzero.counter.domain;
 
 public enum Direction {
-    UP(0, -60), DOWN(0, 60), SWITCHUP(0, -60), SWITCHDOWN(0, 60), STARTUP(0, -60), STARTDOWN(0, 60);
+    UP(1), DOWN(-1), SWITCHUP(-1), SWITCHDOWN(1), STARTUP(-1), STARTDOWN(1);
 
-    private final int xOffset;
+    private final int delta;
 
-    private final int yOffset;
-
-    Direction(int xOffset, int yOffset)
+    Direction(int delta)
     {
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
+        this.delta = delta;
     }
 
-    public int getxOffset()
-    {
-        return this.xOffset;
-    }
-
-    public int getyOffset()
-    {
-        return this.yOffset;
+    public int getDelta() {
+        return delta;
     }
 }

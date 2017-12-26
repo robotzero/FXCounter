@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import org.reactfx.EventSource;
 
 import java.util.HashMap;
@@ -25,12 +26,12 @@ public class Populator {
     private IntegerProperty cellSize = new SimpleIntegerProperty(60);
     private final Clocks clocks;
     private final EventSource[] clocksEvents;
-    private final Subject<Integer> deltaStreamSeconds;
-    private final Subject<Integer> deltaStreamMinutes;
-    private final Subject<Integer> deltaStreamHours;
+    private final Subject<Direction> deltaStreamSeconds;
+    private final Subject<Direction> deltaStreamMinutes;
+    private final Subject<Direction> deltaStreamHours;
     private ObjectProperty<Font> fontTracking = new SimpleObjectProperty<>(Font.getDefault());
 
-    public Populator(final Clocks clocks, final List<Subject<Integer>> deltaStreams, EventSource ...clocksEvents) {
+    public Populator(final Clocks clocks, final List<Subject<Direction>> deltaStreams, EventSource ...clocksEvents) {
         this.clocks = clocks;
         this.clocksEvents = clocksEvents;
         this.deltaStreamSeconds = deltaStreams.get(0);
@@ -62,7 +63,7 @@ public class Populator {
             Rectangle rectangle = (Rectangle) ((StackPane) stackPane).getChildren().get(0);
             Text text = (Text) ((StackPane) stackPane).getChildren().get(1);
             String id = "";
-            Optional<Subject<Integer>> deltaStream = Optional.empty();
+            Optional<Subject<Direction>> deltaStream = Optional.empty();
 
 //            rectangle.widthProperty().bind(stack.widthProperty().subtract(stack.widthProperty().multiply(0.09)));
 //            rectangle.heightProperty().bind(stack.heightProperty().divide(4).multiply(0.8));
@@ -130,6 +131,7 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
+                    translateTransition.setDuration(Duration.millis(600));
                     return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, deltaStreamSeconds, new SimpleIntegerProperty(90));
                 }).collect(Collectors.toList());
 

@@ -6,8 +6,8 @@ import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
+import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clocks;
-import com.robotzero.counter.entity.Clock;
 import com.robotzero.counter.domain.clock.ClockRepository;
 import com.robotzero.counter.infrastructure.database.ClockDatabaseRepository;
 import com.robotzero.counter.service.Populator;
@@ -95,23 +95,23 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Subject<Integer> DeltaStreamSeconds() {
+    public Subject<Direction> DeltaStreamSeconds() {
         return BehaviorSubject.create();
     }
 
     @Bean
-    public Subject<Integer> DeltaStreamMinutes() {
+    public Subject<Direction> DeltaStreamMinutes() {
         return BehaviorSubject.create();
     }
 
     @Bean
-    public Subject<Integer> DeltaStreamHours() {
+    public Subject<Direction> DeltaStreamHours() {
         return BehaviorSubject.create();
     }
 
     @Bean
     public Populator populator(ClockRepository savedTimerRepository) {
-        List<Subject<Integer>> deltaStreams = new ArrayList<>();
+        List<Subject<Direction>> deltaStreams = new ArrayList<>();
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
@@ -148,7 +148,7 @@ public class SpringApplicationConfiguration {
         plays.add(PlayHours());
         plays.add(StopCountdown());
 
-        List<Subject<Integer>> deltaStreams = new ArrayList<>();
+        List<Subject<Direction>> deltaStreams = new ArrayList<>();
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
