@@ -25,13 +25,13 @@ public class Populator {
 
     private IntegerProperty cellSize = new SimpleIntegerProperty(60);
     private final Clocks clocks;
-    private final EventSource[] clocksEvents;
+    private final Subject<Integer>[] clocksEvents;
     private final Subject<Direction> deltaStreamSeconds;
     private final Subject<Direction> deltaStreamMinutes;
     private final Subject<Direction> deltaStreamHours;
     private ObjectProperty<Font> fontTracking = new SimpleObjectProperty<>(Font.getDefault());
 
-    public Populator(final Clocks clocks, final List<Subject<Direction>> deltaStreams, EventSource ...clocksEvents) {
+    public Populator(final Clocks clocks, final List<Subject<Direction>> deltaStreams, Subject<Integer> ...clocksEvents) {
         this.clocks = clocks;
         this.clocksEvents = clocksEvents;
         this.deltaStreamSeconds = deltaStreams.get(0);

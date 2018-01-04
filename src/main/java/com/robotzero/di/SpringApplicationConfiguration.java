@@ -65,18 +65,18 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public EventSource seconds() {
-        return new EventSource();
+    public Subject<Integer> seconds() {
+        return BehaviorSubject.create();
     }
 
     @Bean
-    public EventSource minutes() {
-        return new EventSource();
+    public Subject<Integer> minutes() {
+        return BehaviorSubject.create();
     }
 
     @Bean
-    public EventSource hours() {
-        return new EventSource();
+    public Subject<Integer> hours() {
+        return BehaviorSubject.create();
     }
 
     @Bean

@@ -111,7 +111,7 @@ public class ClockPresenter implements Initializable {
             return Flowable.interval(1, 1, TimeUnit.SECONDS).toObservable().skipWhile(time -> false);
         }).doOnEach(
                 (value) -> {
-                    this.clocks.mainClockTick(Direction.DOWN);
+//                    this.clocks.mainClockTick(Direction.DOWN);
                     this.deltaStreamSeconds.onNext(Direction.DOWN);
                 }
         ).subscribe(

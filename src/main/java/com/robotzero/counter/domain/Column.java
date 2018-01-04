@@ -1,11 +1,11 @@
 package com.robotzero.counter.domain;
 
 import com.robotzero.counter.domain.clock.Clocks;
+import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.reactfx.EventSource;
 import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 
@@ -20,9 +20,9 @@ public class Column {
 
     private ColumnType columnType;
     private SuspendableNo resetClicked = new SuspendableNo();
-    private EventSource<Integer> clockEvent;
+    private Subject<Integer> clockEvent;
 
-    public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType, EventSource<Integer> clockEvent) {
+    public Column(List<Cell> columnList, Clocks clocks, ColumnType columnType, Subject<Integer> clockEvent) {
         this.columnList = columnList;
         this.clocks = clocks;
         this.columnType = columnType;
@@ -52,7 +52,7 @@ public class Column {
                                 cell.setLabel(clocks.getMainClock(), columnType);
                             })
                     );
-
+        
         this.columnList.stream().map(cell -> {
             return EventStreams.valuesOf(cell.hasChangeTextRectangle()).suppressWhen(resetClicked).supply(cell);
         }).reduce((current, next) -> {
