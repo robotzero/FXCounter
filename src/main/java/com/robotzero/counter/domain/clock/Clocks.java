@@ -50,7 +50,6 @@ public class Clocks {
     private final int HR  = 23;
 
     public Clocks(ClockRepository clockRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, Subject<Integer> ...eventSources) {
-//        System.out.println(isGreaterThan.apply(30).test(10));
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
@@ -62,7 +61,6 @@ public class Clocks {
         this.clockRepository = clockRepository;
 
         deltaStreams.get(0).subscribe(currentDelta -> {
-//            if (currentDelta.getDelta() != 0) {
             this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta()).apply(this.scrollSecondsClock, 1);
             this.mainClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta()).apply(this.mainClock, 1);
 //                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta()));

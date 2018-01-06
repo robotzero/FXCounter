@@ -1,12 +1,14 @@
 package com.robotzero.counter.domain;
 
 import com.robotzero.counter.domain.clock.Clocks;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.reactfx.EventStreams;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
@@ -52,29 +54,16 @@ public class Column {
                                 cell.setLabel(clocks.getMainClock(), columnType);
                             })
                     );
-        
-        this.columnList.stream().map(cell -> {
-            return EventStreams.valuesOf(cell.hasChangeTextRectangle()).suppressWhen(resetClicked).supply(cell);
-        }).reduce((current, next) -> {
-            return EventStreams.merge(current, next);
-        }).ifPresent(changeText -> {
-            EventStreams.combine(changeText, clockEvent).subscribe(event -> {
-                Cell cell = event.get1();
-                Integer timeshift = event.get2();
 
-                if (cell.hasChangeTextRectangle().get() && cell.getDelta() != 0) {
-                    cell.setLabel(timeshift);
-                }
-            });
+        clockEvent.skipWhile(a -> {
+            return this.columnList.stream().noneMatch(cell -> cell.hasChangeTextRectangle().get());
+        }).subscribe(event -> {
+            this.columnList.stream().filter(cell -> cell.hasChangeTextRectangle().get()).findFirst().ifPresent(cell -> cell.setLabel(event.intValue()));
         });
     }
 
     public void play() {
         this.columnList.forEach(Cell::animate);
-    }
-
-    public BooleanProperty isRunning() {
-        return running;
     }
 
     public void setLabels() {

@@ -101,14 +101,16 @@ public class ClockPresenter implements Initializable {
 
     private Map<ColumnType, Column> timerColumns;
 
+    private BooleanProperty timerMute = new SimpleBooleanProperty(true);
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 //        start.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
-
+        timerMute.bind(start.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane, clocks);
 
         JavaFxObservable.eventsOf(start, MouseEvent.MOUSE_CLICKED).switchMap(mouseEvent -> {
-            return Flowable.interval(1, 1, TimeUnit.SECONDS).toObservable().skipWhile(time -> false);
+            return Flowable.interval(1, 1, TimeUnit.SECONDS).toObservable().skipWhile(time -> timerMute.get());
         }).doOnEach(
                 (value) -> {
 //                    this.clocks.mainClockTick(Direction.DOWN);

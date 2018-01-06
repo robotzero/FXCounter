@@ -18,6 +18,7 @@ import org.reactfx.util.Tuple2;
 import org.reactfx.util.Tuples;
 
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class Cell {
@@ -50,28 +51,24 @@ public class Cell {
 //        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
         this.currentMultiplayer.set(0);
 
-        //@TODO remove that.
         currentDelta = JavaFxObserver.toBinding(deltaStream.startWith(Direction.DOWN).map(Direction::getDelta));
-        IntegerProperty s = new SimpleIntegerProperty(currentDelta.getValue() == null ? 0 : currentDelta.getValue());
         this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(0L).or(rectangle.translateYProperty().lessThan(0L))).then(true).otherwise(false));
-        this.isCellLabelToChange.bind(new When(rectangle.translateYProperty().greaterThan(currentSize.multiply(3)).and(rectangle.translateYProperty().lessThan(currentSize.multiply(4))).and(s.lessThan(0))).then(true).otherwise(
-                new When(rectangle.translateYProperty().greaterThan(0).and(rectangle.translateYProperty().lessThan(currentSize)).and(s.greaterThan(0))).then(true).otherwise(false)
-        ));
-
-//        EventStream<Number> currentYposition = EventStreams.valuesOf(rectangle.translateYProperty());
         Observable<Integer> currentYposition = JavaFxObservable.valuesOf(rectangle.translateYProperty()).map(Number::intValue);
 
         EventStream<Change<Number>> currentCellSize = EventStreams.changesOf(currentSize);
 
-//        currentDelta.bind(deltaStream.get()..toBinding(0));
+        translateTransition.setOnFinished(a -> {
+            this.hasChangeTextRectangle().setValue(false);
+            Optional.of(currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get())
+                    .filter(value -> value)
+                    .ifPresent(this.hasChangeTextRectangle()::setValue);
+        });
+
         Observable<Tuple2<Direction, Integer>> combo = Observable.combineLatest(
                 this.deltaStream,
                 currentYposition,
                 Tuples::t
         );
-//        EventStream<Tuple2<Integer, Double>> combo = EventStreams.combine(
-//                this.deltaStream, currentYposition
-//        );
         currentCellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
 
         translateTransition.fromYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
@@ -109,9 +106,7 @@ public class Cell {
     }
 
     public void setLabel(int newLabel) {
-//        if (label.getId().contains(rectangle.getId())) {
-            this.label.setText(String.format("%02d", newLabel));
-//        }
+        this.label.textProperty().setValue(String.format("%02d", newLabel));
     }
 
     public void setLabel(LocalTime clock, ColumnType columnType) {
@@ -170,10 +165,6 @@ public class Cell {
 
     public ReadOnlyObjectProperty<Animation.Status> isRunning() {
         return translateTransition.statusProperty();
-    }
-
-    public int getDelta() {
-        return this.currentDelta.getValue();
     }
 
     public void resetMultiplayer(boolean isOnTop) {
