@@ -104,18 +104,18 @@ public class Populator {
 //        stack.setClip(clipRectangle);
 
         if (stack.getId().contains("Seconds")) {
-            Column column = new Column(cc, clocks, ColumnType.SECONDS, clocksEvents[0]);
+            Column column = new Column(cc, ColumnType.SECONDS, clocksEvents[0]);
 //            column.setLabels();
             return column;
         }
 
         if (stack.getId().contains("Minutes")) {
-            Column column = new Column(cc, clocks, ColumnType.MINUTES, clocksEvents[1]);
+            Column column = new Column(cc, ColumnType.MINUTES, clocksEvents[1]);
 //            column.setLabels();
             return column;
         }
 
-        Column column = new Column(cc, clocks, ColumnType.HOURS, clocksEvents[2]);
+        Column column = new Column(cc, ColumnType.HOURS, clocksEvents[2]);
 //        column.setLabels();
         return column;
     }
@@ -159,9 +159,9 @@ public class Populator {
                 }).collect(Collectors.toList());
 
         Map<ColumnType, Column> timerColumns = new HashMap<>();
-        timerColumns.put(ColumnType.SECONDS, new Column(seconds, clocks, ColumnType.SECONDS, clocksEvents[0]));
-        timerColumns.put(ColumnType.MINUTES, new Column(minutes, clocks, ColumnType.MINUTES, clocksEvents[1]));
-        timerColumns.put(ColumnType.HOURS, new Column(hours, clocks, ColumnType.HOURS, clocksEvents[2]));
+        timerColumns.put(ColumnType.SECONDS, new Column(seconds, ColumnType.SECONDS, clocksEvents[0]));
+        timerColumns.put(ColumnType.MINUTES, new Column(minutes, ColumnType.MINUTES, clocksEvents[1]));
+        timerColumns.put(ColumnType.HOURS, new Column(hours, ColumnType.HOURS, clocksEvents[2]));
 
         return timerColumns;
     }

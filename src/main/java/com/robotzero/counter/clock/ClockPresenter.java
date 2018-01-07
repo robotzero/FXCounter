@@ -7,6 +7,8 @@ import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
@@ -110,10 +112,9 @@ public class ClockPresenter implements Initializable {
         this.timerColumns = this.populator.timerColumns(this.gridPane, clocks);
 
         JavaFxObservable.eventsOf(start, MouseEvent.MOUSE_CLICKED).switchMap(mouseEvent -> {
-            return Flowable.interval(1, 1, TimeUnit.SECONDS).toObservable().skipWhile(time -> timerMute.get());
+            return Observable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> timerMute.get());
         }).doOnEach(
                 (value) -> {
-//                    this.clocks.mainClockTick(Direction.DOWN);
                     this.deltaStreamSeconds.onNext(Direction.DOWN);
                 }
         ).subscribe(
@@ -141,7 +142,6 @@ public class ClockPresenter implements Initializable {
 //            return scrollMuteProperty.not().get();
         });
 
-        EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis(1000)).suppressWhen(scrollMuteProperty.not());
 //        Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
 //            this.deltaStreamMinutes.onNext(-60);
 //            timerColumns.get(ColumnType.MINUTES).play();
