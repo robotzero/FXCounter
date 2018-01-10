@@ -1,14 +1,13 @@
 package com.robotzero.counter.clock;
 
-import com.robotzero.counter.domain.Direction;
-import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
@@ -18,12 +17,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import org.reactfx.*;
+import org.reactfx.EventSource;
+import org.reactfx.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.net.URL;
-import java.time.Duration;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -109,7 +108,7 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 //        start.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(start.armedProperty());
-        this.timerColumns = this.populator.timerColumns(this.gridPane, clocks);
+        this.timerColumns = this.populator.timerColumns(this.gridPane);
 
         JavaFxObservable.eventsOf(start, MouseEvent.MOUSE_CLICKED).switchMap(mouseEvent -> {
             return Observable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> timerMute.get());

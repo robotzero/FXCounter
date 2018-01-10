@@ -115,7 +115,7 @@ public class SpringApplicationConfiguration {
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
-        return new Populator(configureClocks(savedTimerRepository), deltaStreams, seconds(), minutes(), hours());
+        return new Populator(deltaStreams, seconds(), minutes(), hours());
     }
 
     @Bean

@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain;
 
-import com.robotzero.counter.domain.clock.Clocks;
 import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
@@ -36,12 +35,6 @@ public class Column {
                 .reduce(BooleanExpression::or)
                 .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop)));
 
-//         Could be brittle in second map.
-//        columnList.stream().map(Cell::hasTopEdgeRectangle)
-//                           .map(hasEdge -> hasEdge.or(hasEdge))
-//                           .reduce(BooleanExpression::or)
-//                           .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop));
-
         // When we are in reset mode / button reset has been clicked set new value of the each cell.
 //        resetClicked.noes()
 //                    .subscribe(cellList -> this.columnList.forEach(
@@ -52,9 +45,14 @@ public class Column {
 //                    );
 
         clockEvent.skipWhile(label -> {
-            return Observable.fromIterable(this.columnList).filter(cell -> cell.hasChangeTextRectangle().get()).firstElement().count().blockingGet() == 0;
+            return Observable.fromIterable(this.columnList).switchMap(cell -> {
+                return Observable.just(cell.hasChangeTextRectangle());
+            }).map(BooleanExpression::getValue).filter(value -> value).count().blockingGet() != 0;
         }).doOnEach(label -> {
-            Observable.fromIterable(this.columnList).filter(cell -> cell.hasChangeTextRectangle().getValue()).firstElement().subscribe(cell -> cell.setLabel(label.getValue()));
+            Observable.fromIterable(this.columnList)
+                    .filter(cell -> cell.hasChangeTextRectangle().getValue())
+                    .firstElement()
+                    .subscribe(cell -> cell.setLabel(label.getValue()));
         }).subscribe();
     }
 
