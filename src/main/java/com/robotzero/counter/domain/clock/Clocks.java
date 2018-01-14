@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 public class Clocks {
 
-    private final ClockRepository clockRepository;
+    private final TimerRepository timerRepository;
     private final Subject<Integer> eventSeconds;
     private final Subject<Integer> eventMinutes;
     private final Subject<Integer> eventHours;
@@ -49,7 +49,7 @@ public class Clocks {
     private final int MIN = 59;
     private final int HR  = 23;
 
-    public Clocks(ClockRepository clockRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, Subject<Integer> ...eventSources) {
+    public Clocks(TimerRepository timerRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, Subject<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
@@ -58,7 +58,7 @@ public class Clocks {
         this.playHours = playSources.get(1);
         this.stopCountdown = playSources.get(2);
 
-        this.clockRepository = clockRepository;
+        this.timerRepository = timerRepository;
 
         deltaStreams.get(0).subscribe(currentDelta -> {
             this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta()).apply(this.scrollSecondsClock, 1);
@@ -102,7 +102,7 @@ public class Clocks {
 
     @PostConstruct
     public void initialize() {
-        this.mainClock = Optional.ofNullable(clockRepository.selectLatest()).orElseGet(() -> {
+        this.mainClock = Optional.ofNullable(timerRepository.selectLatest()).orElseGet(() -> {
             Clock savedTimer = new Clock();
             savedTimer.setSavedTimer(LocalTime.of(22, 10, 0));
             return savedTimer;

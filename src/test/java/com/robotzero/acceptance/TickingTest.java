@@ -1,7 +1,7 @@
 package com.robotzero.acceptance;
 
 import com.google.code.tempusfugit.temporal.WaitFor;
-import com.robotzero.counter.domain.clock.ClockRepository;
+import com.robotzero.counter.domain.clock.TimerRepository;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -27,7 +27,7 @@ import static org.testfx.api.FxAssert.verifyThat;
 @RunWith(DataProviderRunner.class)
 public class TickingTest extends CounterAppIT {
 
-    private ClockRepository repository;
+    private TimerRepository repository;
     private BooleanProperty resetOption;
 
     @DataProvider
@@ -44,7 +44,7 @@ public class TickingTest extends CounterAppIT {
     @Before
     public void setUp() {
         resetOption = this.getBean(BooleanProperty.class);
-        repository = this.getBean(ClockRepository.class);
+        repository = this.getBean(TimerRepository.class);
         repository.deleteAll();
     }
 

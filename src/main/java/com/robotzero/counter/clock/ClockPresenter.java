@@ -7,7 +7,11 @@ import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.Flowable;
+import io.reactivex.Notification;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
@@ -21,11 +25,15 @@ import org.reactfx.EventSource;
 import org.reactfx.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.util.SocketUtils;
 
+import javax.sound.midi.Soundbank;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class ClockPresenter implements Initializable {
 
@@ -33,7 +41,7 @@ public class ClockPresenter implements Initializable {
     GridPane gridPane;
 
     @FXML
-    Button start, reset;
+    Button startButton, reset;
 
 //    @FXML
 //    StackPane paneSeconds;
@@ -106,30 +114,76 @@ public class ClockPresenter implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        start.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
-        timerMute.bind(start.armedProperty());
+//        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
+        timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
 
-        JavaFxObservable.eventsOf(start, MouseEvent.MOUSE_CLICKED).switchMap(mouseEvent -> {
-            return Observable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> timerMute.get());
-        }).doOnEach(
-                (value) -> {
-                    this.deltaStreamSeconds.onNext(Direction.DOWN);
-                }
-        ).subscribe(
-                (value) -> {
-                    if (this.start.getText().equals("Start")) {
-                        this.timerColumns.get(ColumnType.SECONDS).play();
-                    }
-
-                    if (this.start.getText().equals("Pause")) {
-
-                    }
-                },
-                (error) -> start.disableProperty().setValue(false),
-                () -> start.setText("Start")
+        Observable<MouseEvent> mouseClickObservable = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED);
+        Observable<Long> timerObservable = Observable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> timerMute.get());
+        JavaFxObservable.valuesOf(startButton.textProperty()).startWith(startButton.textProperty().get()).skipUntil(mouseClickObservable).subscribe(
+                (val) -> System.out.println("RECEIVED"),
+                (error) -> System.out.println("ERRR"),
+                () -> System.out.println("COMPLETED")
         );
-//        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(start, MouseEvent.MOUSE_CLICKED);
+
+//        Observable.create(observable -> {
+//            observable.onNext(startButton);
+//            observable.onComplete();
+//        }).replay().skipUntil(timerObservable).
+//                subscribe(
+//                (val) -> System.out.println("RECEIVED"),
+//                (error) -> System.out.println("ERRR"),
+//                () -> System.out.println("COMPLETED")
+//        );
+//        Observable.just(startButton.textProperty())
+//                .skipWhile(stringProperty -> !stringProperty.get().equals("Pause"))
+////                .doOnEach(textProperty -> {
+////                    System.out.println("BLAH");
+////                    Optional.ofNullable(textProperty.getValue()).ifPresent(stringProperty -> {
+////                        startButton.setText("PAUSE");
+////                        stringProperty.setValue("Pause");
+////                    });
+//                .subscribe(
+//                        (textProperty) -> {
+//                    System.out.println("BLAH");
+////                    startButton.setText("Pause");
+////                    textProperty.setValue("Pause");
+//                },
+//                        (error) -> System.out.println("ERROR"),
+//                        () -> System.out.println("COMBPL"));
+
+        Consumer<Long> timerOnNext = value -> {
+            System.out.println("PLAY!!!!!!!!!!!!!");
+            System.out.println(value);
+            this.timerColumns.get(ColumnType.SECONDS).play();
+        };
+        Consumer<Notification> timerDoOnEach = value -> this.deltaStreamSeconds.onNext(Direction.DOWN);
+        Consumer<Throwable> timerDoOnError = System.out::println;
+        Action timerOnComplete = () -> System.out.println("Completed");
+
+        Disposable disposable = mouseClickObservable.switchMap(mouseEvent -> {
+            return timerObservable;
+        }).doOnEach(timerDoOnEach::accept).subscribe(
+                timerOnNext::accept,
+                timerDoOnError::accept,
+                timerOnComplete
+        );
+
+        ConnectableObservable<MouseEvent> conn  = mouseClickObservable.publish();
+        //@Todo debounce or delay here!!!
+        mouseClickObservable.window(1).switchMap(mouseEvent -> {
+           return Observable.just(startButton);
+        }).doOnEach(startButton -> {
+            conn.publish();
+            if (startButton.getValue().getText().equals("Start")) {
+                startButton.getValue().setText("Pause");
+            } else {
+                startButton.getValue().setText("Start");
+            }
+        }).subscribe();
+
+
+//        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(startButton, MouseEvent.MOUSE_CLICKED);
 //        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
 //        EventStream<MouseEvent> optionClicks = EventStreams.eventsOf(optionsLabel, MouseEvent.MOUSE_CLICKED);
 
@@ -160,7 +214,7 @@ public class ClockPresenter implements Initializable {
 //            System.out.println("BEEP");
 //        });
 
-        // If start button is clicked mute scroll event until stop button is clicked.
+        // If startButton button is clicked mute scroll event until stop button is clicked.
 //        StateMachine.init(scrollMuteProperty)
 //                .on(startClicks).transition((wasMuted, event) -> {
 //                    if (wasMuted.get()) {

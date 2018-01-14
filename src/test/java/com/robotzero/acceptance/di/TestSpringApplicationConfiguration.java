@@ -1,13 +1,13 @@
 package com.robotzero.acceptance.di;
 
-import com.robotzero.di.SpringApplicationConfiguration;
+import com.robotzero.di.TimerConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
 
-@Import(SpringApplicationConfiguration.class)
+@Import(TimerConfiguration.class)
 public class TestSpringApplicationConfiguration {
 
     @Bean

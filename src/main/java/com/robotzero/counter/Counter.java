@@ -2,7 +2,7 @@ package com.robotzero.counter;
 
 import com.airhacks.afterburner.injection.Injector;
 import com.robotzero.counter.service.StageController;
-import com.robotzero.di.SpringApplicationConfiguration;
+import com.robotzero.di.TimerConfiguration;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class Counter extends Application {
 
-    private final ApplicationContext injector = new AnnotationConfigApplicationContext(SpringApplicationConfiguration.class);
+    private final ApplicationContext injector = new AnnotationConfigApplicationContext(TimerConfiguration.class);
 
     public static void main(String[] args) {
         launch(args);

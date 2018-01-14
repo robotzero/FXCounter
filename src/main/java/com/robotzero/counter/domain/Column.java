@@ -1,6 +1,9 @@
 package com.robotzero.counter.domain;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
@@ -9,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Column {
 
@@ -18,12 +22,12 @@ public class Column {
 
     private ColumnType columnType;
     private SuspendableNo resetClicked = new SuspendableNo();
-    private Subject<Integer> clockEvent;
+    private Subject<Integer> newLableEvent;
 
-    public Column(List<Cell> columnList, ColumnType columnType, Subject<Integer> clockEvent) {
+    public Column(List<Cell> columnList, ColumnType columnType, Subject<Integer> newLabelEvent) {
         this.columnList = columnList;
         this.columnType = columnType;
-        this.clockEvent = clockEvent;
+        this.newLableEvent = newLabelEvent;
 
         columnList.stream().map(Cell::isRunning)
                            .map(runningStatus -> runningStatus.isEqualTo(Animation.Status.RUNNING))
@@ -43,16 +47,17 @@ public class Column {
 //                                cell.setLabel(clocks.getMainClock(), columnType);
 //                            })
 //                    );
+        // Grab only top column from the list and transform it into Flowable.
+        Flowable<Cell> topCellFlowable = Observable.fromIterable(this.columnList)
+                .filter(cell -> cell.hasChangeTextRectangle().getValue())
+                .toFlowable(BackpressureStrategy.LATEST);
 
-        clockEvent.skipWhile(label -> {
-            return Observable.fromIterable(this.columnList).switchMap(cell -> {
-                return Observable.just(cell.hasChangeTextRectangle());
-            }).map(BooleanExpression::getValue).filter(value -> value).count().blockingGet() != 0;
-        }).doOnEach(label -> {
-            Observable.fromIterable(this.columnList)
-                    .filter(cell -> cell.hasChangeTextRectangle().getValue())
-                    .firstElement()
-                    .subscribe(cell -> cell.setLabel(label.getValue()));
+        // When new label comes in, ignore event when topCell is missing otherwise set the new label on the cell.
+        newLabelEvent.skipUntil(topCellFlowable.toObservable()).doOnEach(label -> {
+           Disposable disposable = topCellFlowable.doOnEach(cellNotification -> Optional.ofNullable(cellNotification.getValue())
+                   .ifPresent(cell -> cell.setLabel(label.getValue())))
+                   .subscribe();
+           disposable.dispose();
         }).subscribe();
     }
 

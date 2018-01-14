@@ -4,7 +4,7 @@ import com.robotzero.counter.entity.Clock;
 
 import java.time.LocalTime;
 
-public interface ClockRepository {
+public interface TimerRepository {
 
     void create(String name, LocalTime savedTimer);
 

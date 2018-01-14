@@ -116,7 +116,7 @@
         <Rectangle id="strokeInsideDarkHours" arcHeight="20" arcWidth="20" fill="transparent" height="60" strokeType="INSIDE" styleClass="insideGradient" width="60" />
     </StackPane>
     <HBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.rowSpan="1" GridPane.valignment="CENTER">
-        <Button id="start" fx:id="start" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Start" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+        <Button id="start" fx:id="startButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Start" textAlignment="CENTER" HBox.hgrow="ALWAYS">
             <HBox.margin>
                 <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
             </HBox.margin>

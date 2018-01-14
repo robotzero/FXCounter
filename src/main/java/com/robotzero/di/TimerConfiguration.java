@@ -7,9 +7,9 @@ import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
 import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.clock.TimerRepository;
 import com.robotzero.counter.domain.clock.Clocks;
-import com.robotzero.counter.domain.clock.ClockRepository;
-import com.robotzero.counter.infrastructure.database.ClockDatabaseRepository;
+import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import io.reactivex.subjects.BehaviorSubject;
@@ -25,13 +25,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Configuration
-public class SpringApplicationConfiguration {
+public class TimerConfiguration {
 
     @FXML
     StackPane paneSeconds;
@@ -110,7 +108,7 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Populator populator(ClockRepository savedTimerRepository) {
+    public Populator populator(TimerRepository savedTimerRepository) {
         List<Subject<Direction>> deltaStreams = new ArrayList<>();
         deltaStreams.add(DeltaStreamSeconds());
         deltaStreams.add(DeltaStreamMinutes());
@@ -132,8 +130,8 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public ClockRepository clockRepository(JdbcTemplate jdbcTemplate) {
-        return new ClockDatabaseRepository(jdbcTemplate);
+    public TimerRepository clockRepository(JdbcTemplate jdbcTemplate) {
+        return new TimerDatabaseRepository(jdbcTemplate);
     }
 
     @Bean
@@ -142,7 +140,7 @@ public class SpringApplicationConfiguration {
     }
 
     @Bean
-    public Clocks configureClocks(ClockRepository clockRepository) {
+    public Clocks configureClocks(TimerRepository clockRepository) {
         List<EventSource<Void>> plays = new ArrayList<>();
         plays.add(PlayMinutes());
         plays.add(PlayHours());

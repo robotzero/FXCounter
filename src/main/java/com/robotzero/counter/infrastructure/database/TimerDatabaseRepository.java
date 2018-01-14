@@ -1,17 +1,17 @@
 package com.robotzero.counter.infrastructure.database;
 
+import com.robotzero.counter.domain.clock.TimerRepository;
 import com.robotzero.counter.entity.Clock;
-import com.robotzero.counter.domain.clock.ClockRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Instant;
 import java.time.LocalTime;
 
-public class ClockDatabaseRepository implements ClockRepository {
+public class TimerDatabaseRepository implements TimerRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ClockDatabaseRepository(JdbcTemplate jdbcTemplate) {
+    public TimerDatabaseRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalTime;
 
-public class ClockRowMapper implements org.springframework.jdbc.core.RowMapper {
+public class TimerRowMapper implements org.springframework.jdbc.core.RowMapper {
 
     @Override
     public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
