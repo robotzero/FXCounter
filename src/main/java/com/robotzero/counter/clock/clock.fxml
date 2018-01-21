@@ -277,7 +277,7 @@
                   <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                </HBox.margin>
             </Button>
-            <Button id="reset" fx:id="reset" maxHeight="Infinity" maxWidth="Infinity" alignment="CENTER" mnemonicParsing="false" text="Reset" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+            <Button id="reset" fx:id="resetButton" maxHeight="Infinity" maxWidth="Infinity" alignment="CENTER" mnemonicParsing="false" text="Reset" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                </HBox.margin>

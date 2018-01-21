@@ -4,15 +4,21 @@ import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clocks;
+import com.robotzero.counter.event.ButtonType;
+import com.robotzero.counter.event.ClickEvent;
+import com.robotzero.counter.event.ScrollEvent;
+import com.robotzero.counter.event.SubmitEvent;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
-import io.reactivex.Flowable;
-import io.reactivex.Notification;
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,6 +34,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.SocketUtils;
 
 import javax.sound.midi.Soundbank;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +48,7 @@ public class ClockPresenter implements Initializable {
     GridPane gridPane;
 
     @FXML
-    Button startButton, reset;
+    Button startButton, resetButton;
 
 //    @FXML
 //    StackPane paneSeconds;
@@ -118,13 +125,20 @@ public class ClockPresenter implements Initializable {
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
 
-        Observable<MouseEvent> mouseClickObservable = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED);
-        Observable<Long> timerObservable = Observable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> timerMute.get());
-        JavaFxObservable.valuesOf(startButton.textProperty()).startWith(startButton.textProperty().get()).skipUntil(mouseClickObservable).subscribe(
-                (val) -> System.out.println("RECEIVED"),
-                (error) -> System.out.println("ERRR"),
-                () -> System.out.println("COMPLETED")
-        );
+//        Observable<MouseEvent> mouseClickObservable = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED);
+//        Observable<Long> timerObservable = Observable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> timerMute.get());
+//        JavaFxObservable.valuesOf(startButton.textProperty()).startWith(startButton.textProperty().get()).skipUntil(mouseClickObservable).subscribe(
+//                (val) -> System.out.println("RECEIVED"),
+//                (error) -> System.out.println("ERRR"),
+//                () -> System.out.println("COMPLETED")
+//        );
+
+//        Observable.create(e -> {
+//           e.onNext("blah");
+//           e.onComplete();
+//           e.onError(new IOException());
+//           e.setCancellable(() -> System.out.printf(""));
+//        }).subscribe();
 
 //        Observable.create(observable -> {
 //            observable.onNext(startButton);
@@ -153,35 +167,34 @@ public class ClockPresenter implements Initializable {
 //                        () -> System.out.println("COMBPL"));
 
         Consumer<Long> timerOnNext = value -> {
-            System.out.println("PLAY!!!!!!!!!!!!!");
-            System.out.println(value);
-            this.timerColumns.get(ColumnType.SECONDS).play();
+//            this.timerColumns.get(ColumnType.SECONDS).play();
         };
         Consumer<Notification> timerDoOnEach = value -> this.deltaStreamSeconds.onNext(Direction.DOWN);
         Consumer<Throwable> timerDoOnError = System.out::println;
         Action timerOnComplete = () -> System.out.println("Completed");
 
-        Disposable disposable = mouseClickObservable.switchMap(mouseEvent -> {
-            return timerObservable;
-        }).doOnEach(timerDoOnEach::accept).subscribe(
-                timerOnNext::accept,
-                timerDoOnError::accept,
-                timerOnComplete
-        );
+//        Disposable disposable = mouseClickObservable.switchMap(mouseEvent -> {
+//            return timerObservable;
+//        }).doOnEach(timerDoOnEach::accept).subscribe(
+//                timerOnNext::accept,
+//                timerDoOnError::accept,
+//                timerOnComplete
+//        );
 
-        ConnectableObservable<MouseEvent> conn  = mouseClickObservable.publish();
-        //@Todo debounce or delay here!!!
-        mouseClickObservable.window(1).switchMap(mouseEvent -> {
-           return Observable.just(startButton);
-        }).doOnEach(startButton -> {
-            conn.publish();
-            if (startButton.getValue().getText().equals("Start")) {
-                startButton.getValue().setText("Pause");
-            } else {
-                startButton.getValue().setText("Start");
-            }
-        }).subscribe();
+//        ConnectableObservable<MouseEvent> conn  = mouseClickObservable.publish();
+//        //@Todo debounce or delay here!!!
+//        mouseClickObservable.window(1).switchMap(mouseEvent -> {
+//           return Observable.just(startButton);
+//        }).doOnEach(startButton -> {
+//            conn.publish();
+//            if (startButton.getValue().getText().equals("Start")) {
+//                startButton.getValue().setText("Pause");
+//            } else {
+//                startButton.getValue().setText("Start");
+//            }
+//        }).subscribe();
 
+        UserManager userManager = new UserManager();
 
 //        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(startButton, MouseEvent.MOUSE_CLICKED);
 //        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
@@ -279,5 +292,98 @@ public class ClockPresenter implements Initializable {
 //            });
 //            timerColumns.get(ColumnType.SECONDS).setLabels();
 //        });
+
+        Observable<ClickEvent> startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
+                .map(ignored -> new ClickEvent(ButtonType.START));
+
+        Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
+                .map(ignored -> new ClickEvent(ButtonType.RESET));
+
+        Observable<SubmitEvent> events = Observable.merge(startClickEvent, resetClickEvent);
+
+        ObservableTransformer<SubmitEvent, SubmitUIModel> submit = e -> e.flatMap(clickEvent -> {
+           return userManager.setI(3)
+                   .map(response -> {
+                       System.out.println(response);
+                       return SubmitUIModel.success((ClickEvent) clickEvent);
+                   })
+                   .onErrorReturn(t -> SubmitUIModel.failure(t.toString(), new ClickEvent(ButtonType.START)))
+                   .observeOn(JavaFxScheduler.platform())
+                   .startWith(SubmitUIModel.idle(new ClickEvent(ButtonType.RESET)));
+        });
+
+        ObservableTransformer<SubmitEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
+                shared.ofType(ClickEvent.class).compose(submit),
+                shared.ofType(ScrollEvent.class).compose(submit)
+        ));
+
+                events.compose(submitUi).subscribe(model -> {
+                    if (model.getData().getButtonType().equals(ButtonType.START) && startButton.textProperty().getValue().equals(ButtonType.START.descripton())) {
+                        startButton.setText(ButtonType.PAUSE.descripton());
+                    }
+
+                    if (model.getData().getButtonType().equals(ButtonType.START) && startButton.textProperty().getValue().equals(ButtonType.PAUSE.descripton())) {
+                        startButton.setText(ButtonType.START.descripton());
+                    }
+
+                    if (model.getData().getButtonType().equals(ButtonType.RESET)) {
+                        startButton.setText(ButtonType.START.descripton());
+                    }
+
+        }, t -> {
+            throw new IOException("CRASHING");
+        });
+    }
+}
+
+class SubmitUIModel {
+    private final boolean success;
+    private final boolean failure;
+    private final String errorMessage;
+    private final ClickEvent data;
+
+    public SubmitUIModel(boolean success, boolean failure, String errorMessage, ClickEvent data) {
+        this.success = success;
+        this.failure = failure;
+        this.errorMessage = errorMessage;
+        this.data = data;
+    }
+
+    static SubmitUIModel success(ClickEvent data) {
+        return new SubmitUIModel(true, false, "", data);
+    }
+
+    static SubmitUIModel failure(ClickEvent data) {
+        return new SubmitUIModel(false, true, "", data);
+    }
+
+
+    static SubmitUIModel failure(String errorMessage, ClickEvent data) {
+        return new SubmitUIModel(false, false, errorMessage, data);
+    }
+
+    static SubmitUIModel idle(ClickEvent data) {
+        return new SubmitUIModel(false, false, "", data);
+    }
+
+    public ClickEvent getData() {
+        return data;
+    }
+}
+
+class UserManager {
+    Integer i = 1;
+    Observable get(String s) {
+        return Observable.just(i);
+    }
+
+    Observable setI(Integer i) {
+        this.i = i;
+        return Observable.just(i);
+    }
+
+    Completable setB(Integer i) {
+        this.i = i;
+        return Completable.complete();
     }
 }
