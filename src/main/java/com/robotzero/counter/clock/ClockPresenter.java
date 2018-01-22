@@ -27,6 +27,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import org.reactfx.EventSource;
 import org.reactfx.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,8 @@ public class ClockPresenter implements Initializable {
     @FXML
     Button startButton, resetButton;
 
-//    @FXML
-//    StackPane paneSeconds;
+    @FXML
+    StackPane seconds;
 //
 //    @FXML
 //    StackPane paneMinutes;
@@ -299,38 +300,58 @@ public class ClockPresenter implements Initializable {
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .map(ignored -> new ClickEvent(ButtonType.RESET));
 
-        Observable<SubmitEvent> events = Observable.merge(startClickEvent, resetClickEvent);
+        Observable<SubmitEvent> scrolls = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
+                .map(ignored -> new com.robotzero.counter.event.ScrollEvent(Direction.DOWN, ColumnType.SECONDS));
+
+        Observable<SubmitEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrolls);
 
         ObservableTransformer<SubmitEvent, SubmitUIModel> submit = e -> e.flatMap(clickEvent -> {
            return userManager.setI(3)
                    .map(response -> {
-                       System.out.println(response);
-                       return SubmitUIModel.success((ClickEvent) clickEvent);
+                       return SubmitUIModel.success(clickEvent);
                    })
-                   .onErrorReturn(t -> SubmitUIModel.failure(t.toString(), new ClickEvent(ButtonType.START)))
+                   .onErrorReturn(t -> SubmitUIModel.failure(t.toString()))
                    .observeOn(JavaFxScheduler.platform())
-                   .startWith(SubmitUIModel.idle(new ClickEvent(ButtonType.RESET)));
+                   .startWith(SubmitUIModel.idle());
+        });
+
+        ObservableTransformer<SubmitEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
+            return userManager.setI(3)
+                    .map(response -> {
+                        return SubmitUIModel.success(scrollEvent);
+                    })
+                    .onErrorReturn(t -> SubmitUIModel.failure(t.toString()))
+                    .observeOn(JavaFxScheduler.platform())
+                    .startWith(SubmitUIModel.idle());
         });
 
         ObservableTransformer<SubmitEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
                 shared.ofType(ClickEvent.class).compose(submit),
-                shared.ofType(ScrollEvent.class).compose(submit)
+                shared.ofType(com.robotzero.counter.event.ScrollEvent.class).compose(scroll)
         ));
 
                 events.compose(submitUi).subscribe(model -> {
-                    if (model.getData().getButtonType().equals(ButtonType.START) && startButton.textProperty().getValue().equals(ButtonType.START.descripton())) {
-                        startButton.setText(ButtonType.PAUSE.descripton());
-                    }
+                    if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {
+                        ClickEvent click = (ClickEvent) model.getData();
+                        if (click.getButtonType().equals(ButtonType.START)) {
+                            if (startButton.textProperty().getValue().equals(ButtonType.START.descripton())) {
+                                System.out.println("SETTING1");
+                                startButton.setText(ButtonType.PAUSE.descripton());
+                            } else {
+                                if (startButton.textProperty().getValue().equals(ButtonType.PAUSE.descripton())) {
+                                    System.out.println("SETTING 2");
+                                    startButton.setText(ButtonType.START.descripton());
+                                }
+                            }
+                        }
 
-                    if (model.getData().getButtonType().equals(ButtonType.START) && startButton.textProperty().getValue().equals(ButtonType.PAUSE.descripton())) {
-                        startButton.setText(ButtonType.START.descripton());
-                    }
-
-                    if (model.getData().getButtonType().equals(ButtonType.RESET)) {
-                        startButton.setText(ButtonType.START.descripton());
+                        if (click.getButtonType().equals(ButtonType.RESET)) {
+                            startButton.setText(ButtonType.START.descripton());
+                        }
                     }
 
         }, t -> {
+                    System.out.println(t.getMessage());
             throw new IOException("CRASHING");
         });
     }
@@ -340,33 +361,29 @@ class SubmitUIModel {
     private final boolean success;
     private final boolean failure;
     private final String errorMessage;
-    private final ClickEvent data;
+    protected final SubmitEvent data;
 
-    public SubmitUIModel(boolean success, boolean failure, String errorMessage, ClickEvent data) {
+    public SubmitUIModel(boolean success, boolean failure, String errorMessage, SubmitEvent data) {
         this.success = success;
         this.failure = failure;
         this.errorMessage = errorMessage;
         this.data = data;
     }
 
-    static SubmitUIModel success(ClickEvent data) {
+    static SubmitUIModel success(SubmitEvent data) {
         return new SubmitUIModel(true, false, "", data);
     }
 
-    static SubmitUIModel failure(ClickEvent data) {
-        return new SubmitUIModel(false, true, "", data);
+
+    static SubmitUIModel failure(String errorMessage) {
+        return new SubmitUIModel(false, false, errorMessage, null);
     }
 
-
-    static SubmitUIModel failure(String errorMessage, ClickEvent data) {
-        return new SubmitUIModel(false, false, errorMessage, data);
+    static SubmitUIModel idle() {
+        return new SubmitUIModel(false, false, "", null);
     }
 
-    static SubmitUIModel idle(ClickEvent data) {
-        return new SubmitUIModel(false, false, "", data);
-    }
-
-    public ClickEvent getData() {
+    public SubmitEvent getData() {
         return data;
     }
 }
