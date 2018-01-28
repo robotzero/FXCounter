@@ -10,6 +10,7 @@ import com.robotzero.counter.event.ScrollEvent;
 import com.robotzero.counter.event.SubmitEvent;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
+import com.robotzero.counter.service.TimerService;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -77,6 +78,9 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     private Clocks clocks;
+
+    @Autowired
+    private TimerService timerService;
 //
 //    @Autowired
 //    private ClockRepository savedTimerRepository;
@@ -204,10 +208,6 @@ public class ClockPresenter implements Initializable {
 //        Flowable<Long> ticksReact = Flowable.interval(1, TimeUnit.SECONDS).skipWhile(time -> {
 //            return scrollMuteProperty.not().get();
 //        });
-        Flowable<Long> ticksReact = Flowable.interval(1, 1, TimeUnit.SECONDS).skipWhile(time -> {
-            return false;
-//            return scrollMuteProperty.not().get();
-        });
 
 //        Subscription.multi(playMinutes.conditionOn(scrollMuteProperty).thenIgnoreFor(Duration.ofMillis(700)).subscribe(v -> {
 //            this.deltaStreamMinutes.onNext(-60);
@@ -315,6 +315,16 @@ public class ClockPresenter implements Initializable {
                    .startWith(SubmitUIModel.idle());
         });
 
+        Flowable<Long> ticksReact = timerService.initTimer();
+
+        ticksReact.subscribe(a -> {
+            this.deltaStreamSeconds.onNext(Direction.DOWN);
+            timerColumns.forEach((columnType, column) -> {
+                column.play();
+                column.setLabels();
+            });
+            timerColumns.get(ColumnType.SECONDS).setLabels();
+        });
         ObservableTransformer<SubmitEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
             return userManager.setI(3)
                     .map(response -> {
@@ -337,16 +347,19 @@ public class ClockPresenter implements Initializable {
                             if (startButton.textProperty().getValue().equals(ButtonType.START.descripton())) {
                                 System.out.println("SETTING1");
                                 startButton.setText(ButtonType.PAUSE.descripton());
+                                timerService.startTimer();
                             } else {
                                 if (startButton.textProperty().getValue().equals(ButtonType.PAUSE.descripton())) {
                                     System.out.println("SETTING 2");
                                     startButton.setText(ButtonType.START.descripton());
+                                    timerService.pauseTimer();
                                 }
                             }
                         }
 
                         if (click.getButtonType().equals(ButtonType.RESET)) {
                             startButton.setText(ButtonType.START.descripton());
+                            timerService.stopTimer();
                         }
                     }
 

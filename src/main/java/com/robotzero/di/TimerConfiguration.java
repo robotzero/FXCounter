@@ -12,6 +12,7 @@ import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
+import com.robotzero.counter.service.TimerService;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
@@ -152,5 +153,10 @@ public class TimerConfiguration {
         deltaStreams.add(DeltaStreamHours());
 
         return new Clocks(clockRepository, plays, deltaStreams, seconds(), minutes(), hours());
+    }
+
+    @Bean
+    public TimerService timerService() {
+        return new TimerService();
     }
 }

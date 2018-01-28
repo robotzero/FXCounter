@@ -7,6 +7,8 @@ import org.reactfx.EventSource;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -46,8 +48,8 @@ public class Clocks {
         return candidate -> candidate > pivot;
     };
 
-    private final int MIN = 59;
-    private final int HR  = 23;
+    private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
+    private final long HR  = ChronoUnit.HOURS.getDuration().toHours();
 
     public Clocks(TimerRepository timerRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, Subject<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
@@ -110,9 +112,9 @@ public class Clocks {
     }
 
     public void initializeClocks(final LocalTime mainClock) {
-        this.scrollHoursClock   = LocalTime.of(mainClock.getHour(), MIN, MIN);
-        this.scrollMinutesClock = LocalTime.of(HR, mainClock.getMinute(), MIN);
-        this.scrollSecondsClock = LocalTime.of(HR, MIN, mainClock.getSecond());
+        this.scrollHoursClock   = LocalTime.of(mainClock.getHour(), (int)MIN, (int)MIN);
+        this.scrollMinutesClock = LocalTime.of((int)HR, mainClock.getMinute(), (int)MIN);
+        this.scrollSecondsClock = LocalTime.of((int)HR, (int)MIN, mainClock.getSecond());
 
         eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1).apply(scrollSecondsClock, 2).getSecond());
         eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1).apply(scrollMinutesClock, 2).getMinute());
