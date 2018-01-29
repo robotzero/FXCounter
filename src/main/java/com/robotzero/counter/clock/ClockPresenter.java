@@ -5,21 +5,18 @@ import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.event.ButtonType;
-import com.robotzero.counter.event.ClickEvent;
 import com.robotzero.counter.event.ScrollEvent;
+import com.robotzero.counter.event.action.ActionType;
+import com.robotzero.counter.event.ClickEvent;
 import com.robotzero.counter.event.SubmitEvent;
+import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import com.robotzero.counter.service.TimerService;
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
-import io.reactivex.observables.ConnectableObservable;
-import io.reactivex.observers.DisposableCompletableObserver;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -33,15 +30,11 @@ import org.reactfx.EventSource;
 import org.reactfx.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.SocketUtils;
 
-import javax.sound.midi.Soundbank;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class ClockPresenter implements Initializable {
@@ -305,6 +298,30 @@ public class ClockPresenter implements Initializable {
 
         Observable<SubmitEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrolls);
 
+        ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickTransformer = e -> e.flatMap(
+          clickEvent -> {
+              return Observable.just(new ClickAction(new ActionType(clickEvent.getButtonType().descripton())));
+          });
+
+        ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollTransformer = e -> e.flatMap(
+                scrollEvent -> {
+                    return Observable.just(new ClickAction(new ActionType(scrollEvent.getButtonType().descripton())));
+                });
+
+        ObservableTransformer<SubmitEvent, Action> actions = e -> e.publish(shared -> {
+            return Observable.merge(
+              shared.ofType(ClickEvent.class).compose(clickTransformer),
+              shared.ofType(ScrollEvent.class).compose(scrollTransformer)
+            );
+        });
+
+
+
+        events.compose(actions).subscribe(a -> {
+            System.out.println(a);
+            System.out.println(a.getClass());
+            System.out.println("BLAH");
+        });
         ObservableTransformer<SubmitEvent, SubmitUIModel> submit = e -> e.flatMap(clickEvent -> {
            return userManager.setI(3)
                    .map(response -> {
@@ -315,7 +332,7 @@ public class ClockPresenter implements Initializable {
                    .startWith(SubmitUIModel.idle());
         });
 
-        Flowable<Long> ticksReact = timerService.initTimer();
+        Flowable<Long> ticksReact = timerService.getTimer();
 
         ticksReact.subscribe(a -> {
             this.deltaStreamSeconds.onNext(Direction.DOWN);
@@ -325,6 +342,7 @@ public class ClockPresenter implements Initializable {
             });
             timerColumns.get(ColumnType.SECONDS).setLabels();
         });
+
         ObservableTransformer<SubmitEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
             return userManager.setI(3)
                     .map(response -> {
@@ -343,22 +361,22 @@ public class ClockPresenter implements Initializable {
                 events.compose(submitUi).subscribe(model -> {
                     if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {
                         ClickEvent click = (ClickEvent) model.getData();
-                        if (click.getButtonType().equals(ButtonType.START)) {
-                            if (startButton.textProperty().getValue().equals(ButtonType.START.descripton())) {
+                        if (click.getButtonType().equals(ActionType.START)) {
+                            if (startButton.textProperty().getValue().equals(ActionType.START.descripton())) {
                                 System.out.println("SETTING1");
-                                startButton.setText(ButtonType.PAUSE.descripton());
+                                startButton.setText(ActionType.PAUSE.descripton());
                                 timerService.startTimer();
                             } else {
-                                if (startButton.textProperty().getValue().equals(ButtonType.PAUSE.descripton())) {
+                                if (startButton.textProperty().getValue().equals(ActionType.PAUSE.descripton())) {
                                     System.out.println("SETTING 2");
-                                    startButton.setText(ButtonType.START.descripton());
+                                    startButton.setText(ActionType.START.descripton());
                                     timerService.pauseTimer();
                                 }
                             }
                         }
 
-                        if (click.getButtonType().equals(ButtonType.RESET)) {
-                            startButton.setText(ButtonType.START.descripton());
+                        if (click.getButtonType().equals(ActionType.RESET)) {
+                            startButton.setText(ActionType.START.descripton());
                             timerService.stopTimer();
                         }
                     }

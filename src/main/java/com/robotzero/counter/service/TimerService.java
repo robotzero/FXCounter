@@ -2,22 +2,25 @@ package com.robotzero.counter.service;
 
 import io.reactivex.Flowable;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TimerService {
-    AtomicLong elapsedTime = new AtomicLong();
-    AtomicBoolean resumed = new AtomicBoolean();
-    AtomicBoolean stopped = new AtomicBoolean();
+    private AtomicLong elapsedTime = new AtomicLong();
+    private AtomicBoolean resumed = new AtomicBoolean();
+    private AtomicBoolean stopped = new AtomicBoolean();
+    private Flowable<Long> timer;
 
     public void startTimer() {
         resumed.set(true);
         stopped.set(false);
     }
 
-    public Flowable<Long> initTimer() {
-        return Flowable.interval(1, 1, TimeUnit.SECONDS)
+    @PostConstruct
+    public void initTimer() {
+        this.timer = Flowable.interval(1, TimeUnit.SECONDS)
                 .takeWhile(tick -> !stopped.get())
                 .filter(tick -> resumed.get())
                 .map(tick -> elapsedTime.addAndGet(1000));
@@ -37,5 +40,9 @@ public class TimerService {
 
     public void addToTimer(int seconds) {
         elapsedTime.addAndGet(seconds * 1000);
+    }
+
+    public Flowable<Long> getTimer() {
+        return timer;
     }
 }
