@@ -11,4 +11,12 @@ public class ScrollAction implements Action {
         this.direction = direction;
         this.columnType = columnType;
     }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public ColumnType getColumnType() {
+        return columnType;
+    }
 }

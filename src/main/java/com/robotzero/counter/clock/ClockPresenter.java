@@ -10,6 +10,8 @@ import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.ClickEvent;
 import com.robotzero.counter.event.SubmitEvent;
 import com.robotzero.counter.event.action.ClickAction;
+import com.robotzero.counter.event.action.ScrollAction;
+import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import com.robotzero.counter.service.TimerService;
@@ -108,6 +110,9 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     private StageController stageController;
+
+    @Autowired
+    private DirectionService directionService;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
@@ -293,22 +298,23 @@ public class ClockPresenter implements Initializable {
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .map(ignored -> new ClickEvent(ButtonType.RESET));
 
-        Observable<SubmitEvent> scrolls = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
-                .map(ignored -> new com.robotzero.counter.event.ScrollEvent(Direction.DOWN, ColumnType.SECONDS));
+        Observable<ScrollEvent> scrolls = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
+                .map(scrollEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollEvent.getDeltaY()));
 
         Observable<SubmitEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrolls);
 
         ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickTransformer = e -> e.flatMap(
           clickEvent -> {
-              return Observable.just(new ClickAction(new ActionType(clickEvent.getButtonType().descripton())));
+              return Observable.just(new ClickAction(ActionType.valueOf(clickEvent.getButtonType().descripton().toUpperCase())));
           });
 
         ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollTransformer = e -> e.flatMap(
                 scrollEvent -> {
-                    return Observable.just(new ClickAction(new ActionType(scrollEvent.getButtonType().descripton())));
+                    return Observable.just(new ScrollAction(directionService.calculateDirection(scrollEvent.getDelta()), scrollEvent.getColumnType()));
                 });
 
-        ObservableTransformer<SubmitEvent, Action> actions = e -> e.publish(shared -> {
+
+        ObservableTransformer<SubmitEvent, com.robotzero.counter.event.action.Action> actions = e -> e.publish(shared -> {
             return Observable.merge(
               shared.ofType(ClickEvent.class).compose(clickTransformer),
               shared.ofType(ScrollEvent.class).compose(scrollTransformer)
@@ -322,6 +328,7 @@ public class ClockPresenter implements Initializable {
             System.out.println(a.getClass());
             System.out.println("BLAH");
         });
+
         ObservableTransformer<SubmitEvent, SubmitUIModel> submit = e -> e.flatMap(clickEvent -> {
            return userManager.setI(3)
                    .map(response -> {

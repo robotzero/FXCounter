@@ -1,14 +1,21 @@
 package com.robotzero.counter.event;
 
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
 
 public final class ScrollEvent implements SubmitEvent {
-    private Direction direction;
     private ColumnType columnType;
+    private double delta;
 
-    public ScrollEvent(Direction direction, ColumnType columnType) {
-        this.direction = direction;
+    public ScrollEvent(ColumnType columnType, double delta) {
+        this.delta = delta;
         this.columnType = columnType;
+    }
+
+    public double getDelta() {
+        return delta;
+    }
+
+    public ColumnType getColumnType() {
+        return columnType;
     }
 }

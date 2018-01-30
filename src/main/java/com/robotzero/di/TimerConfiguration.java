@@ -10,6 +10,7 @@ import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.TimerRepository;
 import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
+import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import com.robotzero.counter.service.TimerService;
@@ -158,5 +159,10 @@ public class TimerConfiguration {
     @Bean
     public TimerService timerService() {
         return new TimerService();
+    }
+
+    @Bean
+    public DirectionService directionService() {
+        return new DirectionService();
     }
 }
