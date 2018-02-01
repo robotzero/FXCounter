@@ -11,6 +11,9 @@ import com.robotzero.counter.event.ClickEvent;
 import com.robotzero.counter.event.SubmitEvent;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.ScrollAction;
+import com.robotzero.counter.event.result.ClickResult;
+import com.robotzero.counter.event.result.Result;
+import com.robotzero.counter.event.result.ScrollResult;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
@@ -321,12 +324,27 @@ public class ClockPresenter implements Initializable {
             );
         });
 
+        ObservableTransformer<ScrollAction, ScrollResult> scroll = act -> act.flatMap(action -> {
+            return Observable.just(action);
+        }).map(response -> new ScrollResult());
 
+        ObservableTransformer<ClickAction, ClickResult> click = c -> c.flatMap(cc -> {
+            return Observable.just(cc);
+        }).map(response -> new ClickResult());
 
-        events.compose(actions).subscribe(a -> {
+        Observable<Result> results = events.compose(actions).publish(ek -> {
+            return Observable.merge(
+                    ek.ofType(ClickAction.class).compose(click),
+                    ek.ofType(ScrollAction.class).compose(scroll)
+            );
+        });
+
+        Observable<SubmitUIModel> uiModels = results.scan(SubmitUIModel.idle(), (start, end) -> {
+            return SubmitUIModel.idle();
+        });
+
+        uiModels.subscribe(a -> {
             System.out.println(a);
-            System.out.println(a.getClass());
-            System.out.println("BLAH");
         });
 
         ObservableTransformer<SubmitEvent, SubmitUIModel> submit = e -> e.flatMap(clickEvent -> {
@@ -350,48 +368,48 @@ public class ClockPresenter implements Initializable {
             timerColumns.get(ColumnType.SECONDS).setLabels();
         });
 
-        ObservableTransformer<SubmitEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
-            return userManager.setI(3)
-                    .map(response -> {
-                        return SubmitUIModel.success(scrollEvent);
-                    })
-                    .onErrorReturn(t -> SubmitUIModel.failure(t.toString()))
-                    .observeOn(JavaFxScheduler.platform())
-                    .startWith(SubmitUIModel.idle());
-        });
+//        ObservableTransformer<SubmitEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
+//            return userManager.setI(3)
+//                    .map(response -> {
+//                        return SubmitUIModel.success(scrollEvent);
+//                    })
+//                    .onErrorReturn(t -> SubmitUIModel.failure(t.toString()))
+//                    .observeOn(JavaFxScheduler.platform())
+//                    .startWith(SubmitUIModel.idle());
+//        });
 
-        ObservableTransformer<SubmitEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
-                shared.ofType(ClickEvent.class).compose(submit),
-                shared.ofType(com.robotzero.counter.event.ScrollEvent.class).compose(scroll)
-        ));
+//        ObservableTransformer<SubmitEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
+//                shared.ofType(ClickEvent.class).compose(submit),
+//                shared.ofType(com.robotzero.counter.event.ScrollEvent.class).compose(scroll)
+//        ));
 
-                events.compose(submitUi).subscribe(model -> {
-                    if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {
-                        ClickEvent click = (ClickEvent) model.getData();
-                        if (click.getButtonType().equals(ActionType.START)) {
-                            if (startButton.textProperty().getValue().equals(ActionType.START.descripton())) {
-                                System.out.println("SETTING1");
-                                startButton.setText(ActionType.PAUSE.descripton());
-                                timerService.startTimer();
-                            } else {
-                                if (startButton.textProperty().getValue().equals(ActionType.PAUSE.descripton())) {
-                                    System.out.println("SETTING 2");
-                                    startButton.setText(ActionType.START.descripton());
-                                    timerService.pauseTimer();
-                                }
-                            }
-                        }
-
-                        if (click.getButtonType().equals(ActionType.RESET)) {
-                            startButton.setText(ActionType.START.descripton());
-                            timerService.stopTimer();
-                        }
-                    }
-
-        }, t -> {
-                    System.out.println(t.getMessage());
-            throw new IOException("CRASHING");
-        });
+//                events.compose(submitUi).subscribe(model -> {
+//                    if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {
+//                        ClickEvent cli = (ClickEvent) model.getData();
+//                        if (cli.getButtonType().equals(ActionType.START)) {
+//                            if (startButton.textProperty().getValue().equals(ActionType.START.descripton())) {
+//                                System.out.println("SETTING1");
+//                                startButton.setText(ActionType.PAUSE.descripton());
+//                                timerService.startTimer();
+//                            } else {
+//                                if (startButton.textProperty().getValue().equals(ActionType.PAUSE.descripton())) {
+//                                    System.out.println("SETTING 2");
+//                                    startButton.setText(ActionType.START.descripton());
+//                                    timerService.pauseTimer();
+//                                }
+//                            }
+//                        }
+//
+//                        if (click.getButtonType().equals(ActionType.RESET)) {
+//                            startButton.setText(ActionType.START.descripton());
+//                            timerService.stopTimer();
+//                        }
+//                    }
+//
+//        }, t -> {
+//                    System.out.println(t.getMessage());
+//            throw new IOException("CRASHING");
+//        });
     }
 }
 

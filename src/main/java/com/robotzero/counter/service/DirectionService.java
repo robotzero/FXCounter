@@ -1,17 +1,14 @@
 package com.robotzero.counter.service;
 
 import com.robotzero.counter.domain.Direction;
+import io.reactivex.Observable;
 
 public class DirectionService {
-    public Direction calculateDirection(double delta) {
+    public Observable<Direction> calculateDirection(double delta) {
         if (Math.abs(delta) < 0) {
-            return Direction.DOWN;
+            return Observable.just(Direction.DOWN);
         }
 
-        if (Math.abs(delta) > 0) {
-            return Direction.UP;
-        }
-
-        throw new UnsupportedOperationException("");
+        return Observable.just(Direction.UP);
     }
 }
