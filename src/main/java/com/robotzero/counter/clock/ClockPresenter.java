@@ -4,11 +4,8 @@ import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clocks;
-import com.robotzero.counter.event.ButtonType;
-import com.robotzero.counter.event.ScrollEvent;
+import com.robotzero.counter.event.*;
 import com.robotzero.counter.event.action.ActionType;
-import com.robotzero.counter.event.ClickEvent;
-import com.robotzero.counter.event.SubmitEvent;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.ScrollAction;
 import com.robotzero.counter.event.result.ClickResult;
@@ -200,7 +197,6 @@ public class ClockPresenter implements Initializable {
 //            }
 //        }).subscribe();
 
-        UserManager userManager = new UserManager();
 
 //        EventStream<MouseEvent> startClicks = EventStreams.eventsOf(startButton, MouseEvent.MOUSE_CLICKED);
 //        EventStream<MouseEvent> resetClicks = EventStreams.eventsOf(reset, MouseEvent.MOUSE_CLICKED);
@@ -330,7 +326,7 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ClickAction, ClickResult> click = c -> c.flatMap(cc -> {
             return Observable.just(cc);
-        }).map(response -> new ClickResult());
+        }).map(response -> new ClickResult(response.getActionType()));
 
         Observable<Result> results = events.compose(actions).publish(ek -> {
             return Observable.merge(
@@ -339,23 +335,34 @@ public class ClockPresenter implements Initializable {
             );
         });
 
-        Observable<SubmitUIModel> uiModels = results.scan(SubmitUIModel.idle(), (start, end) -> {
-            return SubmitUIModel.idle();
+        Observable<EndState> uiModels = results.scan(EndState.idle(), (start, end) -> {
+            if (end.getClass().equals(ClickResult.class)) {
+                if (((ClickResult) end).getActionType().descripton().equals("Start")) {
+                    return EndState.start();
+                }
+
+                if (((ClickResult) end).getActionType().descripton().equals("Stop")) {
+                    return EndState.stop();
+                }
+            }
+
+            return EndState.idle();
         });
 
         uiModels.subscribe(a -> {
-            System.out.println(a);
+            if (a.isStart()) {
+                timerService.startTimer();
+            }
+
+            if (a.isStop()) {
+                timerService.stopTimer();
+            }
         });
 
-        ObservableTransformer<SubmitEvent, SubmitUIModel> submit = e -> e.flatMap(clickEvent -> {
-           return userManager.setI(3)
-                   .map(response -> {
-                       return SubmitUIModel.success(clickEvent);
-                   })
-                   .onErrorReturn(t -> SubmitUIModel.failure(t.toString()))
-                   .observeOn(JavaFxScheduler.platform())
-                   .startWith(SubmitUIModel.idle());
+        results.subscribe(a -> {
+//            System.out.println(a.toString());
         });
+
 
         Flowable<Long> ticksReact = timerService.getTimer();
 
@@ -410,53 +417,5 @@ public class ClockPresenter implements Initializable {
 //                    System.out.println(t.getMessage());
 //            throw new IOException("CRASHING");
 //        });
-    }
-}
-
-class SubmitUIModel {
-    private final boolean success;
-    private final boolean failure;
-    private final String errorMessage;
-    protected final SubmitEvent data;
-
-    public SubmitUIModel(boolean success, boolean failure, String errorMessage, SubmitEvent data) {
-        this.success = success;
-        this.failure = failure;
-        this.errorMessage = errorMessage;
-        this.data = data;
-    }
-
-    static SubmitUIModel success(SubmitEvent data) {
-        return new SubmitUIModel(true, false, "", data);
-    }
-
-
-    static SubmitUIModel failure(String errorMessage) {
-        return new SubmitUIModel(false, false, errorMessage, null);
-    }
-
-    static SubmitUIModel idle() {
-        return new SubmitUIModel(false, false, "", null);
-    }
-
-    public SubmitEvent getData() {
-        return data;
-    }
-}
-
-class UserManager {
-    Integer i = 1;
-    Observable get(String s) {
-        return Observable.just(i);
-    }
-
-    Observable setI(Integer i) {
-        this.i = i;
-        return Observable.just(i);
-    }
-
-    Completable setB(Integer i) {
-        this.i = i;
-        return Completable.complete();
     }
 }
