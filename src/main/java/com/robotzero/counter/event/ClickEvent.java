@@ -1,6 +1,6 @@
 package com.robotzero.counter.event;
 
-public class ClickEvent implements SubmitEvent {
+public class ClickEvent implements MainViewEvent {
     private final ButtonType buttonType;
     private final ButtonState buttonState;
 

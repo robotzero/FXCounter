@@ -1,4 +1,4 @@
 package com.robotzero.counter.event;
 
-public interface SubmitEvent {
+public interface MainViewEvent {
 }

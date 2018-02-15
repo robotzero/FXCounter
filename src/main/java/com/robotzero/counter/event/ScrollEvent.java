@@ -2,7 +2,7 @@ package com.robotzero.counter.event;
 
 import com.robotzero.counter.domain.ColumnType;
 
-public final class ScrollEvent implements SubmitEvent {
+public final class ScrollEvent implements MainViewEvent {
     private ColumnType columnType;
     private double delta;
 

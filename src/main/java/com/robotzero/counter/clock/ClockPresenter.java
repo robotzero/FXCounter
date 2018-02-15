@@ -300,7 +300,7 @@ public class ClockPresenter implements Initializable {
         Observable<ScrollEvent> scrolls = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .map(scrollEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollEvent.getDeltaY()));
 
-        Observable<SubmitEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrolls);
+        Observable<MainViewEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrolls);
 
         ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickTransformer = e -> e.flatMap(
           clickEvent -> {
@@ -317,7 +317,7 @@ public class ClockPresenter implements Initializable {
                 });
 
 
-        ObservableTransformer<SubmitEvent, com.robotzero.counter.event.action.Action> actions = e -> e.publish(shared -> {
+        ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actions = e -> e.publish(shared -> {
             return Observable.merge(
               shared.ofType(ClickEvent.class).compose(clickTransformer),
               shared.ofType(ScrollEvent.class).compose(scrollTransformer)
@@ -382,7 +382,7 @@ public class ClockPresenter implements Initializable {
             timerColumns.get(ColumnType.SECONDS).setLabels();
         });
 
-//        ObservableTransformer<SubmitEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
+//        ObservableTransformer<MainViewEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
 //            return userManager.setI(3)
 //                    .map(response -> {
 //                        return SubmitUIModel.success(scrollEvent);
@@ -392,7 +392,7 @@ public class ClockPresenter implements Initializable {
 //                    .startWith(SubmitUIModel.idle());
 //        });
 
-//        ObservableTransformer<SubmitEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
+//        ObservableTransformer<MainViewEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
 //                shared.ofType(ClickEvent.class).compose(submit),
 //                shared.ofType(com.robotzero.counter.event.ScrollEvent.class).compose(scroll)
 //        ));
