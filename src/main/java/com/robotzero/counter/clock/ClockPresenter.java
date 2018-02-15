@@ -9,6 +9,7 @@ import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.ScrollAction;
 import com.robotzero.counter.event.result.ClickResult;
+import com.robotzero.counter.event.result.CurrentViewData;
 import com.robotzero.counter.event.result.Result;
 import com.robotzero.counter.event.result.ScrollResult;
 import com.robotzero.counter.service.DirectionService;
@@ -33,7 +34,6 @@ import org.reactfx.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -292,10 +292,10 @@ public class ClockPresenter implements Initializable {
 //        });
 
         Observable<ClickEvent> startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
-                .map(ignored -> new ClickEvent(ButtonType.START));
+                .map(ignored -> new ClickEvent(ButtonType.START, ButtonState.valueOf(startButton.getText().toUpperCase())));
 
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
-                .map(ignored -> new ClickEvent(ButtonType.RESET));
+                .map(ignored -> new ClickEvent(ButtonType.RESET, ButtonState.valueOf(resetButton.getText().toUpperCase())));
 
         Observable<ScrollEvent> scrolls = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .map(scrollEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollEvent.getDeltaY()));
@@ -304,7 +304,11 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickTransformer = e -> e.flatMap(
           clickEvent -> {
-              return Observable.just(new ClickAction(ActionType.valueOf(clickEvent.getButtonType().descripton().toUpperCase())));
+              return Observable.just(new ClickAction(
+                                ActionType.valueOf(clickEvent.getButtonType().descripton().toUpperCase()),
+                                clickEvent.getButtonState()
+                        )
+              );
           });
 
         ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollTransformer = e -> e.flatMap(
@@ -326,7 +330,7 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ClickAction, ClickResult> click = c -> c.flatMap(cc -> {
             return Observable.just(cc);
-        }).map(response -> new ClickResult(response.getActionType()));
+        }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
         Observable<Result> results = events.compose(actions).publish(ek -> {
             return Observable.merge(
@@ -335,26 +339,29 @@ public class ClockPresenter implements Initializable {
             );
         });
 
-        Observable<EndState> uiModels = results.scan(EndState.idle(), (start, end) -> {
+        Observable<CurrentViewState> uiModels = results.scan(CurrentViewState.idle(), (start, end) -> {
             if (end.getClass().equals(ClickResult.class)) {
-                if (((ClickResult) end).getActionType().descripton().equals("Start")) {
-                    return EndState.start();
+                ClickResult clickResult = (ClickResult) end;
+                if (clickResult.getActionType().equals(ActionType.START)) {
+                    return CurrentViewState.start(new CurrentViewData(clickResult, null));
                 }
 
-                if (((ClickResult) end).getActionType().descripton().equals("Stop")) {
-                    return EndState.stop();
+                if (clickResult.getActionType().equals(ActionType.PAUSE)) {
+                    return CurrentViewState.stop(new CurrentViewData(clickResult, null));
                 }
             }
 
-            return EndState.idle();
+            return CurrentViewState.idle();
         });
 
-        uiModels.subscribe(a -> {
-            if (a.isStart()) {
+        uiModels.observeOn(JavaFxScheduler.platform()).subscribe(currentViewState -> {
+            if (currentViewState.isStart()) {
+                startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
                 timerService.startTimer();
             }
 
-            if (a.isStop()) {
+            if (currentViewState.isStop()) {
+                startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
                 timerService.stopTimer();
             }
         });

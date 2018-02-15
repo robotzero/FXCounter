@@ -1,7 +1,7 @@
 package com.robotzero.counter.event.action;
 
 public enum ActionType {
-    START("Start"), PAUSE("Pause"), RESET("Reset"), SCROLL("Scroll");
+    START("start"), PAUSE("pause"), RESET("reset"), SCROLL("scroll");
 
     private final String description;
 

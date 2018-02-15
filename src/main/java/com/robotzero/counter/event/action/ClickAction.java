@@ -1,13 +1,33 @@
 package com.robotzero.counter.event.action;
 
-public class ClickAction implements Action {
-    private ActionType actionType;
+import com.robotzero.counter.event.ButtonState;
 
-    public ClickAction(ActionType actionType) {
+public class ClickAction implements Action {
+    private final ActionType actionType;
+    private final ButtonState buttonState;
+
+    public ClickAction(ActionType actionType, ButtonState buttonState) {
         this.actionType = actionType;
+        this.buttonState = buttonState;
     }
 
     public ActionType getActionType() {
         return actionType;
+    }
+
+    public ButtonState getButtonState() {
+        return buttonState;
+    }
+
+    public ButtonState getNewButtonState() {
+        if (buttonState.equals(ButtonState.START)) {
+            return ButtonState.PAUSED;
+        }
+
+        if (buttonState.equals(ButtonState.PAUSED)) {
+            return ButtonState.START;
+        }
+
+        throw new RuntimeException("Unknown button state.");
     }
 }
