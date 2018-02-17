@@ -1,5 +1,6 @@
 package com.robotzero.counter.service;
 
+import com.robotzero.counter.event.action.ClickAction;
 import io.reactivex.Flowable;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,14 @@ public class TimerService {
                 .map(tick -> elapsedTime.addAndGet(1000));
     }
 
+    public void operateTimer(ClickAction clickAction) {
+
+    }
+
+    public Flowable<Long> getTimer() {
+        return timer;
+    }
+
     public void pauseTimer() {
         resumed.set(false);
     }
@@ -40,9 +49,5 @@ public class TimerService {
 
     public void addToTimer(int seconds) {
         elapsedTime.addAndGet(seconds * 1000);
-    }
-
-    public Flowable<Long> getTimer() {
-        return timer;
     }
 }

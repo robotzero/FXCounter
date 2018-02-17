@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class ClockPresenter implements Initializable {
@@ -297,10 +298,10 @@ public class ClockPresenter implements Initializable {
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .map(ignored -> new ClickEvent(ButtonType.RESET, ButtonState.valueOf(resetButton.getText().toUpperCase())));
 
-        Observable<ScrollEvent> scrolls = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
-                .map(scrollEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollEvent.getDeltaY()));
+        Observable<ScrollEvent> scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
+                .map(scrollMouseEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollMouseEvent.getDeltaY()));
 
-        Observable<MainViewEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrolls);
+        Observable<MainViewEvent> events = Observable.merge(startClickEvent, resetClickEvent, scrollEvent);
 
         ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickTransformer = e -> e.flatMap(
           clickEvent -> {
@@ -312,15 +313,15 @@ public class ClockPresenter implements Initializable {
           });
 
         ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollTransformer = e -> e.flatMap(
-                scrollEvent -> {
-                    return Observable.just(new ScrollAction(directionService.calculateDirection(scrollEvent.getDelta()), scrollEvent.getColumnType()));
+                scrollMouseEvent -> {
+                    return Observable.just(new ScrollAction(directionService.calculateDirection(scrollMouseEvent.getDelta()), scrollMouseEvent.getColumnType()));
                 });
 
 
-        ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actions = e -> e.publish(shared -> {
+        ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actions = e -> e.publish(sharedObservable -> {
             return Observable.merge(
-              shared.ofType(ClickEvent.class).compose(clickTransformer),
-              shared.ofType(ScrollEvent.class).compose(scrollTransformer)
+              sharedObservable.ofType(ClickEvent.class).compose(clickTransformer),
+              sharedObservable.ofType(ScrollEvent.class).compose(scrollTransformer)
             );
         });
 
@@ -329,6 +330,9 @@ public class ClockPresenter implements Initializable {
         }).map(response -> new ScrollResult());
 
         ObservableTransformer<ClickAction, ClickResult> click = c -> c.flatMap(cc -> {
+            //@TODO put timer start/stop between clickaction and clickresult transformer as a reaction to click action. View updates should be done in subscribe
+            //on Scheduler platform.
+//            System.out.println(cc.getNewButtonState());
             return Observable.just(cc);
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
@@ -343,11 +347,17 @@ public class ClockPresenter implements Initializable {
             if (end.getClass().equals(ClickResult.class)) {
                 ClickResult clickResult = (ClickResult) end;
                 if (clickResult.getActionType().equals(ActionType.START)) {
-                    return CurrentViewState.start(new CurrentViewData(clickResult, null));
-                }
+                    if (clickResult.getButtonState().equals(ButtonState.START)) {
+                        return CurrentViewState.stop(new CurrentViewData(clickResult, null));
+                    }
 
-                if (clickResult.getActionType().equals(ActionType.PAUSE)) {
-                    return CurrentViewState.stop(new CurrentViewData(clickResult, null));
+                    if (clickResult.getButtonState().equals(ButtonState.PAUSE)) {
+                        return CurrentViewState.start(new CurrentViewData(clickResult, null));
+                    }
+
+                    if (clickResult.getButtonState().equals(ButtonState.STOP)) {
+                        return CurrentViewState.stop(new CurrentViewData(clickResult, null));
+                    }
                 }
             }
 
@@ -358,6 +368,11 @@ public class ClockPresenter implements Initializable {
             if (currentViewState.isStart()) {
                 startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
                 timerService.startTimer();
+            }
+
+            if (currentViewState.isPause()) {
+                startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
+                timerService.pauseTimer();
             }
 
             if (currentViewState.isStop()) {

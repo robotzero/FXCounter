@@ -21,11 +21,10 @@ public class ClickAction implements Action {
 
     public ButtonState getNewButtonState() {
         if (buttonState.equals(ButtonState.START)) {
-            return ButtonState.PAUSED;
-        }
-
-        if (buttonState.equals(ButtonState.PAUSED)) {
+            return ButtonState.PAUSE;
+        } else if (buttonState.equals(ButtonState.PAUSE)) {
             return ButtonState.START;
+
         }
 
         throw new RuntimeException("Unknown button state.");

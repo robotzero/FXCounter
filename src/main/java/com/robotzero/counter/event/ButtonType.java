@@ -1,7 +1,7 @@
 package com.robotzero.counter.event;
 
 public enum ButtonType {
-    START("Start"), PAUSE("Pause"), RESET("Reset");
+    START("Start"), RESET("Reset");
 
     private final String description;
 
