@@ -317,13 +317,13 @@ public class ClockPresenter implements Initializable {
                     return Observable.just(new ScrollAction(directionService.calculateDirection(scrollMouseEvent.getDelta()), scrollMouseEvent.getColumnType()));
                 });
 
-
         ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actions = e -> e.publish(sharedObservable -> {
             return Observable.merge(
               sharedObservable.ofType(ClickEvent.class).compose(clickTransformer),
               sharedObservable.ofType(ScrollEvent.class).compose(scrollTransformer)
             );
         });
+
 
         ObservableTransformer<ScrollAction, ScrollResult> scroll = act -> act.flatMap(action -> {
             return Observable.just(action);
@@ -335,6 +335,7 @@ public class ClockPresenter implements Initializable {
 //            System.out.println(cc.getNewButtonState());
             return Observable.just(cc);
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
+
 
         Observable<Result> results = events.compose(actions).publish(ek -> {
             return Observable.merge(
@@ -348,7 +349,7 @@ public class ClockPresenter implements Initializable {
                 ClickResult clickResult = (ClickResult) end;
                 if (clickResult.getActionType().equals(ActionType.START)) {
                     if (clickResult.getButtonState().equals(ButtonState.START)) {
-                        return CurrentViewState.stop(new CurrentViewData(clickResult, null));
+                        return CurrentViewState.pause(new CurrentViewData(clickResult, null));
                     }
 
                     if (clickResult.getButtonState().equals(ButtonState.PAUSE)) {
@@ -365,6 +366,7 @@ public class ClockPresenter implements Initializable {
         });
 
         uiModels.observeOn(JavaFxScheduler.platform()).subscribe(currentViewState -> {
+            System.out.println(currentViewState.toString());
             if (currentViewState.isStart()) {
                 startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
                 timerService.startTimer();
@@ -380,11 +382,6 @@ public class ClockPresenter implements Initializable {
                 timerService.stopTimer();
             }
         });
-
-        results.subscribe(a -> {
-//            System.out.println(a.toString());
-        });
-
 
         Flowable<Long> ticksReact = timerService.getTimer();
 
