@@ -57,12 +57,11 @@ public class Cell {
 
         EventStream<Change<Number>> currentCellSize = EventStreams.changesOf(currentSize);
 
-        translateTransition.setOnFinished(a -> {
-            this.hasChangeTextRectangle().setValue(false);
-            Optional.of(currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get())
-                    .filter(value -> value)
-                    .ifPresent(this.hasChangeTextRectangle()::setValue);
-        });
+//        translateTransition.setOnFinished(a -> {
+//            this.hasChangeTextRectangle().setValue(false);
+//            Optional.of(currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get())
+//                    .ifPresent(this.hasChangeTextRectangle()::setValue);
+//        });
 
         Observable<Tuple2<Direction, Integer>> combo = Observable.combineLatest(
                 this.deltaStream,
@@ -101,8 +100,13 @@ public class Cell {
         return this.isCellOnTop;
     }
 
-    public BooleanProperty hasChangeTextRectangle() {
-        return this.isCellLabelToChange;
+    public Observable<Boolean> hasChangeTextRectangle() {
+        return Observable.fromCallable(() -> {
+            return currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get();
+        }).filter(value -> value);
+//        Optional.of(currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get())
+//                .ifPresent(this.hasChangeTextRectangle()::setValue);
+//        return this.isCellLabelToChange;
     }
 
     public void setLabel(int newLabel) {

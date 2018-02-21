@@ -47,18 +47,16 @@ public class Column {
 //                                cell.setLabel(clocks.getMainClock(), columnType);
 //                            })
 //                    );
-        // Grab only top column from the list and transform it into Flowable.
-        Flowable<Cell> topCellFlowable = Observable.fromIterable(this.columnList)
-                .filter(cell -> cell.hasChangeTextRectangle().getValue())
-                .toFlowable(BackpressureStrategy.LATEST);
+        // Grab only top column from the list and transform it into Observable.
+        Observable<Cell> topCellObservable = Observable.fromIterable(this.columnList)
+                .filter(cell -> cell.hasChangeTextRectangle().blockingFirst(false));
 
         // When new label comes in, ignore event when topCell is missing otherwise set the new label on the cell.
-        newLabelEvent.skipUntil(topCellFlowable.toObservable()).doOnEach(label -> {
-           Disposable disposable = topCellFlowable.doOnEach(cellNotification -> Optional.ofNullable(cellNotification.getValue())
-                   .ifPresent(cell -> cell.setLabel(label.getValue())))
-                   .subscribe();
-           disposable.dispose();
-        }).subscribe();
+        newLabelEvent.skipUntil(topCellObservable).switchMap(label -> {
+                    return topCellObservable.doOnNext(cellNotification -> {
+                        cellNotification.setLabel(label);
+                    });
+                }).subscribe();
     }
 
     public void play() {
