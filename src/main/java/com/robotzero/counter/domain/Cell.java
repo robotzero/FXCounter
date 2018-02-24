@@ -29,7 +29,6 @@ public class Cell {
     private TranslateTransition translateTransition;
     private BooleanProperty isCellOnTop = new SimpleBooleanProperty(false);
     private BooleanProperty isCellLabelToChange = new SimpleBooleanProperty(false);
-    private Binding<Integer> currentDelta;
     private IntegerProperty currentSize;
     private Subject<Direction> deltaStream;
     private IntegerProperty currentMultiplayer = new SimpleIntegerProperty(0);
@@ -51,7 +50,6 @@ public class Cell {
 //        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
         this.currentMultiplayer.set(0);
 
-        currentDelta = JavaFxObserver.toBinding(deltaStream.startWith(Direction.DOWN).map(Direction::getDelta));
         this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(0L).or(rectangle.translateYProperty().lessThan(0L))).then(true).otherwise(false));
         Observable<Integer> currentYposition = JavaFxObservable.valuesOf(rectangle.translateYProperty()).map(Number::intValue);
 
@@ -100,13 +98,13 @@ public class Cell {
         return this.isCellOnTop;
     }
 
-    public Observable<Boolean> hasChangeTextRectangle() {
-        return Observable.fromCallable(() -> {
-            return currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get();
-        }).filter(value -> value);
-//        Optional.of(currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get())
-//                .ifPresent(this.hasChangeTextRectangle()::setValue);
-//        return this.isCellLabelToChange;
+    public Observable<Cell> hasChangeTextRectangle() {
+        return deltaStream.startWith(Observable.just(Direction.DOWN)).switchMap(direction -> {
+            if (direction.getDelta() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get()) {
+                return Observable.just(this);
+            }
+            return Observable.empty();
+        });
     }
 
     public void setLabel(int newLabel) {

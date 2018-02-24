@@ -49,7 +49,7 @@ public class Column {
 //                    );
         // Grab only top column from the list and transform it into Observable.
         Observable<Cell> topCellObservable = Observable.fromIterable(this.columnList)
-                .filter(cell -> cell.hasChangeTextRectangle().blockingFirst(false));
+                .switchMap(cell -> cell.hasChangeTextRectangle());
 
         // When new label comes in, ignore event when topCell is missing otherwise set the new label on the cell.
         newLabelEvent.skipUntil(topCellObservable).switchMap(label -> {
