@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.15.1</version>
+            <version>3.21.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.tempus-fugit</groupId>
@@ -83,13 +83,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.0.1.RELEASE</version>
+            <version>5.0.4.RELEASE</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>5.0.1.RELEASE</version>
+            <version>5.0.4.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.reactfx</groupId>
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
-            <version>2.1.6</version>
+            <version>2.1.10</version>
         </dependency>
     </dependencies>
     <build>
