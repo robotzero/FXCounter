@@ -1,9 +1,9 @@
 package com.robotzero.counter.clock;
 
+import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
-import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.event.*;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
@@ -12,10 +12,7 @@ import com.robotzero.counter.event.result.ClickResult;
 import com.robotzero.counter.event.result.CurrentViewData;
 import com.robotzero.counter.event.result.Result;
 import com.robotzero.counter.event.result.ScrollResult;
-import com.robotzero.counter.service.DirectionService;
-import com.robotzero.counter.service.Populator;
-import com.robotzero.counter.service.StageController;
-import com.robotzero.counter.service.TimerService;
+import com.robotzero.counter.service.*;
 import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
@@ -38,7 +35,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class ClockPresenter implements Initializable {
@@ -73,8 +69,8 @@ public class ClockPresenter implements Initializable {
     @Autowired
     private Populator populator;
 
-    @Autowired
-    private Clocks clocks;
+//    @Autowired
+//    private Clock localTimeClock;
 
     @Autowired
     private TimerService timerService;
@@ -115,6 +111,9 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     private DirectionService directionService;
+
+    @Autowired
+    private ClockService clockService;
 
     private BooleanProperty scrollMuteProperty = new SimpleBooleanProperty(false);
 
@@ -235,12 +234,12 @@ public class ClockPresenter implements Initializable {
 //                        return scrollMuteProperty;
 //                    }
 //
-//                    if (clocks.getMainClock().compareTo(LocalTime.of(0, 0, 0)) == 0) {
+//                    if (localTimeClock.getMainClock().compareTo(LocalTime.of(0, 0, 0)) == 0) {
 //                        return scrollMuteProperty;
 //                    }
 //
 //                    scrollMuteProperty.set(true);
-//                    savedTimerRepository.create("latest", clocks.getMainClock());
+//                    savedTimerRepository.create("latest", localTimeClock.getMainClock());
 //                    return scrollMuteProperty;
 //                })
 //                .on(stopCountdown).transition((wasMuted, event) -> {
@@ -266,7 +265,7 @@ public class ClockPresenter implements Initializable {
 //        });
 //        startClicks.subscribe(click -> {
 //            if (scrollMuteProperty.get()) {
-//                savedTimerRepository.create("latest", clocks.getMainClock());
+//                savedTimerRepository.create("latest", localTimeClock.getMainClock());
 //            }
 //        });
 
@@ -275,14 +274,14 @@ public class ClockPresenter implements Initializable {
 //        resetClicks.subscribe(click -> {
 //            this.fetchFromDatabase.setValue(true);
 //            if (fetchFromDatabase.get()) {
-//                this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
-////                this.clocks.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
-//                    Clock savedTimer = new Clock();
+//                this.localTimeClock.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
+////                this.localTimeClock.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
+//                    LocalTimeClock savedTimer = new LocalTimeClock();
 //                    savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
 //                    return savedTimer;
 //                }).getSavedTimer());
 //            } else {
-//                this.clocks.initializeClocks(LocalTime.of(0, 0, 0));
+//                this.localTimeClock.initializeClocks(LocalTime.of(0, 0, 0));
 //            }
 //            this.deltaStreamSeconds.onNext(0);
 //            this.deltaStreamMinutes.onNext(0);
@@ -383,12 +382,18 @@ public class ClockPresenter implements Initializable {
         Flowable<Long> ticksReact = timerService.getTimer();
 
         ticksReact.subscribe(a -> {
-            this.deltaStreamSeconds.onNext(Direction.DOWN);
+            Observable<Integer> label = this.clockService.tick(Direction.DOWN);
+//            this.deltaStreamSeconds.onNext(Direction.DOWN);
             timerColumns.forEach((columnType, column) -> {
                 column.play();
-                column.setLabels();
+//                column.setLabels();
             });
-            timerColumns.get(ColumnType.SECONDS).setLabels();
+            Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
+            label.switchMap(l -> {
+                    return topCellObservable.doOnNext(cellNotification -> {
+                        cellNotification.setLabel(l);
+                    });
+                }).subscribe();
         });
 
 //        ObservableTransformer<MainViewEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {

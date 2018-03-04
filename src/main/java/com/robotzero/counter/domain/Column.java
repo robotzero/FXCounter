@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public class Column {
 
+    private final Observable<Cell> topCellObservable;
     private List<Cell> columnList;
     private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
@@ -48,15 +49,19 @@ public class Column {
 //                            })
 //                    );
         // Grab only top column from the list and transform it into Observable.
-        Observable<Cell> topCellObservable = Observable.fromIterable(this.columnList)
-                .switchMap(cell -> cell.hasChangeTextRectangle());
+        topCellObservable = Observable.fromIterable(this.columnList)
+                .flatMap(cell -> cell.hasChangeTextRectangle());
 
         // When new label comes in, ignore event when topCell is missing otherwise set the new label on the cell.
-        newLabelEvent.skipUntil(topCellObservable).switchMap(label -> {
-                    return topCellObservable.doOnNext(cellNotification -> {
-                        cellNotification.setLabel(label);
-                    });
-                }).subscribe();
+//        newLabelEvent.skipUntil(topCellObservable).switchMap(label -> {
+//                    return topCellObservable.doOnNext(cellNotification -> {
+//                        cellNotification.setLabel(label);
+//                    });
+//                }).subscribe();
+    }
+
+    public Observable<Cell> getTopCellObservable() {
+        return topCellObservable;
     }
 
     public void play() {

@@ -7,13 +7,11 @@ import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
 import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.clock.Clock;
+import com.robotzero.counter.domain.clock.LocalTimeClock;
 import com.robotzero.counter.domain.clock.TimerRepository;
-import com.robotzero.counter.domain.clock.Clocks;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
-import com.robotzero.counter.service.DirectionService;
-import com.robotzero.counter.service.Populator;
-import com.robotzero.counter.service.StageController;
-import com.robotzero.counter.service.TimerService;
+import com.robotzero.counter.service.*;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
@@ -50,7 +48,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public ClockPresenter clockPresenter(ClockView clockView, Clocks clocks) {
+    public ClockPresenter clockPresenter() {
         return new ClockPresenter();
     }
 
@@ -142,7 +140,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clocks configureClocks(TimerRepository clockRepository) {
+    public Clock configureClocks(TimerRepository clockRepository) {
         List<EventSource<Void>> plays = new ArrayList<>();
         plays.add(PlayMinutes());
         plays.add(PlayHours());
@@ -153,7 +151,7 @@ public class TimerConfiguration {
         deltaStreams.add(DeltaStreamMinutes());
         deltaStreams.add(DeltaStreamHours());
 
-        return new Clocks(clockRepository, plays, deltaStreams, seconds(), minutes(), hours());
+        return new LocalTimeClock(clockRepository, plays, deltaStreams, seconds(), minutes(), hours());
     }
 
     @Bean
@@ -164,5 +162,10 @@ public class TimerConfiguration {
     @Bean
     public DirectionService directionService() {
         return new DirectionService();
+    }
+
+    @Bean
+    public ClockService clockService() {
+        return new ClockService(configureClocks(clockRepository(jdbcTemplate(jdbcDataSource()))));
     }
 }

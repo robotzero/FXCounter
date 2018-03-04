@@ -1,21 +1,20 @@
 package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.Direction;
-import com.robotzero.counter.entity.Clock;
+import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 import org.reactfx.EventSource;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class Clocks {
+public class LocalTimeClock implements Clock {
 
     private final TimerRepository timerRepository;
     private final Subject<Integer> eventSeconds;
@@ -51,7 +50,7 @@ public class Clocks {
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
     private final long HR  = ChronoUnit.HOURS.getDuration().toHours();
 
-    public Clocks(TimerRepository timerRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, Subject<Integer> ...eventSources) {
+    public LocalTimeClock(TimerRepository timerRepository, List<EventSource<Void>> playSources, List<Subject<Direction>> deltaStreams, Subject<Integer> ...eventSources) {
         this.eventSeconds = eventSources[0];
         this.eventMinutes = eventSources[1];
         this.eventHours = eventSources[2];
@@ -105,7 +104,7 @@ public class Clocks {
     @PostConstruct
     public void initialize() {
         this.mainClock = Optional.ofNullable(timerRepository.selectLatest()).orElseGet(() -> {
-            Clock savedTimer = new Clock();
+            com.robotzero.counter.entity.Clock savedTimer = new com.robotzero.counter.entity.Clock();
             savedTimer.setSavedTimer(LocalTime.of(22, 10, 0));
             return savedTimer;
         }).getSavedTimer();
@@ -126,5 +125,25 @@ public class Clocks {
 
     public LocalTime getMainClock() {
         return this.mainClock;
+    }
+
+    public Observable<Integer> tick(Direction direction) {
+        this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta()).apply(this.scrollSecondsClock, 1);
+        this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta()).apply(this.mainClock, 1);
+//                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta()));
+//                this.mainClock = clockTick.apply(mainClock, currentDelta);
+//                this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta())).getSecond());
+//        this.eventSeconds.onNext(this.scrollSecondsClock.getSecond());
+
+        // Count down has ended.
+        if (this.mainClock == LocalTime.of(0, 0, 0)) {
+            this.stopCountdown.push(null);
+        }
+
+        if (this.scrollSecondsClock.getSecond() == MIN) {
+            this.playMinutes.push(null);
+        }
+
+        return Observable.just(this.scrollSecondsClock.getSecond());
     }
 }
