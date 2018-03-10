@@ -61,27 +61,29 @@ public class Cell {
 //                    .ifPresent(this.hasChangeTextRectangle()::setValue);
 //        });
 
-        Observable<Tuple2<Direction, Integer>> combo = Observable.combineLatest(
-                this.deltaStream,
-                currentYposition,
-                Tuples::t
-        );
+//        Observable<Tuple2<Direction, Integer>> combo = Observable.combineLatest(
+//                this.deltaStream,
+//                currentYposition,
+//                Tuples::t
+//        );
         currentCellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
 
-        translateTransition.fromYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
-            Integer currDelta = change.get1().getDelta();
-            Integer transY = change.get2();
-            return location.calculateFromY(currentSize, currDelta, transY);
-        })));
-
-        translateTransition.toYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
-            Integer currDelta = change.get1().getDelta();
-            Integer transY = change.get2();
-            return location.calculateToY(currentSize, currDelta, transY);
-        })));
+//        translateTransition.fromYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
+//            Integer currDelta = change.get1().getDelta();
+//            Integer transY = change.get2();
+//            return location.calculateFromY(currentSize, currDelta, transY);
+//        })));
+//
+//        translateTransition.toYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
+//            Integer currDelta = change.get1().getDelta();
+//            Integer transY = change.get2();
+//            return location.calculateToY(currentSize, currDelta, transY);
+//        })));
     }
 
-    public void animate() {
+    public void animate(Direction direction) {
+        translateTransition.setFromY(location.calculateFromY(currentSize, direction.getDelta(), rectangle.getTranslateY()));
+        translateTransition.setToY(location.calculateToY(currentSize, direction.getDelta(), rectangle.getTranslateY()));
         translateTransition.play();
         if (this.currentMultiplayer.get() == 3) {
             this.currentMultiplayer.set(0);

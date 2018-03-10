@@ -385,7 +385,7 @@ public class ClockPresenter implements Initializable {
             Observable<Integer> label = this.clockService.tick(Direction.DOWN);
 //            this.deltaStreamSeconds.onNext(Direction.DOWN);
             timerColumns.forEach((columnType, column) -> {
-                column.play();
+                column.play(Direction.DOWN);
 //                column.setLabels();
             });
             Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();

@@ -64,8 +64,8 @@ public class Column {
         return topCellObservable;
     }
 
-    public void play() {
-        this.columnList.forEach(Cell::animate);
+    public void play(Direction direction) {
+        this.columnList.forEach(cell -> cell.animate(direction));
     }
 
     public void setLabels() {
