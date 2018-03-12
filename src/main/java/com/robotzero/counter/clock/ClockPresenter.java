@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class ClockPresenter implements Initializable {
@@ -381,35 +382,20 @@ public class ClockPresenter implements Initializable {
 
         Flowable<Long> ticksReact = timerService.getTimer();
 
-        ticksReact.subscribe(a -> {
+        ObservableTransformer<Long, Object> tickTransformer = tickAction -> tickAction.flatMap(a -> {
             Observable<Integer> label = this.clockService.tick(Direction.DOWN);
-//            this.deltaStreamSeconds.onNext(Direction.DOWN);
-            timerColumns.forEach((columnType, column) -> {
-                column.play(Direction.DOWN);
-//                column.setLabels();
-            });
             Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
-            label.switchMap(l -> {
-                    return topCellObservable.doOnNext(cellNotification -> {
-                        cellNotification.setLabel(l);
-                    });
-                }).subscribe();
+            return Observable.zip(label, topCellObservable, (l, c) -> {
+                c.setLabel(l);
+                return Observable.empty();
+            });
         });
 
-//        ObservableTransformer<MainViewEvent, SubmitUIModel> scroll = e -> e.flatMap(scrollEvent -> {
-//            return userManager.setI(3)
-//                    .map(response -> {
-//                        return SubmitUIModel.success(scrollEvent);
-//                    })
-//                    .onErrorReturn(t -> SubmitUIModel.failure(t.toString()))
-//                    .observeOn(JavaFxScheduler.platform())
-//                    .startWith(SubmitUIModel.idle());
-//        });
 
-//        ObservableTransformer<MainViewEvent, SubmitUIModel> submitUi = e -> e.publish(shared -> Observable.merge(
-//                shared.ofType(ClickEvent.class).compose(submit),
-//                shared.ofType(com.robotzero.counter.event.ScrollEvent.class).compose(scroll)
-//        ));
+        ticksReact.toObservable().compose(tickTransformer).subscribe(ignored -> {
+            timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
+        });
+
 
 //                events.compose(submitUi).subscribe(model -> {
 //                    if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {

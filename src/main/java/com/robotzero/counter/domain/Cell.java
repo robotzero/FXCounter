@@ -1,12 +1,9 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
-import io.reactivex.rxjavafx.observables.JavaFxObservable;
-import io.reactivex.rxjavafx.observers.JavaFxObserver;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.layout.VBox;
@@ -14,11 +11,8 @@ import javafx.scene.text.Text;
 import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
-import org.reactfx.util.Tuple2;
-import org.reactfx.util.Tuples;
 
 import java.time.LocalTime;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class Cell {
@@ -49,36 +43,10 @@ public class Cell {
         this.currentSize = currentSize;
 //        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
         this.currentMultiplayer.set(0);
-
         this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(0L).or(rectangle.translateYProperty().lessThan(0L))).then(true).otherwise(false));
-        Observable<Integer> currentYposition = JavaFxObservable.valuesOf(rectangle.translateYProperty()).map(Number::intValue);
-
         EventStream<Change<Number>> currentCellSize = EventStreams.changesOf(currentSize);
 
-//        translateTransition.setOnFinished(a -> {
-//            this.hasChangeTextRectangle().setValue(false);
-//            Optional.of(currentDelta.getValue() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(3).get())
-//                    .ifPresent(this.hasChangeTextRectangle()::setValue);
-//        });
-
-//        Observable<Tuple2<Direction, Integer>> combo = Observable.combineLatest(
-//                this.deltaStream,
-//                currentYposition,
-//                Tuples::t
-//        );
         currentCellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
-
-//        translateTransition.fromYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
-//            Integer currDelta = change.get1().getDelta();
-//            Integer transY = change.get2();
-//            return location.calculateFromY(currentSize, currDelta, transY);
-//        })));
-//
-//        translateTransition.toYProperty().bind(JavaFxObserver.toBinding(combo.map(change -> {
-//            Integer currDelta = change.get1().getDelta();
-//            Integer transY = change.get2();
-//            return location.calculateToY(currentSize, currDelta, transY);
-//        })));
     }
 
     public void animate(Direction direction) {

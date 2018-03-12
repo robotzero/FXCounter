@@ -1,9 +1,6 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
@@ -12,7 +9,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Column {
 
@@ -51,13 +47,6 @@ public class Column {
         // Grab only top column from the list and transform it into Observable.
         topCellObservable = Observable.fromIterable(this.columnList)
                 .flatMap(cell -> cell.hasChangeTextRectangle());
-
-        // When new label comes in, ignore event when topCell is missing otherwise set the new label on the cell.
-//        newLabelEvent.skipUntil(topCellObservable).switchMap(label -> {
-//                    return topCellObservable.doOnNext(cellNotification -> {
-//                        cellNotification.setLabel(label);
-//                    });
-//                }).subscribe();
     }
 
     public Observable<Cell> getTopCellObservable() {
