@@ -61,6 +61,10 @@ public class Column {
         resetClicked.suspendWhile(this::resetPositions);
     }
 
+    public void setLabels(int index, Integer value) {
+        this.columnList.get(index).setLabel(value);
+    }
+
     private void resetPositions() {
         if (!hasTopEdge.get()) {
             this.columnList.forEach(Cell::animateReset);

@@ -1,5 +1,6 @@
 package com.robotzero.counter.domain.clock;
 
+import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
@@ -9,6 +10,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -145,5 +147,13 @@ public class LocalTimeClock implements Clock {
         }
 
         return Observable.just(this.scrollSecondsClock.getSecond());
+    }
+
+    @Override
+    public Map<ColumnType, Map<Integer, Integer>> initialize(Direction fromDirection) {
+        Map<Integer, Integer> seconds = Map.of(0, mainClock.minusSeconds(1).getSecond(), 1, mainClock.getSecond(), 2, mainClock.plusSeconds(1).getSecond(), 3, mainClock.plusSeconds(2).getSecond());
+        Map<Integer, Integer> minutes = Map.of(0, mainClock.minusMinutes(1).getMinute(), 1, mainClock.getMinute(), 2, mainClock.plusMinutes(1).getMinute(), 3, mainClock.plusMinutes(2).getMinute());
+        Map<Integer, Integer> hours = Map.of(0, mainClock.minusHours(1).getHour(), 1, mainClock.getHour(), 2, mainClock.plusHours(1).getHour(), 3, mainClock.plusHours(2).getHour());
+        return Map.of(ColumnType.SECONDS, seconds, ColumnType.MINUTES, minutes, ColumnType.HOURS, hours);
     }
 }

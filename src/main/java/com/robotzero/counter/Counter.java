@@ -21,7 +21,6 @@ public class Counter extends Application {
 
         Injector.setInstanceSupplier(injector::getBean);
         Injector.setConfigurationSource(null);
-
         StageController stageController = injector.getBean(StageController.class);
         stageController.setStage(primaryStage);
         stageController.setView();
