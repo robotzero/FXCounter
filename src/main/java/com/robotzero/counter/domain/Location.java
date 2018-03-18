@@ -28,14 +28,14 @@ public class Location {
     public double calculateFromY(IntegerProperty currentCellSize, Integer delta, double translateY)
     {
         if (delta <= 0) {
-            if (translateY <= 0) {
-                return currentCellSize.multiply(4).get();
+            if (translateY <= -90) {
+                return currentCellSize.multiply(3).get();
             } else {
                 return translateY;
             }
         } else {
-            if (translateY == currentCellSize.multiply(4).get()) {
-                return 0;
+            if (translateY == currentCellSize.multiply(3).get()) {
+                return -90;
             } else {
                 return translateY;
             }
@@ -45,13 +45,13 @@ public class Location {
     public double calculateToY(IntegerProperty currentCellSize, Integer delta, double translateY)
     {
         if (delta <= 0) {
-            if (translateY <= 0) {
-                return currentCellSize.multiply(3).get();
+            if (translateY <= -90) {
+                return currentCellSize.multiply(2).get();
             } else {
                 return translateY - currentCellSize.get();
             }
         } else {
-            if (translateY == currentCellSize.multiply(4).get()) {
+            if (translateY == currentCellSize.multiply(2).get()) {
                 return currentCellSize.get();
             } else {
                 return translateY + currentCellSize.get();

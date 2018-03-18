@@ -43,10 +43,7 @@ public class Cell {
         this.currentSize = currentSize;
 //        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
         this.currentMultiplayer.set(0);
-        this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(0L).or(rectangle.translateYProperty().lessThan(0L))).then(true).otherwise(false));
-        EventStream<Change<Number>> currentCellSize = EventStreams.changesOf(currentSize);
-
-        currentCellSize.map(size -> size.getNewValue().intValue() * this.currentMultiplayer.get()).feedTo(rectangle.translateYProperty());
+        this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(-90L).or(rectangle.translateYProperty().lessThan(-80L))).then(true).otherwise(false));
     }
 
     public void animate(Direction direction) {

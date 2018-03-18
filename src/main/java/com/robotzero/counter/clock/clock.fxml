@@ -17,7 +17,7 @@
   <columnConstraints>
     <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
     <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
+    <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="ALWAYS" />
@@ -25,15 +25,50 @@
     <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="ALWAYS" />
   </rowConstraints>
    <children>
+      <HBox alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" GridPane.columnSpan="3" GridPane.rowIndex="0">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+         <children>
+            <!--<Button id="start" fx:id="startButton" maxHeight="Infinity" maxWidth="Infinity" alignment="CENTER" mnemonicParsing="false" text="Start" textAlignment="CENTER" HBox.hgrow="ALWAYS">-->
+               <!--<HBox.margin>-->
+                  <!--<Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />-->
+               <!--</HBox.margin>-->
+            <!--</Button>-->
+            <!--<Button id="reset" fx:id="resetButton" maxHeight="Infinity" maxWidth="Infinity" alignment="CENTER" mnemonicParsing="false" text="Reset" textAlignment="CENTER" HBox.hgrow="ALWAYS">-->
+               <!--<HBox.margin>-->
+                  <!--<Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />-->
+               <!--</HBox.margin>-->
+            <!--</Button>-->
+         </children>
+      </HBox>
       <StackPane id="hours" fx:id="hours" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
          <children>
             <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" />
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875">
+                     <font>
+                        <Font name="Andale Mono" size="70.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                     <effect>
+                        <DropShadow height="0.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                     </effect>
+                  </Text>
+               </children>
+               <StackPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </StackPane.margin>
+            </VBox>
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -68,24 +103,6 @@
                </StackPane.margin>
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
-               <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
-                     <font>
-                        <Font name="Andale Mono" size="70.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                     <effect>
-                        <DropShadow height="0.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
-                     </effect>
-                  </Text>
-               </children>
-               <StackPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </StackPane.margin>
-            </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="270.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
                      <font>
@@ -109,9 +126,27 @@
       <StackPane id="minutes" fx:id="minutes" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" />
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875">
+                     <font>
+                        <Font name="Andale Mono" size="70.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                     <effect>
+                        <DropShadow radius="5.0" width="1.0" />
+                     </effect>
+                  </Text>
+               </children>
+               <StackPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </StackPane.margin>
+            </VBox>
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -146,24 +181,6 @@
                </StackPane.margin>
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
-               <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
-                     <font>
-                        <Font name="Andale Mono" size="70.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                     <effect>
-                        <DropShadow radius="5.0" width="1.0" />
-                     </effect>
-                  </Text>
-               </children>
-               <StackPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </StackPane.margin>
-            </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="270.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
                      <font>
@@ -191,7 +208,7 @@
          <children>
             <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" />
             <Rectangle id="rectWhite" arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="rectangleWhiteSeconds" width="110.0" StackPane.alignment="TOP_CENTER" />
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
@@ -209,7 +226,25 @@
                   </Text>
                </children>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+               <StackPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </StackPane.margin>
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                     <font>
+                        <Font name="Andale Mono" size="70.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                     <effect>
+                        <DropShadow color="#ffffff4d" height="0.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
+                     </effect>
+                  </Text>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
@@ -245,24 +280,6 @@
                   </Text>
                </children>
             </VBox>
-            <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="270.0" StackPane.alignment="TOP_CENTER">
-               <StackPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </StackPane.margin>
-               <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
-                     <font>
-                        <Font name="Andale Mono" size="70.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                     <effect>
-                        <DropShadow color="#ffffff4d" height="0.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
-                     </effect>
-                  </Text>
-               </children>
-            </VBox>
          </children>
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -272,12 +289,12 @@
             <Insets />
          </GridPane.margin>
          <children>
-            <Button id="start" fx:id="startButton" maxHeight="Infinity" maxWidth="Infinity" alignment="CENTER" mnemonicParsing="false" text="Start" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+            <Button id="start" fx:id="startButton" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Start" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                </HBox.margin>
             </Button>
-            <Button id="reset" fx:id="resetButton" maxHeight="Infinity" maxWidth="Infinity" alignment="CENTER" mnemonicParsing="false" text="Reset" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+            <Button id="reset" fx:id="resetButton" alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Reset" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
                </HBox.margin>

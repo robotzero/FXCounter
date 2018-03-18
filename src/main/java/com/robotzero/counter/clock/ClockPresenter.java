@@ -319,20 +319,20 @@ public class ClockPresenter implements Initializable {
 
         Flowable<Long> ticksReact = timerService.getTimer();
 
-        ObservableTransformer<Long, Object> tickTransformer = tickAction -> tickAction.flatMap(a -> {
-            Observable<Integer> label = this.clockService.tick(Direction.DOWN);
-            Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
-            return Observable.zip(label, topCellObservable, (l, c) -> {
-                c.setLabel(l);
-                return Observable.empty();
+        FlowableTransformer<Long, Object> tickTransformer = tickAction -> tickAction.flatMap(a -> {
+            Flowable<Integer> label = this.clockService.tick(Direction.DOWN).toFlowable(BackpressureStrategy.LATEST);
+            Flowable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable().toFlowable(BackpressureStrategy.LATEST);
+
+            topCellObservable.blockingSingle().setLabel(label.blockingSingle());
+            return Flowable.zip(label, topCellObservable, (lbl, cell) -> {
+                cell.setLabel(lbl);
+                return Flowable.empty();
             });
         });
 
-        ticksReact.toObservable().compose(tickTransformer).subscribe(ignored -> {
+        ticksReact.compose(tickTransformer).subscribe(ignored -> {
             timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
         });
-
-
 //                events.compose(submitUi).subscribe(model -> {
 //                    if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {
 //                        ClickEvent cli = (ClickEvent) model.getData();
