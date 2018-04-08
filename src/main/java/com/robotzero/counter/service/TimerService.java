@@ -2,7 +2,6 @@ package com.robotzero.counter.service;
 
 import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.action.ClickAction;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +13,7 @@ public class TimerService {
     private AtomicLong elapsedTime = new AtomicLong();
     private AtomicBoolean resumed = new AtomicBoolean();
     private AtomicBoolean stopped = new AtomicBoolean();
-    private Flowable<Long> timer;
+    private Observable<Long> timer;
 
     public void startTimer() {
         resumed.set(true);
@@ -23,7 +22,7 @@ public class TimerService {
 
     @PostConstruct
     public void initTimer() {
-        this.timer = Flowable.interval(1, TimeUnit.SECONDS)
+        this.timer = Observable.interval(1, TimeUnit.SECONDS)
                 .takeWhile(tick -> !stopped.get())
                 .filter(tick -> resumed.get())
                 .map(tick -> elapsedTime.addAndGet(1000));
@@ -46,7 +45,7 @@ public class TimerService {
         });
     }
 
-    public Flowable<Long> getTimer() {
+    public Observable<Long> getTimer() {
         return timer;
     }
 

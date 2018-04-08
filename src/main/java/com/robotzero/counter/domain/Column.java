@@ -1,6 +1,7 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
@@ -9,10 +10,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Column {
 
-    private final Observable<Cell> topCellObservable;
     private List<Cell> columnList;
     private BooleanProperty running = new SimpleBooleanProperty(false);
     private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
@@ -44,13 +45,11 @@ public class Column {
 //                                cell.setLabel(clocks.getMainClock(), columnType);
 //                            })
 //                    );
-        // Grab only top column from the list and transform it into Observable.
-        topCellObservable = Observable.fromIterable(this.columnList)
-                .flatMap(cell -> cell.hasChangeTextRectangle());
     }
 
-    public Observable<Cell> getTopCellObservable() {
-        return topCellObservable;
+    public Observable<Optional<Cell>> getTopCellObservable() {
+        return Observable.fromIterable(this.columnList)
+                .flatMap(cell -> cell.hasChangeTextRectangle());
     }
 
     public void play(Direction direction) {

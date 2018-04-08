@@ -1,6 +1,5 @@
 package com.robotzero.counter.clock;
 
-import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
@@ -8,19 +7,20 @@ import com.robotzero.counter.event.*;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.ScrollAction;
+import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.event.result.ClickResult;
 import com.robotzero.counter.event.result.CurrentViewData;
 import com.robotzero.counter.event.result.Result;
 import com.robotzero.counter.event.result.ScrollResult;
 import com.robotzero.counter.service.*;
 import io.reactivex.*;
-import io.reactivex.functions.Action;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -35,8 +35,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
@@ -130,6 +128,12 @@ public class ClockPresenter implements Initializable {
 //        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
+        Observable<ActionEvent> kk = gridPane.getChildren().filtered(c -> c.getClass().equals(StackPane.class)).stream().flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .map(c -> JavaFxObservable.actionEventsOf(c)).reduce(Observable.empty(), (s, k) -> {
+                    return s.mergeWith(k);
+                });
+
+        kk.subscribe(c -> System.out.println(c.getEventType()));
         Map<ColumnType, Map<Integer, Integer>> initialValues = this.clockService.initialize(Direction.DOWN);
         IntStream.rangeClosed(0, 3).forEach(index -> {
             this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
@@ -317,22 +321,38 @@ public class ClockPresenter implements Initializable {
             }
         });
 
-        Flowable<Long> ticksReact = timerService.getTimer();
+        Observable<Long> ticksReact = timerService.getTimer();
+//        Observable<Integer> label = this.clockService.tick(Direction.DOWN);
+//        Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
 
-        FlowableTransformer<Long, Object> tickTransformer = tickAction -> tickAction.flatMap(a -> {
-            Flowable<Integer> label = this.clockService.tick(Direction.DOWN).toFlowable(BackpressureStrategy.LATEST);
-            Flowable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable().toFlowable(BackpressureStrategy.LATEST);
+//        Flowable<Object> one = label.map(l -> new Object());
 
-            topCellObservable.blockingSingle().setLabel(label.blockingSingle());
-            return Flowable.zip(label, topCellObservable, (lbl, cell) -> {
-                cell.setLabel(lbl);
-                return Flowable.empty();
+//        topCellObservable.subscribe(a -> System.out.println("BLAHBB"));
+        FlowableTransformer<Long, Object> tickTransformer = tickAction -> tickAction.flatMap(ignored -> {
+//            Flowable<Integer> label = this.clockService.tick(Direction.DOWN).toFlowable(BackpressureStrategy.LATEST);
+//            Flowable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable().toFlowable(BackpressureStrategy.LATEST);
+//
+//            topCellObservable.blockingSingle().setLabel(label.blockingSingle());
+//            return Flowable.zip(label, topCellObservable, (lbl, cell) -> {
+//                cell.setLabel(lbl);
+//                return Flowable.empty();
+//            });
+            return null;
+        });
+
+//        Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
+
+        ticksReact.map(ignored -> {
+            return Observable.zip(timerColumns.get(ColumnType.SECONDS).getTopCellObservable(), clockService.tick(Direction.DOWN), (lbl, cell) -> {
+                return Observable.just(new TickAction(cell, lbl));
             });
-        });
-
-        ticksReact.compose(tickTransformer).subscribe(ignored -> {
+        }).flatMap(test -> test).flatMap(t -> t).subscribe(notignored -> {
             timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
+            notignored.getCell().ifPresent(cell -> cell.setLabel(notignored.getLabel()));
         });
+//        ticksReact.subscribe(ignored -> {
+//            timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
+//        });
 //                events.compose(submitUi).subscribe(model -> {
 //                    if (model.getData() != null && model.getData().getClass().equals(ClickEvent.class)) {
 //                        ClickEvent cli = (ClickEvent) model.getData();
