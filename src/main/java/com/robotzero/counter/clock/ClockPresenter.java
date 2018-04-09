@@ -342,7 +342,7 @@ public class ClockPresenter implements Initializable {
 
 //        Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
 
-        ticksReact.map(ignored -> {
+        ticksReact.take(3).map(ignored -> {
             return Observable.zip(timerColumns.get(ColumnType.SECONDS).getTopCellObservable(), clockService.tick(Direction.DOWN), (lbl, cell) -> {
                 return Observable.just(new TickAction(cell, lbl));
             });

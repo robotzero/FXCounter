@@ -46,7 +46,7 @@ public class Location {
     {
         if (delta <= 0) {
             if (translateY <= -90) {
-                return currentCellSize.multiply(2).get();
+                return currentCellSize.multiply(3).get() - currentCellSize.get();
             } else {
                 return translateY - currentCellSize.get();
             }

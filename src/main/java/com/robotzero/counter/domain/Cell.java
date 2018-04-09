@@ -13,6 +13,7 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 
+import java.sql.SQLOutput;
 import java.time.LocalTime;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -51,13 +52,13 @@ public class Cell {
     public void animate(Direction direction) {
         double fromY = location.calculateFromY(currentSize, direction.getDelta(), rectangle.getTranslateY());
         double toY = location.calculateToY(currentSize, direction.getDelta(), rectangle.getTranslateY());
-        System.out.println("FROM YL " + fromY);
-        System.out.println("TO Y " + toY);
+//        System.out.println("FROM YL " + fromY);
+//        System.out.println("TO Y " + toY);
         translateTransition.setFromY(fromY);
         translateTransition.setToY(toY);
         translateTransition.play();
-        rectangle.setTranslateY(toY);
-        System.out.println("TRANSLATE Y" + rectangle.getTranslateY());
+//        rectangle.setTranslateY(toY);
+//        System.out.println("TRANSLATE Y" + rectangle.getTranslateY());
         if (this.currentMultiplayer.get() == 3) {
             this.currentMultiplayer.set(0);
         } else {
@@ -74,10 +75,13 @@ public class Cell {
     }
 
     public Observable<Optional<Cell>> hasChangeTextRectangle() {
-//        System.out.println("----------------");
-//        System.out.println("Translate " + rectangle.getTranslateY());
-//        System.out.println("----------------");
-        if (translateTransition.getFromY() >= 270) {
+        System.out.println("----------------");
+        System.out.println("THIS " + this);
+        System.out.println("Translate from: " + translateTransition.getFromY());
+        System.out.println("Translate to: " + translateTransition.getToY());
+        System.out.println("Translate y: " + rectangle.translateYProperty().get());
+        System.out.println("----------------");
+        if (rectangle.translateYProperty().get() == -90) {
             return Observable.just(Optional.of(this));
         }
         return Observable.just(Optional.empty());
