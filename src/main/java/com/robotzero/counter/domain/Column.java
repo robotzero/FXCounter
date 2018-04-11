@@ -1,7 +1,6 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
@@ -48,8 +47,12 @@ public class Column {
     }
 
     public Observable<Optional<Cell>> getTopCellObservable() {
-        return Observable.fromIterable(this.columnList)
-                .flatMap(cell -> cell.hasChangeTextRectangle());
+//        return this.columnList.get(0).hasChangeTextRectangle().mergeWith(this.columnList.get(1).hasChangeTextRectangle()).mergeWith(this.columnList.get(2).hasChangeTextRectangle())
+//                .mergeWith(this.columnList.get(3).hasChangeTextRectangle());
+
+        return this.columnList.stream().map(cell -> cell.hasChangeTextRectangle()).reduce(Observable.empty(), (a, b) -> {
+           return Observable.merge(a, b);
+        });
     }
 
     public void play(Direction direction) {

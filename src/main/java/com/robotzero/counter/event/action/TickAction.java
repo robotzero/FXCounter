@@ -9,9 +9,9 @@ public class TickAction {
     private final Integer label;
     private final Optional<Cell> cell;
 
-    public TickAction(Integer label, Optional<Cell> cell) {
-        this.label = label;
+    public TickAction(Optional<Cell> cell, Integer label) {
         this.cell = cell;
+        this.label = label;
     }
 
     public Integer getLabel() {

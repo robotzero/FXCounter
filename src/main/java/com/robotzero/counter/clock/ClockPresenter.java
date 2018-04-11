@@ -1,5 +1,6 @@
 package com.robotzero.counter.clock;
 
+import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
@@ -14,6 +15,7 @@ import com.robotzero.counter.event.result.Result;
 import com.robotzero.counter.event.result.ScrollResult;
 import com.robotzero.counter.service.*;
 import io.reactivex.*;
+import io.reactivex.internal.operators.single.SingleUsing;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -33,8 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
@@ -322,12 +327,6 @@ public class ClockPresenter implements Initializable {
         });
 
         Observable<Long> ticksReact = timerService.getTimer();
-//        Observable<Integer> label = this.clockService.tick(Direction.DOWN);
-//        Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
-
-//        Flowable<Object> one = label.map(l -> new Object());
-
-//        topCellObservable.subscribe(a -> System.out.println("BLAHBB"));
         FlowableTransformer<Long, Object> tickTransformer = tickAction -> tickAction.flatMap(ignored -> {
 //            Flowable<Integer> label = this.clockService.tick(Direction.DOWN).toFlowable(BackpressureStrategy.LATEST);
 //            Flowable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable().toFlowable(BackpressureStrategy.LATEST);
@@ -340,15 +339,13 @@ public class ClockPresenter implements Initializable {
             return null;
         });
 
-//        Observable<Cell> topCellObservable = timerColumns.get(ColumnType.SECONDS).getTopCellObservable();
-
-        ticksReact.take(3).map(ignored -> {
-            return Observable.zip(timerColumns.get(ColumnType.SECONDS).getTopCellObservable(), clockService.tick(Direction.DOWN), (lbl, cell) -> {
-                return Observable.just(new TickAction(cell, lbl));
+        ticksReact.flatMap(ignored -> {
+            return timerColumns.get(ColumnType.SECONDS).getTopCellObservable().withLatestFrom(clockService.tick(Direction.DOWN), (cell, label) -> {
+               return new TickAction(cell, label);
             });
-        }).flatMap(test -> test).flatMap(t -> t).subscribe(notignored -> {
-            timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
+        }).subscribe(notignored -> {
             notignored.getCell().ifPresent(cell -> cell.setLabel(notignored.getLabel()));
+            timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
         });
 //        ticksReact.subscribe(ignored -> {
 //            timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);

@@ -75,13 +75,13 @@ public class Cell {
     }
 
     public Observable<Optional<Cell>> hasChangeTextRectangle() {
-        System.out.println("----------------");
-        System.out.println("THIS " + this);
-        System.out.println("Translate from: " + translateTransition.getFromY());
-        System.out.println("Translate to: " + translateTransition.getToY());
-        System.out.println("Translate y: " + rectangle.translateYProperty().get());
-        System.out.println("----------------");
+//        System.out.println("Translate from: " + translateTransition.getFromY());
+//        System.out.println("Translate to: " + translateTransition.getToY());
+//        System.out.println("Translate y: " + rectangle.translateYProperty().get());
+//        System.out.println("----------------");
         if (rectangle.translateYProperty().get() == -90) {
+//            System.out.println("----------------");
+//            System.out.println("THIS " + this);
             return Observable.just(Optional.of(this));
         }
         return Observable.just(Optional.empty());
