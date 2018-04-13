@@ -1,24 +1,16 @@
 package com.robotzero.counter.event.action;
 
-import com.robotzero.counter.domain.Cell;
+import com.robotzero.counter.domain.Direction;
 
-import java.util.Optional;
+public class TickAction implements Action {
 
-public class TickAction {
+    Direction direction;
 
-    private final Integer label;
-    private final Optional<Cell> cell;
-
-    public TickAction(Optional<Cell> cell, Integer label) {
-        this.cell = cell;
-        this.label = label;
+    public TickAction(Direction direction) {
+        this.direction = direction;
     }
 
-    public Integer getLabel() {
-        return label;
-    }
-
-    public Optional<Cell> getCell() {
-        return cell;
+    public Direction getDirection() {
+        return direction;
     }
 }

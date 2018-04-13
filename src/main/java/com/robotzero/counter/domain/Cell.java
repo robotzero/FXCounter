@@ -2,6 +2,7 @@ package com.robotzero.counter.domain;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
@@ -74,7 +75,7 @@ public class Cell {
         return this.isCellOnTop;
     }
 
-    public Observable<Optional<Cell>> hasChangeTextRectangle() {
+    public Observable<Cell> hasChangeTextRectangle() {
 //        System.out.println("Translate from: " + translateTransition.getFromY());
 //        System.out.println("Translate to: " + translateTransition.getToY());
 //        System.out.println("Translate y: " + rectangle.translateYProperty().get());
@@ -82,9 +83,9 @@ public class Cell {
         if (rectangle.translateYProperty().get() == -90) {
 //            System.out.println("----------------");
 //            System.out.println("THIS " + this);
-            return Observable.just(Optional.of(this));
+            return Observable.just(this);
         }
-        return Observable.just(Optional.empty());
+        return Observable.never();
 
 //        if (rectangle.translateYProperty().get() < 180) {
 //            return Observable.just(Optional.of(this));

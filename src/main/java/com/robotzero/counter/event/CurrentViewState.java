@@ -9,36 +9,42 @@ public class CurrentViewState {
     private final boolean stop;
     private final boolean pause;
     private final boolean reset;
+    private final boolean tick;
     private final CurrentViewData data;
 
-    public CurrentViewState(boolean failure, boolean start, boolean stop, boolean pause, boolean reset, String errorMessage, CurrentViewData data) {
+    public CurrentViewState(boolean failure, boolean start, boolean stop, boolean pause, boolean reset, boolean tick, String errorMessage, CurrentViewData data) {
         this.start = start;
         this.stop = stop;
         this.pause = pause;
         this.reset = reset;
+        this.tick = tick;
         this.failure = failure;
         this.errorMessage = errorMessage;
         this.data = data;
     }
 
     public static CurrentViewState start(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, false, false, "", currentViewData);
+        return new CurrentViewState(false, true, false, false, false, false, "", currentViewData);
     }
 
     public static CurrentViewState stop(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, true, false, false, "", currentViewData);
+        return new CurrentViewState(false, false, true, false, false, false, "", currentViewData);
     }
 
     public static CurrentViewState pause(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, true, false, "", currentViewData);
+        return new CurrentViewState(false, false, false, true, false, false, "", currentViewData);
+    }
+
+    public static CurrentViewState tick(CurrentViewData currentViewData) {
+        return new CurrentViewState(false, false, false, false, false, true, "", currentViewData);
     }
 
     public static CurrentViewState failure(String errorMessage) {
-        return new CurrentViewState(false, false, false, false, false, errorMessage, null);
+        return new CurrentViewState(false, false, false, false, false, false, errorMessage, null);
     }
 
     public static CurrentViewState idle() {
-        return new CurrentViewState(false, false, false, false, false, "", null);
+        return new CurrentViewState(false, false, false, false, false, false, "", null);
     }
 
     public CurrentViewData getData() {
@@ -67,6 +73,10 @@ public class CurrentViewState {
 
     public boolean isReset() {
         return reset;
+    }
+
+    public boolean isTick() {
+        return tick;
     }
 
     @Override
