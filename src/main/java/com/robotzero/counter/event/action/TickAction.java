@@ -4,7 +4,7 @@ import com.robotzero.counter.domain.Direction;
 
 public class TickAction implements Action {
 
-    Direction direction;
+    private final Direction direction;
 
     public TickAction(Direction direction) {
         this.direction = direction;

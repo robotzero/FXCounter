@@ -5,6 +5,7 @@ import com.robotzero.counter.domain.Direction;
 import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 import org.reactfx.EventSource;
+import org.reactfx.util.TriFunction;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
@@ -33,11 +34,35 @@ public class LocalTimeClock implements Clock {
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
 
     private Predicate<Integer> isDeltaGreaterThan = delta -> delta > 0;
-    private BiFunction<Predicate<Integer>, Integer, BiFunction<LocalTime, Integer, LocalTime>> tick = (predicate, currentDelta) -> {
-        if (predicate.test(currentDelta)) {
-            return LocalTime::plusSeconds;
+    private Predicate<Integer> shouldTick = clockState -> clockState == 0;
+
+    private TriFunction<Predicate<Integer>, Integer, ColumnType, BiFunction<LocalTime, Integer, LocalTime>> tick = (predicate, currentDelta, columnType) -> {
+        if (columnType.equals(ColumnType.SECONDS)) {
+            if (predicate.test(currentDelta)) {
+                return LocalTime::plusSeconds;
+            }
+            return LocalTime::minusSeconds;
         }
-        return LocalTime::minusSeconds;
+
+        if (shouldTick.test(this.mainClock.getSecond())) {
+            if (columnType.equals(ColumnType.MINUTES)) {
+                if (predicate.test(currentDelta)) {
+                    return LocalTime::plusMinutes;
+                }
+                return LocalTime::minusMinutes;
+            }
+        } else {
+            return (localTime, integer) -> localTime;
+        }
+
+        if (shouldTick.test(this.mainClock.getMinute())) {
+            if (predicate.test(currentDelta)) {
+                return LocalTime::plusHours;
+            }
+            return LocalTime::plusHours;
+        } else {
+            return (localTime, integer) -> localTime;
+        }
     };
 
     private Function<Integer, LocalTime> calculateLabel = delta -> {
@@ -64,8 +89,8 @@ public class LocalTimeClock implements Clock {
         this.timerRepository = timerRepository;
 
         deltaStreams.get(0).subscribe(currentDelta -> {
-            this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta()).apply(this.scrollSecondsClock, 1);
-            this.mainClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta()).apply(this.mainClock, 1);
+            this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, 1);
+            this.mainClock = tick.apply(isDeltaGreaterThan, currentDelta.getDelta(), ColumnType.SECONDS).apply(this.mainClock, 1);
 //                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta()));
 //                this.mainClock = clockTick.apply(mainClock, currentDelta);
 //                this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta())).getSecond());
@@ -117,21 +142,19 @@ public class LocalTimeClock implements Clock {
         this.scrollMinutesClock = LocalTime.of((int)HR, mainClock.getMinute(), (int)MIN);
         this.scrollSecondsClock = LocalTime.of((int)HR, (int)MIN, mainClock.getSecond());
 
-        eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1).apply(scrollSecondsClock, 2).getSecond());
-        eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1).apply(scrollMinutesClock, 2).getMinute());
-        eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1).apply(scrollHoursClock, 2).getHour());
+        eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1, ColumnType.SECONDS).apply(scrollSecondsClock, 2).getSecond());
+        eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1, ColumnType.MINUTES).apply(scrollMinutesClock, 2).getMinute());
+        eventSeconds.onNext(this.tick.apply(isDeltaGreaterThan, 1, ColumnType.HOURS).apply(scrollHoursClock, 2).getHour());
 //        eventSeconds.push(this.scrollSecondsClock.plusSeconds(2).getSecond());
 //        eventMinutes.push(this.scrollMinutesClock.plusMinutes(2).getMinute());
 //        eventHours.push(this.scrollHoursClock.plusHours(2).getHour());
     }
 
-    public LocalTime getMainClock() {
-        return this.mainClock;
-    }
-
-    public Observable<Integer> tick(Direction direction) {
-        this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta()).apply(this.scrollSecondsClock, 1);
-        this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta()).apply(this.mainClock, 1);
+    public Observable<CurrentClockState> tick(Direction direction) {
+        this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.mainClock, 1);
+        this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, Math.abs(direction.getDelta()));
+        this.scrollMinutesClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.MINUTES).apply(this.scrollMinutesClock, Math.abs(direction.getDelta()));
+        this.scrollHoursClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.HOURS).apply(this.scrollHoursClock, Math.abs(direction.getDelta()));
 //                this.scrollSecondsClock = pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta()));
 //                this.mainClock = clockTick.apply(mainClock, currentDelta);
 //                this.eventSeconds.push(pS.apply(this.scrollSecondsClock, normalizeDelta.apply(currentDelta.getDelta())).getSecond());
@@ -146,14 +169,22 @@ public class LocalTimeClock implements Clock {
             this.playMinutes.push(null);
         }
 
-        return Observable.just(this.scrollSecondsClock.getSecond());
+        return Observable.just(new CurrentClockState(
+                this.scrollSecondsClock.getSecond(),
+                this.scrollMinutesClock.getMinute(),
+                this.scrollHoursClock.getHour(),
+                true,
+                shouldTick.test(this.mainClock.getSecond()),
+                shouldTick.test(this.mainClock.getMinute())
+            )
+        );
     }
 
     @Override
     public Map<ColumnType, Map<Integer, Integer>> initialize(Direction fromDirection) {
-        Map<Integer, Integer> seconds = Map.of(0, mainClock.minusSeconds(1).getSecond(), 1, mainClock.getSecond(), 2, mainClock.plusSeconds(1).getSecond(), 3, mainClock.plusSeconds(2).getSecond());
-        Map<Integer, Integer> minutes = Map.of(0, mainClock.minusMinutes(1).getMinute(), 1, mainClock.getMinute(), 2, mainClock.plusMinutes(1).getMinute(), 3, mainClock.plusMinutes(2).getMinute());
-        Map<Integer, Integer> hours = Map.of(0, mainClock.minusHours(1).getHour(), 1, mainClock.getHour(), 2, mainClock.plusHours(1).getHour(), 3, mainClock.plusHours(2).getHour());
+        Map<Integer, Integer> seconds = Map.of(0, mainClock.plusSeconds(2).getSecond(), 1, mainClock.plusSeconds(1).getSecond(), 2, mainClock.getSecond(), 3, mainClock.minusSeconds(1).getSecond());
+        Map<Integer, Integer> minutes = Map.of(0, mainClock.plusMinutes(2).getMinute(), 1, mainClock.plusMinutes(1).getMinute(), 2, mainClock.getMinute(), 3, mainClock.minusMinutes(1).getMinute());
+        Map<Integer, Integer> hours = Map.of(0, mainClock.plusHours(2).getHour(), 1, mainClock.plusHours(1).getHour(), 2, mainClock.getHour(), 3, mainClock.minusHours(1).getHour());
         return Map.of(ColumnType.SECONDS, seconds, ColumnType.MINUTES, minutes, ColumnType.HOURS, hours);
     }
 }

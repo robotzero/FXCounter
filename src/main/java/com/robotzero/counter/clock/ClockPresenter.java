@@ -133,14 +133,6 @@ public class ClockPresenter implements Initializable {
             this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
             this.timerColumns.get(ColumnType.HOURS).setLabels(index, initialValues.get(ColumnType.HOURS).get(index));
         });
-//        this.clockService.initialize(Direction.DOWN).get(ColumnType.SECONDS).get(0).
-
-//        reset.disableProperty().bind(scrollMuteProperty);
-//        EventStream<ScrollEvent> merged = EventStreams.merge(
-//                EventStreams.eventsOf(paneSeconds, ScrollEvent.SCROLL).suppressWhen(timerColumns.get(ColumnType.SECONDS).isRunning()),
-//                EventStreams.eventsOf(paneMinutes, ScrollEvent.SCROLL).suppressWhen(timerColumns.get(ColumnType.MINUTES).isRunning()),
-//                EventStreams.eventsOf(paneHours, ScrollEvent.SCROLL).suppressWhen(timerColumns.get(ColumnType.HOURS).isRunning())
-//        );
 
         // If startButton button is clicked mute scroll event until stop button is clicked.
 //        StateMachine.init(scrollMuteProperty)
@@ -220,7 +212,7 @@ public class ClockPresenter implements Initializable {
                 .observeOn(Schedulers.computation())
                 .map(scrollMouseEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollMouseEvent.getDeltaY()));
 
-        Observable<TickEvent> tickEvent = timerService.getTimer().map(ignored -> new TickEvent());
+        Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
 
         Observable<MainViewEvent> mainViewEvents = Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent);
 
@@ -239,7 +231,8 @@ public class ClockPresenter implements Initializable {
                 });
 
         ObservableTransformer<TickEvent, TickAction> tickEventTransformer = tickEv -> tickEv.flatMap(event -> {
-            return Observable.just(new TickAction(Direction.DOWN));
+            TickAction tickAction = event.getElapsedTime() == 1000 ? new TickAction(Direction.STARTDOWN) : new TickAction(Direction.DOWN);
+            return Observable.just(tickAction);
         });
 
         ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actionTransformer = mainViewEvent -> mainViewEvent.publish(sharedObservable -> {
@@ -259,9 +252,15 @@ public class ClockPresenter implements Initializable {
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> tickAction.flatMap(action -> {
-            return timerColumns.get(ColumnType.SECONDS).getTopCellObservable().withLatestFrom(clockService.tick(action.getDirection()), (cell, label) -> {
-                return new TickResult(cell, label);
-            });
+            return timerColumns.get(ColumnType.SECONDS).getTopCellObservable()
+                    .mergeWith(timerColumns.get(ColumnType.MINUTES).getTopCellObservable())
+                    .mergeWith(timerColumns.get(ColumnType.HOURS).getTopCellObservable())
+                    .withLatestFrom(clockService.tick(action.getDirection()), (cell, currentClockState) -> {
+                        return new TickResult(cell, currentClockState);
+                    });
+//            return timerColumns.get(ColumnType.SECONDS).getTopCellObservable().withLatestFrom(clockService.tick(action.getDirection()), (cell, currentClockState) -> {
+//                return new TickResult(cell, currentClockState);
+//            });
         });
 
         Observable<com.robotzero.counter.event.action.Action> actions = mainViewEvents.compose(actionTransformer);
@@ -315,23 +314,28 @@ public class ClockPresenter implements Initializable {
 
             if (currentViewState.isTick()) {
                 Cell cell = currentViewState.getData().getTickResult().getCell();
-                cell.setLabel(currentViewState.getData().getTickResult().getLabel());
-                timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
+                if (cell.getColumnType().equals(ColumnType.SECONDS)) {
+                    cell.setLabel(currentViewState.getData().getTickResult().getLabels().getSecond());
+                    timerColumns.get(cell.getColumnType()).play(Direction.DOWN);
+                }
+
+                if (cell.getColumnType().equals(ColumnType.MINUTES)) {
+                    cell.setLabel(currentViewState.getData().getTickResult().getLabels().getMinute());
+                    if (currentViewState.getData().getTickResult().getLabels().isTickMinute()) {
+                        timerColumns.get(cell.getColumnType()).play(Direction.DOWN);
+                    }
+                }
+
+                if (cell.getColumnType().equals(ColumnType.HOURS)) {
+                    cell.setLabel(currentViewState.getData().getTickResult().getLabels().getHour());
+                    if (currentViewState.getData().getTickResult().getLabels().isTickHour()) {
+                        timerColumns.get(cell.getColumnType()).play(Direction.DOWN);
+                    }
+                }
             }
         }, error -> {
             System.out.println(error.getMessage());
-            throw new IOException("CRASHING");
+            throw new IOException("CRASHING THE APP...");
         });
-
-//        Observable<Long> ticksReact = timerService.getTimer();
-
-//        ticksReact.flatMap(ignored -> {
-//            return timerColumns.get(ColumnType.SECONDS).getTopCellObservable().withLatestFrom(clockService.tick(Direction.DOWN), (cell, label) -> {
-//               return new TickAction(cell, label);
-//            });
-//        }).subscribe(notignored -> {
-//            notignored.getCell().setLabel(notignored.getLabel());
-//            timerColumns.get(ColumnType.SECONDS).play(Direction.DOWN);
-//        });
     }
 }

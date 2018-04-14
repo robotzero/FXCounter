@@ -1,22 +1,14 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.reactfx.Change;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
 
-import java.sql.SQLOutput;
 import java.time.LocalTime;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class Cell {
@@ -26,40 +18,34 @@ public class Cell {
     private Text label;
     private TranslateTransition translateTransition;
     private BooleanProperty isCellOnTop = new SimpleBooleanProperty(false);
-    private BooleanProperty isCellLabelToChange = new SimpleBooleanProperty(false);
     private IntegerProperty currentSize;
-    private Subject<Direction> deltaStream;
     private IntegerProperty currentMultiplayer = new SimpleIntegerProperty(0);
+    private ColumnType columnType;
 
     public Cell(
             VBox rectangle,
             Location location,
             Text label,
             TranslateTransition translateTransition,
-            Subject<Direction> deltaStream,
-            IntegerProperty currentSize
+            IntegerProperty currentSize,
+            ColumnType columnType
     ) {
         this.rectangle = rectangle;
         this.location = location;
         this.label = label;
         this.translateTransition = translateTransition;
-        this.deltaStream = deltaStream;
         this.currentSize = currentSize;
-//        this.currentMultiplayer.set(Integer.valueOf(rectangle.getId()) - 1);
         this.currentMultiplayer.set(0);
         this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(-90L).or(rectangle.translateYProperty().lessThan(-80L))).then(true).otherwise(false));
+        this.columnType = columnType;
     }
 
     public void animate(Direction direction) {
         double fromY = location.calculateFromY(currentSize, direction.getDelta(), rectangle.getTranslateY());
         double toY = location.calculateToY(currentSize, direction.getDelta(), rectangle.getTranslateY());
-//        System.out.println("FROM YL " + fromY);
-//        System.out.println("TO Y " + toY);
         translateTransition.setFromY(fromY);
         translateTransition.setToY(toY);
         translateTransition.play();
-//        rectangle.setTranslateY(toY);
-//        System.out.println("TRANSLATE Y" + rectangle.getTranslateY());
         if (this.currentMultiplayer.get() == 3) {
             this.currentMultiplayer.set(0);
         } else {
@@ -76,33 +62,16 @@ public class Cell {
     }
 
     public Observable<Cell> hasChangeTextRectangle() {
-//        System.out.println("Translate from: " + translateTransition.getFromY());
-//        System.out.println("Translate to: " + translateTransition.getToY());
-//        System.out.println("Translate y: " + rectangle.translateYProperty().get());
-//        System.out.println("----------------");
         if (rectangle.translateYProperty().get() == -90) {
-//            System.out.println("----------------");
-//            System.out.println("THIS " + this);
             return Observable.just(this);
         }
         return Observable.never();
-
-//        if (rectangle.translateYProperty().get() < 180) {
-//            return Observable.just(Optional.of(this));
-//        }
-//
-//        return Observable.just(Optional.empty());
-
-//        return deltaStream.flatMap(direction -> {
-//            if (direction.getDelta() < 0 && rectangle.translateYProperty().get() >= currentSize.multiply(2).get()) {
-//                return Observable.just(this);
-//            }
-//            return Observable.empty();
-//        });
     }
 
     public void setLabel(int newLabel) {
-        this.label.textProperty().setValue(String.format("%02d", newLabel));
+        if (!this.label.textProperty().getValue().equals(String.format("%02d", newLabel))) {
+            this.label.textProperty().setValue(String.format("%02d", newLabel));
+        }
     }
 
     public void setLabel(LocalTime clock, ColumnType columnType) {
@@ -181,5 +150,9 @@ public class Cell {
                 }
             });
         }
+    }
+
+    public ColumnType getColumnType() {
+        return columnType;
     }
 }

@@ -1,9 +1,6 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.subjects.Subject;
 import javafx.animation.Animation;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
@@ -11,7 +8,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import org.reactfx.SuspendableNo;
 
 import java.util.List;
-import java.util.Optional;
 
 public class Column {
 
@@ -21,12 +17,10 @@ public class Column {
 
     private ColumnType columnType;
     private SuspendableNo resetClicked = new SuspendableNo();
-    private Subject<Integer> newLableEvent;
 
-    public Column(List<Cell> columnList, ColumnType columnType, Subject<Integer> newLabelEvent) {
+    public Column(List<Cell> columnList, ColumnType columnType) {
         this.columnList = columnList;
         this.columnType = columnType;
-        this.newLableEvent = newLabelEvent;
 
         columnList.stream().map(Cell::isRunning)
                            .map(runningStatus -> runningStatus.isEqualTo(Animation.Status.RUNNING))

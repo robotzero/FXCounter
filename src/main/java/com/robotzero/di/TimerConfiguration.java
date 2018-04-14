@@ -108,12 +108,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Populator populator(TimerRepository savedTimerRepository) {
-        List<Subject<Direction>> deltaStreams = new ArrayList<>();
-        deltaStreams.add(DeltaStreamSeconds());
-        deltaStreams.add(DeltaStreamMinutes());
-        deltaStreams.add(DeltaStreamHours());
-        return new Populator(deltaStreams, seconds(), minutes(), hours());
+    public Populator populator() {
+        return new Populator();
     }
 
     @Bean

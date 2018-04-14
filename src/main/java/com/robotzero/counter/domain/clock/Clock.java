@@ -7,6 +7,6 @@ import io.reactivex.Observable;
 import java.util.Map;
 
 public interface Clock {
-    Observable<Integer> tick(Direction direction);
+    Observable<CurrentClockState> tick(Direction direction);
     Map<ColumnType, Map<Integer, Integer>> initialize(Direction fromDirection);
 }

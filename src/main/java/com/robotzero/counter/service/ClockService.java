@@ -3,9 +3,9 @@ package com.robotzero.counter.service;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clock;
+import com.robotzero.counter.domain.clock.CurrentClockState;
 import io.reactivex.Observable;
 
-import java.util.List;
 import java.util.Map;
 
 public class ClockService {
@@ -16,7 +16,7 @@ public class ClockService {
         this.clock = clock;
     }
 
-    public Observable<Integer> tick(Direction direction) {
+    public Observable<CurrentClockState> tick(Direction direction) {
         return clock.tick(direction);
     }
 

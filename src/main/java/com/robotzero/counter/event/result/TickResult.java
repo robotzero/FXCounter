@@ -1,19 +1,20 @@
 package com.robotzero.counter.event.result;
 
 import com.robotzero.counter.domain.Cell;
+import com.robotzero.counter.domain.clock.CurrentClockState;
 
 public class TickResult implements Result {
 
-    private final Integer label;
+    private final CurrentClockState labels;
     private final Cell cell;
 
-    public TickResult(Cell cell, Integer label) {
+    public TickResult(Cell cell, CurrentClockState labels) {
         this.cell = cell;
-        this.label = label;
+        this.labels = labels;
     }
 
-    public Integer getLabel() {
-        return label;
+    public CurrentClockState getLabels() {
+        return labels;
     }
 
     public Cell getCell() {
