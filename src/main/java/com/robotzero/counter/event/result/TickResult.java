@@ -5,19 +5,34 @@ import com.robotzero.counter.domain.clock.CurrentClockState;
 
 public class TickResult implements Result {
 
-    private final CurrentClockState labels;
-    private final Cell cell;
+    private CurrentClockState labels;
+    private Cell secondsCell;
+    private Cell minutesCell;
+    private Cell hoursCell;
 
-    public TickResult(Cell cell, CurrentClockState labels) {
-        this.cell = cell;
-        this.labels = labels;
+    public TickResult(Cell secondsCell, Cell minutesCell, Cell hoursCell) {
+        this.secondsCell = secondsCell;
+        this.minutesCell = minutesCell;
+        this.hoursCell = hoursCell;
     }
 
+    public TickResult withCurrentClockState(CurrentClockState currentClockState) {
+        this.labels = currentClockState;
+        return this;
+    }
     public CurrentClockState getLabels() {
         return labels;
     }
 
-    public Cell getCell() {
-        return cell;
+    public Cell getSecondsCell() {
+        return secondsCell;
+    }
+
+    public Cell getMinutesCell() {
+        return minutesCell;
+    }
+
+    public Cell getHoursCell() {
+        return hoursCell;
     }
 }

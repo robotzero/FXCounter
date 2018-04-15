@@ -6,27 +6,21 @@ import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
-import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.LocalTimeClock;
 import com.robotzero.counter.domain.clock.TimerRepository;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.service.*;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
-import org.reactfx.EventSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 public class TimerConfiguration {
@@ -63,51 +57,6 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Subject<Integer> seconds() {
-        return BehaviorSubject.create();
-    }
-
-    @Bean
-    public Subject<Integer> minutes() {
-        return BehaviorSubject.create();
-    }
-
-    @Bean
-    public Subject<Integer> hours() {
-        return BehaviorSubject.create();
-    }
-
-    @Bean
-    public EventSource<Void> PlayMinutes() {
-        return new EventSource<>();
-    }
-
-    @Bean
-    public EventSource<Void> PlayHours() {
-        return new EventSource<>();
-    }
-
-    @Bean
-    public EventSource<Void> StopCountdown() {
-        return new EventSource<>();
-    }
-
-    @Bean
-    public Subject<Direction> DeltaStreamSeconds() {
-        return BehaviorSubject.create();
-    }
-
-    @Bean
-    public Subject<Direction> DeltaStreamMinutes() {
-        return BehaviorSubject.create();
-    }
-
-    @Bean
-    public Subject<Direction> DeltaStreamHours() {
-        return BehaviorSubject.create();
-    }
-
-    @Bean
     public Populator populator() {
         return new Populator();
     }
@@ -137,17 +86,7 @@ public class TimerConfiguration {
 
     @Bean
     public Clock configureClocks(TimerRepository clockRepository) {
-        List<EventSource<Void>> plays = new ArrayList<>();
-        plays.add(PlayMinutes());
-        plays.add(PlayHours());
-        plays.add(StopCountdown());
-
-        List<Subject<Direction>> deltaStreams = new ArrayList<>();
-        deltaStreams.add(DeltaStreamSeconds());
-        deltaStreams.add(DeltaStreamMinutes());
-        deltaStreams.add(DeltaStreamHours());
-
-        return new LocalTimeClock(clockRepository, plays, deltaStreams, seconds(), minutes(), hours());
+        return new LocalTimeClock(clockRepository);
     }
 
     @Bean

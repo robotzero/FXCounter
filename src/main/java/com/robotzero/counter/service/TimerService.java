@@ -41,6 +41,11 @@ public class TimerService {
             if (clickAction.getNewButtonState().equals(ButtonState.STOP)) {
                 this.stopTimer();
             }
+
+            if (clickAction.getNewButtonState().equals(ButtonState.RESET)) {
+                this.stopTimer();
+            }
+
             return clickAction;
         });
     }

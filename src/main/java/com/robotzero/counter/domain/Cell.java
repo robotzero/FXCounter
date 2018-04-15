@@ -1,14 +1,12 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
-import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-import java.time.LocalTime;
 import java.util.stream.IntStream;
 
 public class Cell {
@@ -53,10 +51,6 @@ public class Cell {
         }
     }
 
-    public void animateReset() {
-        translateTransition.play();
-    }
-
     public BooleanProperty isCellOnTop() {
         return this.isCellOnTop;
     }
@@ -72,64 +66,6 @@ public class Cell {
         if (!this.label.textProperty().getValue().equals(String.format("%02d", newLabel))) {
             this.label.textProperty().setValue(String.format("%02d", newLabel));
         }
-    }
-
-    public void setLabel(LocalTime clock, ColumnType columnType) {
-        if (columnType.equals(ColumnType.SECONDS)) {
-            if (currentMultiplayer.get() == 0) {
-                System.out.println("BLAH");
-                label.setText(String.format("%02d", clock.plusSeconds(2).getSecond()));
-            }
-            if (currentMultiplayer.get() == 1) {
-                label.setText(String.format("%02d", clock.plusSeconds(1).getSecond()));
-            }
-
-            if (currentMultiplayer.get() == 2) {
-                label.setText(String.format("%02d", clock.getSecond()));
-            }
-
-            if (currentMultiplayer.get() == 3) {
-                label.setText(String.format("%02d", clock.minusSeconds(1).getSecond()));
-            }
-        }
-
-        if (columnType.equals(ColumnType.MINUTES)) {
-            if (currentMultiplayer.get() == 0) {
-                label.setText(String.format("%02d", clock.plusMinutes(2).getMinute()));
-            }
-            if (currentMultiplayer.get() == 1) {
-                label.setText(String.format("%02d", clock.plusMinutes(1).getMinute()));
-            }
-
-            if (currentMultiplayer.get() == 2) {
-                label.setText(String.format("%02d", clock.getMinute()));
-            }
-
-            if (currentMultiplayer.get() == 3) {
-                label.setText(String.format("%02d", clock.minusMinutes(1).getMinute()));
-            }
-        }
-
-        if (columnType.equals(ColumnType.HOURS)) {
-            if (currentMultiplayer.get() == 0) {
-                label.setText(String.format("%02d", clock.plusHours(2).getHour()));
-            }
-            if (currentMultiplayer.get() == 1) {
-                label.setText(String.format("%02d", clock.plusHours(1).getHour()));
-            }
-
-            if (currentMultiplayer.get() == 2) {
-                label.setText(String.format("%02d", clock.getHour()));
-            }
-
-            if (currentMultiplayer.get() == 3) {
-                label.setText(String.format("%02d", clock.minusHours(1).getHour()));
-            }
-        }
-    }
-
-    public ReadOnlyObjectProperty<Animation.Status> isRunning() {
-        return translateTransition.statusProperty();
     }
 
     public void resetMultiplayer(boolean isOnTop) {

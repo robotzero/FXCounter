@@ -1,51 +1,20 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
-import javafx.animation.Animation;
-import javafx.beans.binding.BooleanExpression;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import org.reactfx.SuspendableNo;
 
 import java.util.List;
 
 public class Column {
 
     private List<Cell> columnList;
-    private BooleanProperty running = new SimpleBooleanProperty(false);
-    private BooleanProperty hasTopEdge = new SimpleBooleanProperty(false);
-
     private ColumnType columnType;
-    private SuspendableNo resetClicked = new SuspendableNo();
 
     public Column(List<Cell> columnList, ColumnType columnType) {
         this.columnList = columnList;
         this.columnType = columnType;
-
-        columnList.stream().map(Cell::isRunning)
-                           .map(runningStatus -> runningStatus.isEqualTo(Animation.Status.RUNNING))
-                           .reduce(BooleanExpression::or)
-                           .ifPresent(running -> this.running.bind(running));
-
-        columnList.forEach(column -> columnList.stream().map(Cell::isCellOnTop)
-                .map(c2 -> c2.or(column.isCellOnTop()))
-                .reduce(BooleanExpression::or)
-                .ifPresent(hasTop -> this.hasTopEdge.bind(hasTop)));
-
-        // When we are in reset mode / button reset has been clicked set new value of the each cell.
-//        resetClicked.noes()
-//                    .subscribe(cellList -> this.columnList.forEach(
-//                            cell -> {
-//                                cell.resetMultiplayer(!hasTopEdge.get());
-//                                cell.setLabel(clocks.getMainClock(), columnType);
-//                            })
-//                    );
     }
 
     public Observable<Cell> getTopCellObservable() {
-//        return this.columnList.get(0).hasChangeTextRectangle().mergeWith(this.columnList.get(1).hasChangeTextRectangle()).mergeWith(this.columnList.get(2).hasChangeTextRectangle())
-//                .mergeWith(this.columnList.get(3).hasChangeTextRectangle());
-
         return this.columnList.stream().map(cell -> cell.hasChangeTextRectangle()).reduce(Observable.empty(), (a, b) -> {
            return Observable.merge(a, b);
         });
@@ -55,17 +24,7 @@ public class Column {
         this.columnList.forEach(cell -> cell.animate(direction));
     }
 
-    public void setLabels() {
-        resetClicked.suspendWhile(this::resetPositions);
-    }
-
     public void setLabels(int index, Integer value) {
         this.columnList.get(index).setLabel(value);
-    }
-
-    private void resetPositions() {
-        if (!hasTopEdge.get()) {
-            this.columnList.forEach(Cell::animateReset);
-        }
     }
 }

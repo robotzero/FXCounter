@@ -39,6 +39,10 @@ public class CurrentViewState {
         return new CurrentViewState(false, false, false, false, false, true, "", currentViewData);
     }
 
+    public static CurrentViewState reset(CurrentViewData currentViewData) {
+        return new CurrentViewState(false, false, false, false, true, false, "", currentViewData);
+    }
+
     public static CurrentViewState failure(String errorMessage) {
         return new CurrentViewState(false, false, false, false, false, false, errorMessage, null);
     }
