@@ -6,6 +6,7 @@ import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 import io.reactivex.Observable;
 
+import java.util.List;
 import java.util.Map;
 
 public class ClockService {
@@ -20,7 +21,7 @@ public class ClockService {
         return clock.tick(direction);
     }
 
-    public Map<ColumnType, Map<Integer, Integer>> initialize(Direction fromDirection) {
+    public Map<ColumnType, List<Integer>> initialize(Direction fromDirection) {
         return clock.initialize(fromDirection);
     }
 }

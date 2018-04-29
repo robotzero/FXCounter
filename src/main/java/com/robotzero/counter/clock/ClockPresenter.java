@@ -28,8 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
@@ -71,7 +73,7 @@ public class ClockPresenter implements Initializable {
 //        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
-        Map<ColumnType, Map<Integer, Integer>> initialValues = this.clockService.initialize(Direction.DOWN);
+        Map<ColumnType, List<Integer>> initialValues = this.clockService.initialize(Direction.DOWN);
         IntStream.rangeClosed(0, 3).forEach(index -> {
             this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
             this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
@@ -111,6 +113,12 @@ public class ClockPresenter implements Initializable {
 
         Observable<ScrollEvent> scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .observeOn(Schedulers.computation())
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .map(a -> {
+                    System.out.println("SCROLL");
+                    System.out.println(a.toString());
+                    return a;
+                })
                 .map(scrollMouseEvent -> new com.robotzero.counter.event.ScrollEvent(ColumnType.SECONDS, scrollMouseEvent.getDeltaY()));
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
@@ -145,7 +153,7 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ScrollAction, ScrollResult> scrollActionTransformer = scrollAction -> scrollAction.flatMap(action -> {
             return Observable.just(action);
-        }).map(response -> new ScrollResult());
+        }).map(response -> new ScrollResult(response.getDirection(), response.getColumnType()));
 
         ObservableTransformer<ClickAction, ClickResult> clickActionTransformer = clickAction -> clickAction.flatMap(action -> {
             return timerService.operateTimer(action);
@@ -200,6 +208,11 @@ public class ClockPresenter implements Initializable {
                 return CurrentViewState.tick(new CurrentViewData(null, null, tickResult));
             }
 
+            if (intermediateState.getClass().equals(ScrollResult.class)) {
+                ScrollResult scrollResult = (ScrollResult) intermediateState;
+                return CurrentViewState.scroll(new CurrentViewData(null, scrollResult, null));
+            }
+
             return CurrentViewState.idle();
         });
 
@@ -236,6 +249,11 @@ public class ClockPresenter implements Initializable {
                     timerColumns.get(hoursCell.getColumnType()).play(Direction.DOWN);
                 }
             }
+
+            if (currentViewState.isScroll()) {
+
+            }
+
         }, error -> {
             System.out.println(error.getMessage());
             throw new IOException("CRASHING THE APP...");

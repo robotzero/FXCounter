@@ -47,10 +47,10 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
          <children>
-            <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" />
+            <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true"/>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875">
+                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -68,7 +68,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -86,7 +86,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -104,7 +104,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -120,15 +120,15 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <Rectangle arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="#494849" strokeType="OUTSIDE" styleClass="rectangleDarkMinutes" width="110.0" StackPane.alignment="TOP_CENTER" />
-            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="TRANSPARENT" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="insideGradientMinutes" width="110.0" StackPane.alignment="TOP_CENTER" />
+            <Rectangle arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="#494849" strokeType="OUTSIDE" styleClass="rectangleDarkMinutes" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true"/>
+            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="TRANSPARENT" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="insideGradientMinutes" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true"/>
          </children></StackPane>
       <StackPane id="minutes" fx:id="minutes" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
-            <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" />
+            <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true"/>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875">
+                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -146,7 +146,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -164,7 +164,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -182,7 +182,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -198,22 +198,22 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <Rectangle arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="#494849" strokeType="OUTSIDE" styleClass="rectangleDarkMinutes" width="110.0" StackPane.alignment="TOP_CENTER" />
-            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="TRANSPARENT" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="insideGradientMinutes" width="110.0" StackPane.alignment="TOP_CENTER" />
+            <Rectangle arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="#494849" strokeType="OUTSIDE" styleClass="rectangleDarkMinutes" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true" />
+            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="TRANSPARENT" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="insideGradientMinutes" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true" />
          </children>
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin></StackPane>
       <StackPane id="seconds" fx:id="seconds" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <children>
-            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" />
-            <Rectangle id="rectWhite" arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="rectangleWhiteSeconds" width="110.0" StackPane.alignment="TOP_CENTER" />
+            <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true" />
+            <Rectangle id="rectWhite" arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="rectangleWhiteSeconds" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true" />
             <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255)" text="04" textAlignment="CENTER" wrappingWidth="84.013671875">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255)" text="04" textAlignment="CENTER" wrappingWidth="84.013671875" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -231,7 +231,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -249,7 +249,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>
@@ -267,7 +267,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
                         <Font name="Andale Mono" size="70.0" />
                      </font>

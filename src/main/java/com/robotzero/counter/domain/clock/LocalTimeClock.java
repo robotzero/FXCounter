@@ -8,6 +8,7 @@ import org.reactfx.util.TriFunction;
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -23,7 +24,7 @@ public class LocalTimeClock implements Clock {
     private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
 
     private Predicate<Integer> isDeltaGreaterThan = delta -> delta > 0;
-    private Predicate<Integer> shouldTick = clockState -> clockState == 59;
+    private Predicate<Integer> shouldTick = clockState -> clockState == 0;
 
     private TriFunction<Predicate<Integer>, Integer, ColumnType, BiFunction<LocalTime, Integer, LocalTime>> tick = (predicate, currentDelta, columnType) -> {
         if (columnType.equals(ColumnType.SECONDS)) {
@@ -95,10 +96,10 @@ public class LocalTimeClock implements Clock {
     }
 
     @Override
-    public Map<ColumnType, Map<Integer, Integer>> initialize(Direction fromDirection) {
-        Map<Integer, Integer> seconds = Map.of(0, mainClock.plusSeconds(2).getSecond(), 1, mainClock.plusSeconds(1).getSecond(), 2, mainClock.getSecond(), 3, mainClock.minusSeconds(1).getSecond());
-        Map<Integer, Integer> minutes = Map.of(0, mainClock.plusMinutes(2).getMinute(), 1, mainClock.plusMinutes(1).getMinute(), 2, mainClock.getMinute(), 3, mainClock.minusMinutes(1).getMinute());
-        Map<Integer, Integer> hours = Map.of(0, mainClock.plusHours(2).getHour(), 1, mainClock.plusHours(1).getHour(), 2, mainClock.getHour(), 3, mainClock.minusHours(1).getHour());
+    public Map<ColumnType, List<Integer>> initialize(Direction fromDirection) {
+        List<Integer> seconds = List.of(mainClock.plusSeconds(2).getSecond(), mainClock.plusSeconds(1).getSecond(), mainClock.getSecond(), mainClock.minusSeconds(1).getSecond());
+        List<Integer> minutes = List.of(mainClock.plusMinutes(2).getMinute(), mainClock.plusMinutes(1).getMinute(), mainClock.getMinute(), mainClock.minusMinutes(1).getMinute());
+        List<Integer> hours = List.of(mainClock.plusHours(2).getHour(), mainClock.plusHours(1).getHour(), mainClock.getHour(), mainClock.minusHours(1).getHour());
         return Map.of(ColumnType.SECONDS, seconds, ColumnType.MINUTES, minutes, ColumnType.HOURS, hours);
     }
 }
