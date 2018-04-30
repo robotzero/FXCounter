@@ -88,7 +88,6 @@ public class LocalTimeClock implements Clock {
                 this.scrollSecondsClock.getSecond(),
                 this.scrollMinutesClock.getMinute(),
                 this.scrollHoursClock.getHour(),
-                true,
                 shouldTick.test(this.mainClock.getSecond()),
                 shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute())
             )

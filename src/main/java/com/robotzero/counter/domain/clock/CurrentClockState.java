@@ -5,15 +5,13 @@ public class CurrentClockState {
     private final Integer second;
     private final Integer minute;
     private final Integer hour;
-    private final boolean tickSecond;
     private final boolean tickMinute;
     private final boolean tickHour;
 
-    public CurrentClockState(Integer second, Integer minute, Integer hour, boolean tickSecond, boolean tickMinute, boolean tickHour) {
+    public CurrentClockState(Integer second, Integer minute, Integer hour, boolean tickMinute, boolean tickHour) {
         this.second = second;
         this.minute = minute;
         this.hour = hour;
-        this.tickSecond = tickSecond;
         this.tickMinute = tickMinute;
         this.tickHour = tickHour;
     }
@@ -30,15 +28,11 @@ public class CurrentClockState {
         return hour;
     }
 
-    public boolean isTickSecond() {
-        return tickSecond;
-    }
-
-    public boolean isTickMinute() {
+    public boolean shouldTickMinute() {
         return tickMinute;
     }
 
-    public boolean isTickHour() {
+    public boolean shouldTickHour() {
         return tickHour;
     }
 }
