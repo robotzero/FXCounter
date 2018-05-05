@@ -2,6 +2,7 @@ package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.TimerType;
 import io.reactivex.Observable;
 import org.reactfx.util.TriFunction;
 
@@ -78,7 +79,7 @@ public class LocalTimeClock implements Clock {
         this.scrollHoursClock = this.scrollHoursClock.withHour(mainClock.getHour() - 1);
     }
 
-    public Observable<CurrentClockState> tick(Direction direction) {
+    public Observable<CurrentClockState> tick(Direction direction, TimerType timerType) {
         this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.mainClock, 1);
         this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, Math.abs(direction.getDelta()));
         this.scrollMinutesClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.MINUTES).apply(this.scrollMinutesClock, Math.abs(direction.getDelta()));

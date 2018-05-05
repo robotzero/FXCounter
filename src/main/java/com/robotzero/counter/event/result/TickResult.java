@@ -3,24 +3,26 @@ package com.robotzero.counter.event.result;
 import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
-import io.reactivex.Observable;
 
 public class TickResult implements Result {
 
     private CurrentClockState labels;
-    private Cell secondsCell;
-    private Cell minutesCell;
-    private Cell hoursCell;
-    private Direction direction;
-    private ColumnType columnType;
+    private final Cell secondsCell;
+    private final Cell minutesCell;
+    private final Cell hoursCell;
+    private final Direction direction;
+    private final ColumnType columnType;
+    private final TimerType timerType;
 
-    public TickResult(Cell secondsCell, Cell minutesCell, Cell hoursCell, Direction direction, ColumnType columnType) {
+    public TickResult(Cell secondsCell, Cell minutesCell, Cell hoursCell, Direction direction, ColumnType columnType, TimerType timerType) {
         this.secondsCell = secondsCell;
         this.minutesCell = minutesCell;
         this.hoursCell = hoursCell;
         this.direction = direction;
         this.columnType = columnType;
+        this.timerType = timerType;
     }
 
     public TickResult withCurrentClockState(CurrentClockState currentClockState) {
@@ -66,5 +68,9 @@ public class TickResult implements Result {
 
     public ColumnType getColumnType() {
         return columnType;
+    }
+
+    public TimerType getTimerType() {
+        return timerType;
     }
 }

@@ -1,9 +1,6 @@
 package com.robotzero.counter.clock;
 
-import com.robotzero.counter.domain.Cell;
-import com.robotzero.counter.domain.Column;
-import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.*;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
@@ -138,11 +135,11 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.flatMap(
                 event -> {
-                    return Observable.just(new TickAction(directionService.calculateDirection(event.getDelta()), event.getColumnType()));
+                    return Observable.just(new TickAction(directionService.calculateDirection(event.getDelta()), event.getColumnType(), TimerType.SCROLL));
                 });
 
         ObservableTransformer<TickEvent, TickAction> tickEventTransformer = tickEv -> tickEv.flatMap(event -> {
-            return Observable.just(new TickAction(Observable.just(Direction.DOWN), ColumnType.SECONDS));
+            return Observable.just(new TickAction(Observable.just(Direction.DOWN), ColumnType.SECONDS, TimerType.TICK));
         });
 
         ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actionTransformer = mainViewEvent -> mainViewEvent.publish(sharedObservable -> {
@@ -164,8 +161,8 @@ public class ClockPresenter implements Initializable {
                     timerColumns.get(ColumnType.HOURS).getTopCellObservable(),
                     action.getDirection(),
                     (secondsCell, minutesCell, hoursCell, direction) -> {
-                return new TickResult(secondsCell, minutesCell, hoursCell, direction, action.getColumnType());
-            }).withLatestFrom(action.getDirection().flatMap(direction -> clockService.tick(direction)), (tickResult, currentClockState) -> {
+                return new TickResult(secondsCell, minutesCell, hoursCell, direction, action.getColumnType(), action.getTimerType());
+            }).withLatestFrom(action.getDirection().flatMap(direction -> clockService.tick(direction, action.getTimerType())), (tickResult, currentClockState) -> {
                 return tickResult.withCurrentClockState(currentClockState);
             });
         });
@@ -210,16 +207,17 @@ public class ClockPresenter implements Initializable {
         });
 
         uiModels.observeOn(JavaFxScheduler.platform()).subscribe(currentViewState -> {
+            ClickResult clickResult = currentViewState.getData().getClickResult();
             if (currentViewState.isStart()) {
-                startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
+                startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
             }
 
             if (currentViewState.isPause()) {
-                startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
+                startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
             }
 
             if (currentViewState.isStop()) {
-                startButton.textProperty().setValue(currentViewState.getData().getClickResult().getButtonState().getDescription());
+                startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
             }
 
             if (currentViewState.isReset()) {
@@ -227,22 +225,23 @@ public class ClockPresenter implements Initializable {
             }
 
             if (currentViewState.isTick()) {
+                TickResult tickResult = currentViewState.getData().getTickResult();
                 if (currentViewState.getData().getTickResult().getColumnType().equals(ColumnType.SECONDS)) {
-                    Cell secondsCell = currentViewState.getData().getTickResult().getSecondsCell();
-                    secondsCell.setLabel(currentViewState.getData().getTickResult().getLabels().getSecond());
-                    timerColumns.get(secondsCell.getColumnType()).play(currentViewState.getData().getTickResult().getDirection());
+                    Cell secondsCell = tickResult.getSecondsCell();
+                    secondsCell.setLabel(tickResult.getLabels().getSecond());
+                    timerColumns.get(secondsCell.getColumnType()).play(tickResult.getDirection());
                 }
 
-                if (currentViewState.getData().getTickResult().getLabels().shouldTickMinute() || currentViewState.getData().getTickResult().getColumnType().equals(ColumnType.MINUTES)) {
-                    Cell minutesCell = currentViewState.getData().getTickResult().getMinutesCell();
-                    minutesCell.setLabel(currentViewState.getData().getTickResult().getLabels().getMinute());
-                    timerColumns.get(minutesCell.getColumnType()).play(currentViewState.getData().getTickResult().getDirection());
+                if (tickResult.getLabels().shouldTickMinute() || tickResult.getColumnType().equals(ColumnType.MINUTES)) {
+                    Cell minutesCell = tickResult.getMinutesCell();
+                    minutesCell.setLabel(tickResult.getLabels().getMinute());
+                    timerColumns.get(minutesCell.getColumnType()).play(tickResult.getDirection());
                 }
 
-                if (currentViewState.getData().getTickResult().getLabels().shouldTickHour() || currentViewState.getData().getTickResult().getColumnType().equals(ColumnType.HOURS)) {
-                    Cell hoursCell = currentViewState.getData().getTickResult().getHoursCell();
-                    hoursCell.setLabel(currentViewState.getData().getTickResult().getLabels().getHour());
-                    timerColumns.get(hoursCell.getColumnType()).play(currentViewState.getData().getTickResult().getDirection());
+                if (tickResult.getLabels().shouldTickHour() || tickResult.getColumnType().equals(ColumnType.HOURS)) {
+                    Cell hoursCell = tickResult.getHoursCell();
+                    hoursCell.setLabel(tickResult.getLabels().getHour());
+                    timerColumns.get(hoursCell.getColumnType()).play(tickResult.getDirection());
                 }
             }
         }, error -> {
