@@ -162,7 +162,7 @@ public class ClockPresenter implements Initializable {
                     action.getDirection(),
                     (secondsCell, minutesCell, hoursCell, direction) -> {
                 return new TickResult(secondsCell, minutesCell, hoursCell, direction, action.getColumnType(), action.getTimerType());
-            }).withLatestFrom(action.getDirection().flatMap(direction -> clockService.tick(direction, action.getTimerType())), (tickResult, currentClockState) -> {
+            }).withLatestFrom(action.getDirection().flatMap(direction -> clockService.tick(direction, action.getTimerType(), action.getColumnType())), (tickResult, currentClockState) -> {
                 return tickResult.withCurrentClockState(currentClockState);
             });
         });
@@ -207,21 +207,23 @@ public class ClockPresenter implements Initializable {
         });
 
         uiModels.observeOn(JavaFxScheduler.platform()).subscribe(currentViewState -> {
-            ClickResult clickResult = currentViewState.getData().getClickResult();
-            if (currentViewState.isStart()) {
-                startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
-            }
+            if (currentViewState.isClick()) {
+                ClickResult clickResult = currentViewState.getData().getClickResult();
+                if (currentViewState.isStart()) {
+                    startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
+                }
 
-            if (currentViewState.isPause()) {
-                startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
-            }
+                if (currentViewState.isPause()) {
+                    startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
+                }
 
-            if (currentViewState.isStop()) {
-                startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
-            }
+                if (currentViewState.isStop()) {
+                    startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
+                }
 
-            if (currentViewState.isReset()) {
-                startButton.textProperty().setValue("Start");
+                if (currentViewState.isReset()) {
+                    startButton.textProperty().setValue("Start");
+                }
             }
 
             if (currentViewState.isTick()) {

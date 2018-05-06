@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface Clock {
-    Observable<CurrentClockState> tick(Direction direction, TimerType timerType);
+    Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType);
     Map<ColumnType, List<Integer>> initialize(Direction fromDirection);
 }

@@ -51,8 +51,11 @@ public class Location {
                 return translateY - currentCellSize.get();
             }
         } else {
-            if (translateY == currentCellSize.multiply(2).get()) {
-                return currentCellSize.get();
+//            if (translateY == -90) {
+//                return currentCellSize.multiply(3).get();
+//            }
+            if (translateY == currentCellSize.multiply(3).get()) {
+                return -currentCellSize.get();
             } else {
                 return translateY + currentCellSize.get();
             }

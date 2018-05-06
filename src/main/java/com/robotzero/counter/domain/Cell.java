@@ -56,7 +56,7 @@ public class Cell {
     }
 
     public Observable<Cell> hasChangeTextRectangle() {
-        if (rectangle.translateYProperty().get() == -90) {
+        if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
             return Observable.just(this);
         }
         return Observable.never();

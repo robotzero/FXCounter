@@ -18,8 +18,8 @@ public class ClockService {
         this.clock = clock;
     }
 
-    public Observable<CurrentClockState> tick(Direction direction, TimerType timerType) {
-        return clock.tick(direction, timerType);
+    public Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
+        return clock.tick(direction, timerType, columnType);
     }
 
     public Map<ColumnType, List<Integer>> initialize(Direction fromDirection) {
