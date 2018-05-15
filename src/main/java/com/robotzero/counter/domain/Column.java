@@ -14,10 +14,14 @@ public class Column {
         this.columnType = columnType;
     }
 
-    public Observable<Cell> getTopCellObservable() {
-        return this.columnList.stream().map(cell -> cell.hasChangeTextRectangle()).reduce(Observable.empty(), (a, b) -> {
-           return Observable.merge(a, b);
-        });
+    public Observable<Cell> getTopCellObservable(Observable<Direction> directionObservable) {
+        return columnList.stream().map(cell -> directionObservable.flatMap(direction -> cell.hasChangeTextRectangle(direction)))
+                           .reduce(Observable.empty(), (a, b) -> {
+                               return Observable.merge(a, b);
+                           });
+//        return this.columnList.stream().map(cell -> cell.hasChangeTextRectangle()).reduce(Observable.empty(), (a, b) -> {
+//           return Observable.merge(a, b);
+//        });
     }
 
     public void play(Direction direction) {

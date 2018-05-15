@@ -34,6 +34,7 @@ public class Location {
                 return translateY;
             }
         } else {
+            System.out.println("TRANSLATE Y " + translateY);
             if (translateY == currentCellSize.multiply(3).get()) {
                 return -90;
             } else {
@@ -52,7 +53,8 @@ public class Location {
             }
         } else {
             if (translateY == currentCellSize.multiply(2).get()) {
-                return currentCellSize.get();
+                return translateY + currentCellSize.get();
+//                return currentCellSize.get();
             } else {
                 return translateY + currentCellSize.get();
             }

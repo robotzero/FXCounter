@@ -159,13 +159,15 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> tickAction.flatMap(action -> {
             return Observable.zip(
-                    timerColumns.get(ColumnType.SECONDS).getTopCellObservable(),
-                    timerColumns.get(ColumnType.MINUTES).getTopCellObservable(),
-                    timerColumns.get(ColumnType.HOURS).getTopCellObservable(),
+                    timerColumns.get(ColumnType.SECONDS).getTopCellObservable(action.getDirection()),
+                    timerColumns.get(ColumnType.MINUTES).getTopCellObservable(action.getDirection()),
+                    timerColumns.get(ColumnType.HOURS).getTopCellObservable(action.getDirection()),
                     action.getDirection(),
                     (secondsCell, minutesCell, hoursCell, direction) -> {
                 return new TickResult(secondsCell, minutesCell, hoursCell, direction, action.getColumnType());
-            }).withLatestFrom(action.getDirection().flatMap(direction -> clockService.tick(direction)), (tickResult, currentClockState) -> {
+            }).withLatestFrom(action.getDirection().doOnEach(d -> {
+                System.out.println(d.getValue());
+            }).flatMap(direction -> clockService.tick(direction)), (tickResult, currentClockState) -> {
                 return tickResult.withCurrentClockState(currentClockState);
             });
         });

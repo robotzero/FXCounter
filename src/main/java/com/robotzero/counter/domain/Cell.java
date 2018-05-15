@@ -55,10 +55,12 @@ public class Cell {
         return this.isCellOnTop;
     }
 
-    public Observable<Cell> hasChangeTextRectangle() {
-        if (rectangle.translateYProperty().get() == -90) {
+    public Observable<Cell> hasChangeTextRectangle(Direction direction) {
+
+        if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
             return Observable.just(this);
         }
+
         return Observable.never();
     }
 
