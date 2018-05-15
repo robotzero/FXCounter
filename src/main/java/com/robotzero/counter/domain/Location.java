@@ -52,9 +52,9 @@ public class Location {
                 return translateY - currentCellSize.get();
             }
         } else {
+
             if (translateY == currentCellSize.multiply(2).get()) {
                 return translateY + currentCellSize.get();
-//                return currentCellSize.get();
             } else {
                 return translateY + currentCellSize.get();
             }

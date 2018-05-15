@@ -9,7 +9,6 @@ public class DirectionService {
         if (delta < 0) {
             return Observable.just(Direction.DOWN);
         }
-
         return Observable.just(Direction.UP);
     }
 }
