@@ -32,15 +32,16 @@ public class LocalTimeClock implements Clock {
             if (predicate.test(currentDelta)) {
                 return LocalTime::plusSeconds;
             }
-            return LocalTime::minusSeconds;
+            return (localTime, integer) -> localTime.minusSeconds(integer);
         }
 
         if (shouldTick.test(this.mainClock.getSecond())) {
             if (columnType.equals(ColumnType.MINUTES)) {
                 if (predicate.test(currentDelta)) {
                     return LocalTime::plusMinutes;
+                } else {
+                    return LocalTime::minusMinutes;
                 }
-                return LocalTime::minusMinutes;
             }
         } else {
             return (localTime, integer) -> localTime;
@@ -90,18 +91,21 @@ public class LocalTimeClock implements Clock {
         if (timerType.equals(TimerType.SCROLL)) {
             if (columnType.equals(ColumnType.SECONDS)) {
                 this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, Math.abs(direction.getDelta()));
+                this.mainClock = this.mainClock.withSecond(this.scrollSecondsClock.getSecond());
             }
 
             if (columnType.equals(ColumnType.MINUTES)) {
                 this.scrollMinutesClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.MINUTES).apply(this.scrollMinutesClock, Math.abs(direction.getDelta()));
+                this.mainClock = this.mainClock.withMinute(this.scrollMinutesClock.getMinute());
             }
 
             if (columnType.equals(ColumnType.HOURS)) {
                 this.scrollHoursClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.HOURS).apply(this.scrollHoursClock, Math.abs(direction.getDelta()));
+                this.mainClock = this.mainClock.withHour(this.scrollHoursClock.getHour());
             }
             this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), columnType).apply(this.mainClock, Math.abs(direction.getDelta()));
         }
-
+        System.out.println("CURRENT CLOCK STATE " + this.scrollMinutesClock.getMinute());
         return Observable.just(new CurrentClockState(
                 this.scrollSecondsClock.getSecond(),
                 this.scrollMinutesClock.getMinute(),
