@@ -35,26 +35,21 @@ public class LocalTimeClock implements Clock {
             return (localTime, integer) -> localTime.minusSeconds(integer);
         }
 
-        if (shouldTick.test(this.mainClock.getSecond())) {
-            if (columnType.equals(ColumnType.MINUTES)) {
-                if (predicate.test(currentDelta)) {
-                    return LocalTime::plusMinutes;
-                } else {
-                    return LocalTime::minusMinutes;
-                }
-            }
-        } else {
-            return (localTime, integer) -> localTime;
+        if (shouldTick.test(this.mainClock.getSecond()) || columnType.equals(ColumnType.MINUTES)) {
+             if (predicate.test(currentDelta)) {
+                 return LocalTime::plusMinutes;
+             }
+             return (localTime, integer) -> localTime.minusMinutes(integer);
         }
 
-        if (shouldTick.test(this.mainClock.getMinute())) {
+        if (shouldTick.test(this.mainClock.getMinute()) || columnType.equals(ColumnType.HOURS)) {
             if (predicate.test(currentDelta)) {
                 return LocalTime::plusHours;
             }
-            return LocalTime::minusHours;
-        } else {
-            return (localTime, integer) -> localTime;
+            return (localtime, integer) -> localtime.minusHours(integer);
         }
+
+        return (localTime, integer) -> localTime;
     };
 
     private Function<Integer, Predicate<Integer>> isGreaterThan = pivot -> {
@@ -105,7 +100,7 @@ public class LocalTimeClock implements Clock {
             }
             this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), columnType).apply(this.mainClock, Math.abs(direction.getDelta()));
         }
-        System.out.println("CURRENT CLOCK STATE " + this.scrollMinutesClock.getMinute());
+
         return Observable.just(new CurrentClockState(
                 this.scrollSecondsClock.getSecond(),
                 this.scrollMinutesClock.getMinute(),
