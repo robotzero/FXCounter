@@ -30,6 +30,7 @@ public class LocalTimeClock implements Clock {
     private TriFunction<Predicate<Integer>, Integer, ColumnType, BiFunction<LocalTime, Integer, LocalTime>> tick = (predicate, currentDelta, columnType) -> {
         if (columnType.equals(ColumnType.SECONDS)) {
             if (predicate.test(currentDelta)) {
+                System.out.println("MINUS");
                 return LocalTime::plusSeconds;
             }
             return (localTime, integer) -> localTime.minusSeconds(integer);
@@ -70,33 +71,38 @@ public class LocalTimeClock implements Clock {
             savedTimer.setSavedTimer(LocalTime.of(22, 1, 10));
             return savedTimer;
         }).getSavedTimer();
-        this.scrollSecondsClock = this.scrollSecondsClock.withSecond(mainClock.getSecond() - 1);
+        this.scrollSecondsClock = this.scrollSecondsClock.withSecond(mainClock.getSecond());
         this.scrollMinutesClock = this.scrollMinutesClock.withMinute(mainClock.getMinute() - 1);
         this.scrollHoursClock = this.scrollHoursClock.withHour(mainClock.getHour() - 1);
     }
 
     public Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
         if (timerType.equals(TimerType.TICK)) {
+            int multiplier = this.scrollSecondsClock.getSecond() == this.mainClock.getSecond() ? 2 : 1;
+            this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, multiplier * Math.abs(direction.getDelta()));
+            this.scrollMinutesClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.MINUTES).apply(this.scrollMinutesClock, multiplier * Math.abs(direction.getDelta()));
+            this.scrollHoursClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.HOURS).apply(this.scrollHoursClock, multiplier * Math.abs(direction.getDelta()));
             this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.mainClock, 1);
-            this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, Math.abs(direction.getDelta()));
-            this.scrollMinutesClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.MINUTES).apply(this.scrollMinutesClock, Math.abs(direction.getDelta()));
-            this.scrollHoursClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.HOURS).apply(this.scrollHoursClock, Math.abs(direction.getDelta()));
         }
 
         if (timerType.equals(TimerType.SCROLL)) {
             if (columnType.equals(ColumnType.SECONDS)) {
-                this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, Math.abs(direction.getDelta()));
-                this.mainClock = this.mainClock.withSecond(this.scrollSecondsClock.getSecond());
+                if (this.scrollSecondsClock.getSecond() == this.mainClock.getSecond()) {
+                    this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, 2 * Math.abs(direction.getDelta()));
+                } else {
+                    this.scrollSecondsClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.SECONDS).apply(this.scrollSecondsClock, Math.abs(direction.getDelta()));
+                }
+//                this.mainClock = this.mainClock.withSecond(this.scrollSecondsClock.getSecond());
             }
 
             if (columnType.equals(ColumnType.MINUTES)) {
                 this.scrollMinutesClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.MINUTES).apply(this.scrollMinutesClock, Math.abs(direction.getDelta()));
-                this.mainClock = this.mainClock.withMinute(this.scrollMinutesClock.getMinute());
+//                this.mainClock = this.mainClock.withMinute(this.scrollMinutesClock.getMinute());
             }
 
             if (columnType.equals(ColumnType.HOURS)) {
                 this.scrollHoursClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), ColumnType.HOURS).apply(this.scrollHoursClock, Math.abs(direction.getDelta()));
-                this.mainClock = this.mainClock.withHour(this.scrollHoursClock.getHour());
+//                this.mainClock = this.mainClock.withHour(this.scrollHoursClock.getHour());
             }
             this.mainClock = tick.apply(isDeltaGreaterThan, direction.getDelta(), columnType).apply(this.mainClock, Math.abs(direction.getDelta()));
         }

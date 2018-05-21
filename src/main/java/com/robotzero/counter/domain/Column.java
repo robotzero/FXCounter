@@ -1,7 +1,6 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
-
 import java.util.List;
 
 public class Column {
@@ -14,14 +13,11 @@ public class Column {
         this.columnType = columnType;
     }
 
-    public Observable<Cell> getTopCellObservable(Observable<Direction> directionObservable) {
-        return columnList.stream().map(cell -> directionObservable.flatMap(direction -> cell.hasChangeTextRectangle(direction)))
+    public Observable<ChangeCell> getChangeCell(Observable<Direction> directionObservable) {
+        return columnList.stream().map(cell -> directionObservable.flatMap(direction -> cell.getChangeCell(direction)))
                            .reduce(Observable.empty(), (a, b) -> {
                                return Observable.merge(a, b);
                            });
-//        return this.columnList.stream().map(cell -> cell.hasChangeTextRectangle()).reduce(Observable.empty(), (a, b) -> {
-//           return Observable.merge(a, b);
-//        });
     }
 
     public void play(Direction direction) {
