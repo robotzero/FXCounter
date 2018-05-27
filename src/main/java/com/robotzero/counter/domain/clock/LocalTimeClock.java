@@ -30,7 +30,6 @@ public class LocalTimeClock implements Clock {
     private TriFunction<Predicate<Integer>, Integer, ColumnType, BiFunction<LocalTime, Integer, LocalTime>> tick = (predicate, currentDelta, columnType) -> {
         if (columnType.equals(ColumnType.SECONDS)) {
             if (predicate.test(currentDelta)) {
-                System.out.println("MINUS");
                 return LocalTime::plusSeconds;
             }
             return (localTime, integer) -> localTime.minusSeconds(integer);
@@ -72,8 +71,8 @@ public class LocalTimeClock implements Clock {
             return savedTimer;
         }).getSavedTimer();
         this.scrollSecondsClock = this.scrollSecondsClock.withSecond(mainClock.getSecond());
-        this.scrollMinutesClock = this.scrollMinutesClock.withMinute(mainClock.getMinute() - 1);
-        this.scrollHoursClock = this.scrollHoursClock.withHour(mainClock.getHour() - 1);
+        this.scrollMinutesClock = this.scrollMinutesClock.withMinute(mainClock.getMinute());
+        this.scrollHoursClock = this.scrollHoursClock.withHour(mainClock.getHour());
     }
 
     public Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
@@ -111,6 +110,7 @@ public class LocalTimeClock implements Clock {
                 this.scrollSecondsClock.getSecond(),
                 this.scrollMinutesClock.getMinute(),
                 this.scrollHoursClock.getHour(),
+                direction,
                 shouldTick.test(this.mainClock.getSecond()) && !timerType.equals(TimerType.SCROLL),
                 shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && !timerType.equals(TimerType.SCROLL)
             )

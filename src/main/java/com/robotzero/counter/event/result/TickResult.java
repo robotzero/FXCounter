@@ -7,31 +7,24 @@ import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 
 public class TickResult implements Result {
-
-    private CurrentClockState labels;
     private final Cell secondsCell;
     private final Cell minutesCell;
     private final Cell hoursCell;
-    private final Direction direction;
+    private final CurrentClockState currentClockState;
     private final ColumnType columnType;
     private final TimerType timerType;
 
-    public TickResult(Cell secondsCell, Cell minutesCell, Cell hoursCell, Direction direction, ColumnType columnType, TimerType timerType) {
+    public TickResult(Cell secondsCell, Cell minutesCell, Cell hoursCell, CurrentClockState currentClockState, ColumnType columnType, TimerType timerType) {
         this.secondsCell = secondsCell;
         this.minutesCell = minutesCell;
         this.hoursCell = hoursCell;
-        this.direction = direction;
+        this.currentClockState = currentClockState;
         this.columnType = columnType;
         this.timerType = timerType;
     }
 
-    public TickResult withCurrentClockState(CurrentClockState currentClockState) {
-        this.labels = currentClockState;
-        return this;
-    }
-
     public CurrentClockState getLabels() {
-        return labels;
+        return this.currentClockState;
     }
 
     public Cell getCell(ColumnType columnType) {
@@ -60,10 +53,6 @@ public class TickResult implements Result {
 
     public Cell getHoursCell() {
         return hoursCell;
-    }
-
-    public Direction getDirection() {
-        return direction;
     }
 
     public ColumnType getColumnType() {

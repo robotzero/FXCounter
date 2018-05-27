@@ -13,8 +13,8 @@ public class Column {
         this.columnType = columnType;
     }
 
-    public Observable<ChangeCell> getChangeCell(Observable<Direction> directionObservable) {
-        return columnList.stream().map(cell -> directionObservable.flatMap(direction -> cell.getChangeCell(direction)))
+    public Observable<ChangeCell> getChangeCell() {
+        return columnList.stream().map(cell -> cell.getChangeCell())
                            .reduce(Observable.empty(), (a, b) -> {
                                return Observable.merge(a, b);
                            });

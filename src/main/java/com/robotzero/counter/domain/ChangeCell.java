@@ -3,18 +3,18 @@ package com.robotzero.counter.domain;
 public class ChangeCell {
 
     private Cell cell;
-    private Direction direction;
+    private double translateY;
 
-    public ChangeCell(Cell cell, Direction direction) {
+    public ChangeCell(Cell cell, double translateY) {
         this.cell = cell;
-        this.direction = direction;
+        this.translateY = translateY;
     }
 
     public Cell getCell() {
         return this.cell;
     }
 
-    public Direction getDirection() {
-        return this.direction;
+    public double getTranslateY() {
+        return translateY;
     }
 }

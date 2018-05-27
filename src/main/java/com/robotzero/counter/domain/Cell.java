@@ -51,10 +51,10 @@ public class Cell {
         }
     }
 
-    public Observable<ChangeCell> getChangeCell(Direction direction) {
+    public Observable<ChangeCell> getChangeCell() {
 
         if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
-            return Observable.just(new ChangeCell(this, direction));
+            return Observable.just(new ChangeCell(this, rectangle.getTranslateY()));
         }
 
         return Observable.never();
