@@ -1,21 +1,24 @@
 package com.robotzero.counter.domain.clock;
 
+import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
+
+import java.util.Map;
 
 public class CurrentClockState {
 
     private final Integer second;
     private final Integer minute;
     private final Integer hour;
-    private final Direction direction;
+    private final Map<ColumnType, Direction> directions;
     private final boolean tickMinute;
     private final boolean tickHour;
 
-    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction direction, boolean tickMinute, boolean tickHour) {
+    public CurrentClockState(Integer second, Integer minute, Integer hour, Map<ColumnType, Direction> directions, boolean tickMinute, boolean tickHour) {
         this.second = second;
         this.minute = minute;
         this.hour = hour;
-        this.direction = direction;
+        this.directions = directions;
         this.tickMinute = tickMinute;
         this.tickHour = tickHour;
     }
@@ -40,7 +43,7 @@ public class CurrentClockState {
         return tickHour;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public Direction getDirection(ColumnType columnType) {
+        return directions.get(columnType);
     }
 }

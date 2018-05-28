@@ -2,7 +2,6 @@ package com.robotzero.counter.event.result;
 
 import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 

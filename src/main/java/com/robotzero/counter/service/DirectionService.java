@@ -4,58 +4,59 @@ import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import io.reactivex.Observable;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
+
 public class DirectionService {
 
     /* We have to track previous directions */
-    private Direction currentDirectionSeconds;
-    private Direction currentDirectionMinutes;
-    private Direction currentDirectionHours;
+    private Map<ColumnType, Direction> previousDirections = new HashMap<>();
 
+    @PostConstruct
+    public void initialize() {
+        previousDirections.put(ColumnType.SECONDS, null);
+        previousDirections.put(ColumnType.MINUTES, null);
+        previousDirections.put(ColumnType.HOURS, null);
+    }
 
     public Observable<Direction> calculateDirection(double translateY, double delta, ColumnType columnType) {
         Direction direction = null;
+        Direction previousDirection = previousDirections.get(columnType);
         if (delta < 0) {
-            if (currentDirectionSeconds == null) {
-                direction = Direction.UP;
-                currentDirectionSeconds = direction;
+            if (previousDirection == null) {
+                direction = Direction.STARTUP;
+                previousDirections.put(columnType, direction);
                 return Observable.just(direction);
             }
 
-            if (currentDirectionSeconds.getDelta() == (int) (delta / Math.abs(delta))) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (!previousDirection.equals(Direction.UP) && translateY == -90)) {
                 direction = Direction.UP;
-            }
-
-            if (translateY == -90) {
-
-            }
-
-            if (translateY == 270) {
+            } else if (translateY == -90) {
+                direction = Direction.SWITCHDOWN;
+            } else if (translateY == 270) {
                 direction = Direction.SWITCHUP;
             }
         } else {
-            if (currentDirectionSeconds == null) {
-                direction = Direction.DOWN;
-                currentDirectionSeconds = direction;
+            if (previousDirection == null) {
+                direction = Direction.STARTDOWN;
+                previousDirections.put(columnType, direction);
                 return Observable.just(direction);
             }
 
-            if (currentDirectionSeconds.getDelta() == (int) (delta / Math.abs(delta))) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (!previousDirection.equals(Direction.DOWN) && translateY == 270)) {
                 direction = Direction.DOWN;
-            }
-
-            if (translateY == -90) {
-
-            }
-
-            if (translateY == 270) {
-
+            } else if (translateY == -90) {
+                direction = Direction.SWITCHDOWN;
+            } else if (translateY == 270) {
+                direction = Direction.SWITCHUP;
             }
         }
 
         if (direction == null) {
             throw new RuntimeException("Unsupported state");
         }
-        currentDirectionSeconds = direction;
+        previousDirections.put(columnType, direction);
         return Observable.just(direction);
     }
 }
