@@ -4,6 +4,7 @@ import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
+import javafx.util.Duration;
 
 public class TickResult implements Result {
     private final Cell secondsCell;
@@ -60,5 +61,9 @@ public class TickResult implements Result {
 
     public TimerType getTimerType() {
         return timerType;
+    }
+
+    public Duration getDuration() {
+        return timerType.equals(TimerType.SCROLL) ? Duration.millis(200) : Duration.millis(600);
     }
 }

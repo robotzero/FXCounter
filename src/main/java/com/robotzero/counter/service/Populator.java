@@ -33,7 +33,6 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    translateTransition.setDuration(Duration.millis(600));
                     return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.SECONDS);
                 }).collect(Collectors.toList());
 
@@ -46,7 +45,6 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    translateTransition.setDuration(Duration.millis(600));
                     return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.MINUTES);
                 }).collect(Collectors.toList());
 
@@ -59,7 +57,6 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    translateTransition.setDuration(Duration.millis(600));
                     return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.HOURS);
                 }).collect(Collectors.toList());
 

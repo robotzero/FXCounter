@@ -1,6 +1,8 @@
 package com.robotzero.counter.domain;
 
 import io.reactivex.Observable;
+import javafx.util.Duration;
+
 import java.util.List;
 
 public class Column {
@@ -20,8 +22,8 @@ public class Column {
                            });
     }
 
-    public void play(Direction direction) {
-        this.columnList.forEach(cell -> cell.animate(direction));
+    public void play(Direction direction, Duration duration) {
+        this.columnList.forEach(cell -> cell.animate(direction, duration));
     }
 
     public void setLabels(int index, Integer value) {

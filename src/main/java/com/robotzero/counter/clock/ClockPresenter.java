@@ -113,13 +113,9 @@ public class ClockPresenter implements Initializable {
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
-                .debounce(700, TimeUnit.MILLISECONDS)
-                .map(a -> {
-                    System.out.println("SCROLL");
-//                    System.out.println(a.toString());
-                    return a;
-                })
-                .map(scrollMouseEvent -> new com.robotzero.counter.event.ScrollEvent(((Node) scrollMouseEvent.getSource()).getId(), scrollMouseEvent.getDeltaY()));
+                .buffer(3)
+                .map(scrollMouseEvent -> new com.robotzero.counter.event.ScrollEvent(((Node) scrollMouseEvent.get(0).getSource()).getId(), scrollMouseEvent.get(0).getDeltaY()));
+
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
 
@@ -259,19 +255,19 @@ public class ClockPresenter implements Initializable {
                 if (currentViewState.getData().getTickResult().getColumnType().equals(ColumnType.SECONDS)) {
                     Cell secondsCell = tickResult.getSecondsCell();
                     secondsCell.setLabel(tickResult.getLabels().getSecond());
-                    timerColumns.get(secondsCell.getColumnType()).play(tickResult.getLabels().getDirection());
+                    timerColumns.get(secondsCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
                 }
 
                 if (tickResult.getLabels().shouldTickMinute() || tickResult.getColumnType().equals(ColumnType.MINUTES)) {
                     Cell minutesCell = tickResult.getMinutesCell();
                     minutesCell.setLabel(tickResult.getLabels().getMinute());
-                    timerColumns.get(minutesCell.getColumnType()).play(tickResult.getLabels().getDirection());
+                    timerColumns.get(minutesCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
                 }
 //
                 if (tickResult.getLabels().shouldTickHour() || tickResult.getColumnType().equals(ColumnType.HOURS)) {
                     Cell hoursCell = tickResult.getHoursCell();
                     hoursCell.setLabel(tickResult.getLabels().getHour());
-                    timerColumns.get(hoursCell.getColumnType()).play(tickResult.getLabels().getDirection());
+                    timerColumns.get(hoursCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
                 }
             }
         }, error -> {

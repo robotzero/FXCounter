@@ -6,6 +6,7 @@ import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.stream.IntStream;
 
@@ -38,9 +39,10 @@ public class Cell {
         this.columnType = columnType;
     }
 
-    public void animate(Direction direction) {
+    public void animate(Direction direction, Duration duration) {
         double fromY = location.calculateFromY(currentSize, direction.getDelta(), rectangle.getTranslateY());
         double toY = location.calculateToY(currentSize, direction.getDelta(), rectangle.getTranslateY());
+        translateTransition.setDuration(duration);
         translateTransition.setFromY(fromY);
         translateTransition.setToY(toY);
         translateTransition.play();
