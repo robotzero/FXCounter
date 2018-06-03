@@ -26,10 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
@@ -71,7 +70,7 @@ public class ClockPresenter implements Initializable {
 //        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
-        Map<ColumnType, List<Integer>> initialValues = this.clockService.initialize(Direction.DOWN);
+        Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(Direction.DOWN);
         IntStream.rangeClosed(0, 3).forEach(index -> {
             this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
             this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
@@ -175,7 +174,7 @@ public class ClockPresenter implements Initializable {
                         minutesStateObservable,
                         hoursStateObservable,
                         (minutesState, hoursState) -> {
-                            return new CurrentClockState(currentClockState.getSecond(), minutesState.getMinute(), hoursState.getHour(), currentClockState.getDirection(), currentClockState.shouldTickMinute(), currentClockState.shouldTickHour());
+                            return new CurrentClockState(currentClockState.getSecond(), minutesState.getMinute(), hoursState.getHour(), currentClockState.getDirection(), currentClockState.shouldTickSecond(), currentClockState.shouldTickMinute(), currentClockState.shouldTickHour());
                         }
                 );
             });
@@ -252,19 +251,19 @@ public class ClockPresenter implements Initializable {
 
             if (currentViewState.isTick()) {
                 TickResult tickResult = currentViewState.getData().getTickResult();
-                if (currentViewState.getData().getTickResult().getColumnType().equals(ColumnType.SECONDS)) {
+                if (tickResult.getLabels().shouldTickSecond()) {
                     Cell secondsCell = tickResult.getSecondsCell();
                     secondsCell.setLabel(tickResult.getLabels().getSecond());
                     timerColumns.get(secondsCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
                 }
 
-                if (tickResult.getLabels().shouldTickMinute() || tickResult.getColumnType().equals(ColumnType.MINUTES)) {
+                if (tickResult.getLabels().shouldTickMinute()) {
                     Cell minutesCell = tickResult.getMinutesCell();
                     minutesCell.setLabel(tickResult.getLabels().getMinute());
                     timerColumns.get(minutesCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
                 }
 //
-                if (tickResult.getLabels().shouldTickHour() || tickResult.getColumnType().equals(ColumnType.HOURS)) {
+                if (tickResult.getLabels().shouldTickHour()) {
                     Cell hoursCell = tickResult.getHoursCell();
                     hoursCell.setLabel(tickResult.getLabels().getHour());
                     timerColumns.get(hoursCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());

@@ -11,14 +11,16 @@ public class CurrentClockState {
     private final Integer minute;
     private final Integer hour;
     private final Direction direction;
+    private final boolean tickSecond;
     private final boolean tickMinute;
     private final boolean tickHour;
 
-    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction direction, boolean tickMinute, boolean tickHour) {
+    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction direction, boolean tickSecond, boolean tickMinute, boolean tickHour) {
         this.second = second;
         this.minute = minute;
         this.hour = hour;
         this.direction = direction;
+        this.tickSecond = tickSecond;
         this.tickMinute = tickMinute;
         this.tickHour = tickHour;
     }
@@ -33,6 +35,10 @@ public class CurrentClockState {
 
     public Integer getHour() {
         return hour;
+    }
+
+    public boolean shouldTickSecond() {
+        return tickSecond;
     }
 
     public boolean shouldTickMinute() {

@@ -5,10 +5,10 @@ import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
 import io.reactivex.Observable;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 public interface Clock {
     Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType);
-    Map<ColumnType, List<Integer>> initialize(Direction fromDirection);
+    Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection);
 }
