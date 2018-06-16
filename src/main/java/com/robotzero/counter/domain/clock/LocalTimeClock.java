@@ -3,7 +3,7 @@ package com.robotzero.counter.domain.clock;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
@@ -67,7 +67,7 @@ public class LocalTimeClock implements Clock {
         this.scrollHoursClock = this.scrollHoursClock.withHour(mainClock.getHour());
     }
 
-    public Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
+    public Single<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
         if (timerType.equals(TimerType.TICK)) {
             this.mainClock = tick.apply(ColumnType.SECONDS, Direction.UP.getDelta()).apply(this.mainClock);
             if (columnType.equals(ColumnType.SECONDS)) {
@@ -101,14 +101,14 @@ public class LocalTimeClock implements Clock {
             this.mainClock = tick.apply(columnType, direction.getDelta() < 0 ? Direction.DOWN.getDelta() : Direction.UP.getDelta()).apply(this.mainClock);
         }
 
-        return Observable.just(new CurrentClockState(
+        return Single.just(new CurrentClockState(
                 this.scrollSecondsClock.getSecond(),
                 this.scrollMinutesClock.getMinute(),
                 this.scrollHoursClock.getHour(),
                 direction,
                 columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(this.mainClock.getSecond()) && !timerType.equals(TimerType.SCROLL)) || columnType.equals(ColumnType.MINUTES),
-                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && !timerType.equals(TimerType.SCROLL)) || columnType.equals(ColumnType.HOURS)
+                (shouldTick.test(this.mainClock.getSecond()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.MINUTES)),
+                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.HOURS))
             )
         );
     }

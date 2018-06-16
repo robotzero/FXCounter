@@ -5,7 +5,7 @@ import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class ClockService {
         this.clock = clock;
     }
 
-    public Observable<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
+    public Single<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
         return clock.tick(direction, timerType, columnType);
     }
 

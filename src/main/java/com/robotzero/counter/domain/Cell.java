@@ -1,9 +1,12 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -53,13 +56,12 @@ public class Cell {
         }
     }
 
-    public Observable<ChangeCell> getChangeCell() {
-
+    public Single<ChangeCell> getChangeCell() {
         if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
-            return Observable.just(new ChangeCell(this, rectangle.getTranslateY()));
+            return Single.just(new ChangeCell(this, rectangle.getTranslateY()));
         }
 
-        return Observable.never();
+        return Single.never();
     }
 
     public void setLabel(int newLabel) {
