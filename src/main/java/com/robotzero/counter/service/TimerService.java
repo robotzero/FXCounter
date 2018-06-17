@@ -23,27 +23,27 @@ public class TimerService {
     @PostConstruct
     public void initTimer() {
         this.timer = Observable.interval(1, TimeUnit.SECONDS)
-                .takeWhile(tick -> !stopped.get())
+//                .takeWhile(tick -> !stopped.get())
                 .filter(tick -> resumed.get())
                 .map(tick -> elapsedTime.addAndGet(1000));
     }
 
     public Observable<ClickAction> operateTimer(ClickAction clickAction) {
         return Observable.fromCallable(() -> {
-            if (clickAction.getNewButtonState().equals(ButtonState.START)) {
-                this.pauseTimer();
-            }
-
-            if (clickAction.getNewButtonState().equals(ButtonState.PAUSE)) {
+            if (clickAction.getButtonState().equals(ButtonState.START)) {
                 this.startTimer();
             }
 
-            if (clickAction.getNewButtonState().equals(ButtonState.STOP)) {
+            if (clickAction.getButtonState().equals(ButtonState.PAUSE)) {
+                this.pauseTimer();
+            }
+
+            if (clickAction.getButtonState().equals(ButtonState.STOP)) {
                 this.stopTimer();
             }
 
-            if (clickAction.getNewButtonState().equals(ButtonState.RESET)) {
-                this.stopTimer();
+            if (clickAction.getButtonState().equals(ButtonState.RESET)) {
+                this.pauseTimer();
             }
 
             return clickAction;

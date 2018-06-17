@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
@@ -101,11 +102,11 @@ public class ClockPresenter implements Initializable {
 
         Observable<ClickEvent> startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
-                .map(ignored -> new ClickEvent(ButtonType.START, ButtonState.valueOf(startButton.getText().toUpperCase())));
+                .map(ignored -> new ClickEvent(ButtonType.LEFT, ButtonState.valueOf(startButton.getText().toUpperCase())));
 
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
-                .map(ignored -> new ClickEvent(ButtonType.RESET, ButtonState.valueOf(resetButton.getText().toUpperCase())));
+                .map(ignored -> new ClickEvent(ButtonType.RIGHT, ButtonState.valueOf(resetButton.getText().toUpperCase())));
 
         Observable<ScrollEvent> scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
@@ -122,7 +123,7 @@ public class ClockPresenter implements Initializable {
         ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickEventTransformer = clickEvent -> clickEvent.flatMap(
           event -> {
               return Observable.just(new ClickAction(
-                                ActionType.valueOf(event.getButtonType().descripton().toUpperCase()),
+                                ActionType.valueOf(event.getButtonType().name()),
                                 event.getButtonState()
                         )
               );
@@ -203,7 +204,7 @@ public class ClockPresenter implements Initializable {
         Observable<CurrentViewState> uiModels = results.scan(CurrentViewState.idle(), (startingState, intermediateState) -> {
             if (intermediateState.getClass().equals(ClickResult.class)) {
                 ClickResult clickResult = (ClickResult) intermediateState;
-                if (clickResult.getActionType().equals(ActionType.START)) {
+                if (clickResult.getActionType().equals(ActionType.LEFT)) {
                     if (clickResult.getButtonState().equals(ButtonState.START)) {
                         return CurrentViewState.pause(new CurrentViewData(clickResult, null, null));
                     }
@@ -217,7 +218,7 @@ public class ClockPresenter implements Initializable {
                     }
                 }
 
-                if (clickResult.getButtonState().equals(ButtonState.RESET)) {
+                if (clickResult.getActionType().equals(ActionType.RIGHT)) {
                     return CurrentViewState.reset(new CurrentViewData(clickResult, null, null));
                 }
             }
@@ -231,45 +232,41 @@ public class ClockPresenter implements Initializable {
         });
 
         uiModels.observeOn(JavaFxScheduler.platform()).subscribe(currentViewState -> {
-            if (currentViewState.isClick()) {
-                ClickResult clickResult = currentViewState.getData().getClickResult();
-                if (currentViewState.isStart()) {
-                    startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
-                }
-
-                if (currentViewState.isPause()) {
-                    startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
-                }
-
-                if (currentViewState.isStop()) {
-                    startButton.textProperty().setValue(clickResult.getButtonState().getDescription());
-                }
-
-                if (currentViewState.isReset()) {
+            Optional.of(currentViewState).filter(CurrentViewState::isClick).ifPresent(state -> {
+                startButton.textProperty().setValue(state.getData().getClickResult().getButtonState().getDescription());
+                Optional.of(state).filter(CurrentViewState::isStart).ifPresent(s -> {
+                    resetButton.disableProperty().setValue(true);
+                });
+                Optional.of(state).filter(CurrentViewState::isPause).ifPresent(s -> {
+                    resetButton.disableProperty().setValue(false);
+                });
+                Optional.of(state).filter(CurrentViewState::isStop).ifPresent(s -> {
+                    resetButton.disableProperty().setValue(false);
+                });
+                Optional.of(state).filter(CurrentViewState::isReset).ifPresent(s -> {
                     startButton.textProperty().setValue("Start");
-                }
-            }
+                    resetButton.disableProperty().setValue(false);
+                });
+            });
 
-            if (currentViewState.isTick()) {
+            Optional.of(currentViewState).filter(CurrentViewState::isTick).ifPresent(state -> {
                 TickResult tickResult = currentViewState.getData().getTickResult();
-                if (tickResult.getLabels().shouldTickSecond()) {
+                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickSecond()).ifPresent(result -> {
                     Cell secondsCell = tickResult.getSecondsCell();
                     secondsCell.setLabel(tickResult.getLabels().getSecond());
                     timerColumns.get(secondsCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
-                }
-
-                if (tickResult.getLabels().shouldTickMinute()) {
+                });
+                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
                     Cell minutesCell = tickResult.getMinutesCell();
                     minutesCell.setLabel(tickResult.getLabels().getMinute());
                     timerColumns.get(minutesCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
-                }
-//
-                if (tickResult.getLabels().shouldTickHour()) {
+                });
+                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
                     Cell hoursCell = tickResult.getHoursCell();
                     hoursCell.setLabel(tickResult.getLabels().getHour());
                     timerColumns.get(hoursCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
-                }
-            }
+                });
+            });
         }, error -> {
             System.out.println(error.getMessage());
             throw new IOException("CRASHING THE APP...");
