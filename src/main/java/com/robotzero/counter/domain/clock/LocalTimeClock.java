@@ -139,4 +139,9 @@ public class LocalTimeClock implements Clock {
                 })
         );
     }
+
+    @Override
+    public void calculateResetDifference(LocalTime calculateTo) {
+
+    }
 }

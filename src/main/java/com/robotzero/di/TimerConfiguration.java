@@ -103,4 +103,9 @@ public class TimerConfiguration {
     public ClockService clockService() {
         return new ClockService(configureClocks(clockRepository(jdbcTemplate(jdbcDataSource()))));
     }
+
+    @Bean
+    public ResetService resetService() {
+        return new ResetService();
+    }
 }

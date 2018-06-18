@@ -61,6 +61,9 @@ public class ClockPresenter implements Initializable {
     @Autowired
     private ClockService clockService;
 
+    @Autowired
+    private ResetService resetService;
+
     private Map<ColumnType, Column> timerColumns;
 
     private BooleanProperty timerMute = new SimpleBooleanProperty(true);
@@ -122,11 +125,7 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickEventTransformer = clickEvent -> clickEvent.flatMap(
           event -> {
-              return Observable.just(new ClickAction(
-                                ActionType.valueOf(event.getButtonType().name()),
-                                event.getButtonState()
-                        )
-              );
+              return resetService.getActions(event.getButtonType(), event.getButtonState());
           });
 
         ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.flatMap(

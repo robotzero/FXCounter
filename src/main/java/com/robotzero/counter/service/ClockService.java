@@ -7,6 +7,7 @@ import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 import io.reactivex.Single;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -24,5 +25,9 @@ public class ClockService {
 
     public Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection) {
         return clock.initialize(fromDirection);
+    }
+
+    public void calculateResetDifference(LocalTime calculateTo) {
+        return clock.calculateResetDifference(calculateTo);
     }
 }
