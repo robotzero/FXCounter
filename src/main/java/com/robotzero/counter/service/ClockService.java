@@ -26,8 +26,4 @@ public class ClockService {
     public Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection) {
         return clock.initialize(fromDirection);
     }
-
-    public void calculateResetDifference(LocalTime calculateTo) {
-        return clock.calculateResetDifference(calculateTo);
-    }
 }

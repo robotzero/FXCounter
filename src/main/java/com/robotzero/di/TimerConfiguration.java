@@ -7,10 +7,16 @@ import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
 import com.robotzero.counter.domain.clock.Clock;
+import com.robotzero.counter.domain.clock.CurrentClockState;
 import com.robotzero.counter.domain.clock.LocalTimeClock;
 import com.robotzero.counter.domain.clock.TimerRepository;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.service.*;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.Observer;
+import io.reactivex.internal.operators.observable.ObservableFlatMapCompletable;
+import io.reactivex.subjects.PublishSubject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -86,7 +92,7 @@ public class TimerConfiguration {
 
     @Bean
     public Clock configureClocks(TimerRepository clockRepository) {
-        return new LocalTimeClock(clockRepository);
+        return new LocalTimeClock(clockRepository, clockState());
     }
 
     @Bean
@@ -106,6 +112,11 @@ public class TimerConfiguration {
 
     @Bean
     public ResetService resetService() {
-        return new ResetService();
+        return new ResetService(clockState());
+    }
+
+    @Bean
+    public PublishSubject<CurrentClockState> clockState() {
+        return PublishSubject.create();
     }
 }

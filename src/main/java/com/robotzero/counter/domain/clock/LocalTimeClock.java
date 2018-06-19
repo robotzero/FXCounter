@@ -3,7 +3,9 @@ package com.robotzero.counter.domain.clock;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
+import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.subjects.PublishSubject;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
@@ -21,6 +23,7 @@ import java.util.stream.IntStream;
 public class LocalTimeClock implements Clock {
 
     private final TimerRepository timerRepository;
+    private final PublishSubject<CurrentClockState> currectClockStateObservable;
     private LocalTime mainClock          = LocalTime.of(0, 0, 0);
     private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
     private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
@@ -51,7 +54,8 @@ public class LocalTimeClock implements Clock {
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
     private final long HR  = ChronoUnit.HOURS.getDuration().toHours();
 
-    public LocalTimeClock(TimerRepository timerRepository) {
+    public LocalTimeClock(TimerRepository timerRepository, PublishSubject<CurrentClockState> currentClockStateObservable) {
+        this.currectClockStateObservable = currentClockStateObservable;
         this.timerRepository = timerRepository;
     }
 
@@ -100,7 +104,15 @@ public class LocalTimeClock implements Clock {
 
             this.mainClock = tick.apply(columnType, direction.getDelta() < 0 ? Direction.DOWN.getDelta() : Direction.UP.getDelta()).apply(this.mainClock);
         }
-
+        currectClockStateObservable.onNext(new CurrentClockState(
+                this.scrollSecondsClock.getSecond(),
+                this.scrollMinutesClock.getMinute(),
+                this.scrollHoursClock.getHour(),
+                direction,
+                columnType.equals(ColumnType.SECONDS),
+                (shouldTick.test(this.mainClock.getSecond()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.MINUTES)),
+                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.HOURS))
+        ));
         return Single.just(new CurrentClockState(
                 this.scrollSecondsClock.getSecond(),
                 this.scrollMinutesClock.getMinute(),
