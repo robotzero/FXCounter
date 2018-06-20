@@ -14,9 +14,12 @@ import io.reactivex.subjects.PublishSubject;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.toIntExact;
@@ -34,23 +37,23 @@ public class ResetService {
     public Observable<? extends Action> getActions(ButtonType buttonType, ButtonState buttonState) {
         howManyTicks();
         if (buttonType.equals(ButtonType.RIGHT)) {
-            return Observable.create(emitter -> {
-                emitter.onNext(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
-                IntStream.range(0, howManyTicks().get(0)).forEach(index -> {
-                   emitter.onNext(new TickAction(-40, ColumnType.SECONDS, TimerType.SCROLL));
-                });
-                IntStream.range(0, howManyTicks().get(1)).forEach(index -> {
-                    emitter.onNext(new TickAction(-40, ColumnType.MINUTES, TimerType.SCROLL));
-                });
-                IntStream.range(0, howManyTicks().get(2)).forEach(index -> {
-                    emitter.onNext(new TickAction(-40, ColumnType.HOURS, TimerType.SCROLL));
-                });
-                emitter.onComplete();
-            });
-//            return Observable.just(new ClickAction(
-//                    ActionType.valueOf(buttonType.name()),
-//                    buttonState
-//            ), new TickAction(-40, ColumnType.SECONDS, TimerType.SCROLL));
+            List<Action> actions = new ArrayList<>();
+            actions.add(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
+            List<Integer> tickNumber = howManyTicks();
+            int seconds = tickNumber.get(0);
+            int minutes = tickNumber.get(1);
+            int hours = tickNumber.get(2);
+            actions.addAll(IntStream.range(0, Math.abs(seconds)).mapToObj(index -> {
+                return new TickAction(seconds, ColumnType.SECONDS, TimerType.SCROLL);
+            }).collect(Collectors.toList()));
+            actions.addAll(IntStream.range(0, Math.abs(minutes)).mapToObj(index -> {
+                return new TickAction(minutes, ColumnType.MINUTES, TimerType.SCROLL);
+            }).collect(Collectors.toList()));
+            actions.addAll(IntStream.range(0, Math.abs(hours)).mapToObj(index -> {
+                return new TickAction(hours, ColumnType.HOURS, TimerType.SCROLL);
+            }).collect(Collectors.toList()));
+
+            return Observable.zip(Observable.fromIterable(actions), Observable.interval(300, TimeUnit.MILLISECONDS), (left, right) -> left);
         }
         return Observable.just(new ClickAction(
                         ActionType.valueOf(buttonType.name()),
