@@ -53,7 +53,7 @@ public class ResetService {
                 return new TickAction(hours, ColumnType.HOURS, TimerType.SCROLL);
             }).collect(Collectors.toList()));
 
-            return Observable.zip(Observable.fromIterable(actions), Observable.interval(300, TimeUnit.MILLISECONDS), (left, right) -> left);
+            return Observable.zip(Observable.fromIterable(actions), Observable.interval(100, TimeUnit.MILLISECONDS), (left, right) -> left);
         }
         return Observable.just(new ClickAction(
                         ActionType.valueOf(buttonType.name()),
