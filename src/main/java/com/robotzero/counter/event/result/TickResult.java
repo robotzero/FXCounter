@@ -64,6 +64,14 @@ public class TickResult implements Result {
     }
 
     public Duration getDuration() {
-        return timerType.equals(TimerType.SCROLL) ? Duration.millis(200) : Duration.millis(600);
+        if (timerType.equals(TimerType.SCROLL)) {
+            return Duration.millis(200);
+        }
+
+        if (timerType.equals(TimerType.TICK)) {
+            return Duration.millis(600);
+        }
+
+        return Duration.millis(10);
     }
 }

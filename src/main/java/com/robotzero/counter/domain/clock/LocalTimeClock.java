@@ -86,7 +86,7 @@ public class LocalTimeClock implements Clock {
 
         }
 
-        if (timerType.equals(TimerType.SCROLL)) {
+        if (timerType.equals(TimerType.SCROLL) || timerType.equals(TimerType.RESET)) {
             if (columnType.equals(ColumnType.SECONDS)) {
                 this.scrollSecondsClock = tick.apply(columnType, direction.getDelta()).apply(this.scrollSecondsClock);
                 this.mainClock = this.mainClock.withSecond(this.scrollSecondsClock.getSecond());
@@ -110,8 +110,8 @@ public class LocalTimeClock implements Clock {
                 this.scrollHoursClock.getHour(),
                 direction,
                 columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(this.mainClock.getSecond()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.MINUTES)),
-                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.HOURS))
+                (shouldTick.test(this.mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
+                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
         ));
         return Single.just(new CurrentClockState(
                 this.scrollSecondsClock.getSecond(),
@@ -119,8 +119,8 @@ public class LocalTimeClock implements Clock {
                 this.scrollHoursClock.getHour(),
                 direction,
                 columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(this.mainClock.getSecond()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.MINUTES)),
-                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && !timerType.equals(TimerType.SCROLL)) || (timerType.equals(TimerType.SCROLL) && columnType.equals(ColumnType.HOURS))
+                (shouldTick.test(this.mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
+                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
             )
         );
     }
