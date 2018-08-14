@@ -14,12 +14,12 @@ import io.reactivex.subjects.PublishSubject;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class ResetService {
@@ -38,28 +38,27 @@ public class ResetService {
         });
     }
 
+    private BiPredicate<Integer, Integer> lessThanOrEquals = (noOfTicks, timeToReset) -> noOfTicks + timeToReset <= baseMiddle;
+
     public Observable<? extends Action> getActions(ButtonType buttonType, ButtonState buttonState) {
         if (buttonType.equals(ButtonType.RIGHT)) {
-
-            List<Action> actions = new ArrayList<>();
-            actions.add(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
             List<Long> tickNumber = howManyTicks();
-            int seconds = Math.toIntExact(tickNumber.get(0)) + timeToReset().getSecond() <= baseMiddle  ? Math.abs(Math.toIntExact(tickNumber.get(0))) : Math.abs(Math.toIntExact(tickNumber.get(0))) * -1;
-            int minutes = Math.toIntExact(tickNumber.get(1)) + timeToReset().getMinute() <= baseMiddle ? Math.abs(Math.toIntExact(tickNumber.get(1))) : Math.abs(Math.toIntExact(tickNumber.get(1))) * -1;
-            int hours = Math.toIntExact(tickNumber.get(2)) + timeToReset().getHour() <= baseMiddle ? Math.abs(Math.toIntExact(tickNumber.get(2))) : Math.abs(Math.toIntExact(tickNumber.get(2))) * -1;
-//            System.out.println("Seconds "  + seconds);
-//            System.out.println("Minutes" + minutes);
-            actions.addAll(IntStream.range(0, Math.abs(seconds)).mapToObj(index -> {
-                return new TickAction(seconds, ColumnType.SECONDS, TimerType.RESET);
-            }).collect(Collectors.toList()));
-            actions.addAll(IntStream.range(0, Math.abs(minutes)).mapToObj(index -> {
-                return new TickAction(minutes, ColumnType.MINUTES, TimerType.RESET);
-            }).collect(Collectors.toList()));
-            actions.addAll(IntStream.range(0, Math.abs(hours)).mapToObj(index -> {
-                return new TickAction(hours, ColumnType.HOURS, TimerType.RESET);
-            }).collect(Collectors.toList()));
+            int seconds = lessThanOrEquals.test(Math.toIntExact(tickNumber.get(0)), timeToReset().getSecond()) ? Math.abs(Math.toIntExact(tickNumber.get(0))) : Math.abs(Math.toIntExact(tickNumber.get(0))) * -1;
+            int minutes = lessThanOrEquals.test(Math.toIntExact(tickNumber.get(1)), timeToReset().getMinute()) ? Math.abs(Math.toIntExact(tickNumber.get(1))) : Math.abs(Math.toIntExact(tickNumber.get(1))) * -1;
+            int hours = lessThanOrEquals.test(Math.toIntExact(tickNumber.get(2)), timeToReset().getHour()) ? Math.abs(Math.toIntExact(tickNumber.get(2))) : Math.abs(Math.toIntExact(tickNumber.get(2))) * -1;
 
-            return Observable.zip(Observable.fromIterable(actions), Observable.interval(500, TimeUnit.MILLISECONDS), (iterable, interval) -> iterable);
+            return Observable.create((emitter) -> {
+                emitter.onNext(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
+                IntStream.range(0, Math.abs(seconds)).mapToObj(index -> {
+                    return new TickAction(seconds, ColumnType.SECONDS, TimerType.RESET);
+                }).forEach(emitter::onNext);
+                IntStream.range(0, Math.abs(minutes)).mapToObj(index -> {
+                    return new TickAction(minutes, ColumnType.MINUTES, TimerType.RESET);
+                }).forEach(emitter::onNext);
+                IntStream.range(0, Math.abs(hours)).mapToObj(index -> {
+                    return new TickAction(hours, ColumnType.HOURS, TimerType.RESET);
+                }).forEach(emitter::onNext);
+            }).zipWith(Observable.interval(50, TimeUnit.MILLISECONDS), (observable, interval) -> (Action) observable);
         }
         return Observable.just(new ClickAction(
                         ActionType.valueOf(buttonType.name()),

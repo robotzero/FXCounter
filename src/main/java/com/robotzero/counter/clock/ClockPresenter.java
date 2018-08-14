@@ -12,6 +12,7 @@ import io.reactivex.*;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -63,6 +64,9 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     private ResetService resetService;
+
+//    @Autowired
+//    private Flowable<CurrentClockState> clockState;
 
     private Map<ColumnType, Column> timerColumns;
 
@@ -153,6 +157,30 @@ public class ClockPresenter implements Initializable {
             return tickAction.flatMap(action -> {
                 Flowable<ChangeCell> changeCell = timerColumns.get(action.getColumnType()).getChangeCell();
                 Flowable<Direction> observableDirection = changeCell.flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), action.getColumnType()));
+//                Flowable<CurrentClockState> currentClockStatePublishSubject = this.clockState.flatMap(currentClockState -> {
+//                    Flowable<CurrentClockState> minutesStateObservable = Single.just(currentClockState).toFlowable();
+//                    Flowable<CurrentClockState> hoursStateObservable = Single.just(currentClockState).toFlowable();
+//
+//                    if (currentClockState.shouldTickMinute() && currentClockState.shouldTickSecond()) {
+//                        minutesStateObservable = timerColumns.get(ColumnType.MINUTES).getChangeCell().flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.MINUTES)).flatMapSingle(
+//                                direction -> clockService.tick(direction, action.getTimerType(), ColumnType.MINUTES)
+//                        );
+//                    }
+//
+//                    if (currentClockState.shouldTickHour() && currentClockState.shouldTickSecond()) {
+//                        hoursStateObservable = timerColumns.get(ColumnType.HOURS).getChangeCell().flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.HOURS)).flatMapSingle(
+//                                direction -> clockService.tick(direction, action.getTimerType(), ColumnType.HOURS)
+//                        );
+//                    }
+//
+//                    return Flowable.zip(
+//                            minutesStateObservable,
+//                            hoursStateObservable,
+//                            (minutesState, hoursState) -> {
+//                                return new CurrentClockState(currentClockState.getSecond(), minutesState.getMinute(), hoursState.getHour(), currentClockState.getDirection(), currentClockState.shouldTickSecond(), currentClockState.shouldTickMinute(), currentClockState.shouldTickHour());
+//                            }
+//                    );
+//                });
                 Flowable<CurrentClockState> flowableCurrentClockState = observableDirection.flatMapSingle(direction -> {
                     return clockService.tick(direction, action.getTimerType(), action.getColumnType());
                 }).flatMap(currentClockState -> {
@@ -170,6 +198,7 @@ public class ClockPresenter implements Initializable {
                         );
                     }
 
+//                    return Flowable.merge(Flowable.just(currentClockState), minutesStateObservable, hoursStateObservable);
                     return Flowable.zip(
                             minutesStateObservable,
                             hoursStateObservable,
