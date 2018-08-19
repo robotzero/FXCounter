@@ -4,17 +4,18 @@ import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class TickResult implements Result {
-    private final Cell secondsCell;
-    private final Cell minutesCell;
-    private final Cell hoursCell;
+    private final Text secondsCell;
+    private final Text minutesCell;
+    private final Text hoursCell;
     private final CurrentClockState currentClockState;
     private final ColumnType columnType;
     private final TimerType timerType;
 
-    public TickResult(Cell secondsCell, Cell minutesCell, Cell hoursCell, CurrentClockState currentClockState, ColumnType columnType, TimerType timerType) {
+    public TickResult(Text secondsCell, Text minutesCell, Text hoursCell, CurrentClockState currentClockState, ColumnType columnType, TimerType timerType) {
         this.secondsCell = secondsCell;
         this.minutesCell = minutesCell;
         this.hoursCell = hoursCell;
@@ -27,7 +28,7 @@ public class TickResult implements Result {
         return this.currentClockState;
     }
 
-    public Cell getCell(ColumnType columnType) {
+    public Text getLabel(ColumnType columnType) {
         if (columnType.equals(ColumnType.SECONDS)) {
             return getSecondsCell();
         }
@@ -43,15 +44,15 @@ public class TickResult implements Result {
         throw new RuntimeException("Unsupported column type.");
     }
 
-    public Cell getSecondsCell() {
+    public Text getSecondsCell() {
         return secondsCell;
     }
 
-    public Cell getMinutesCell() {
+    public Text getMinutesCell() {
         return minutesCell;
     }
 
-    public Cell getHoursCell() {
+    public Text getHoursCell() {
         return hoursCell;
     }
 

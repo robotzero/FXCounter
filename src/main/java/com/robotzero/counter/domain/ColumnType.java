@@ -1,5 +1,5 @@
 package com.robotzero.counter.domain;
 
 public enum ColumnType {
-    SECONDS, MINUTES, HOURS
+    SECONDS, MINUTES, HOURS, MAIN
 }

@@ -58,7 +58,7 @@ public class Cell {
 
     public Single<ChangeCell> getChangeCell() {
         if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
-            return Single.just(new ChangeCell(this, rectangle.getTranslateY()));
+            return Single.just(new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType));
         }
 
         return Single.never();

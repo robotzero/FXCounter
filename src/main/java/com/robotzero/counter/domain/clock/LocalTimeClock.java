@@ -1,19 +1,17 @@
 package com.robotzero.counter.domain.clock;
 
+import com.robotzero.counter.domain.ChangeCell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -22,12 +20,10 @@ import java.util.stream.IntStream;
 
 public class LocalTimeClock implements Clock {
 
+    private final ClockRepository clockRepository;
     private final TimerRepository timerRepository;
     private final PublishSubject<CurrentClockState> currectClockStateObservable;
-    private LocalTime mainClock          = LocalTime.of(0, 0, 0);
-    private LocalTime scrollSecondsClock = LocalTime.of(0, 0, 0);
-    private LocalTime scrollMinutesClock = LocalTime.of(0, 0, 0);
-    private LocalTime scrollHoursClock   = LocalTime.of(0, 0, 0);
+    private final Map<TimerType, ClockMode> clockmodes;
 
     private Comparator<Integer> clockSort = (num1, num2) -> {
         return num1.equals(num2) ? 0 : num1 == 0 ? -1 : num1 > num2 ? -1 : 1;
@@ -54,83 +50,58 @@ public class LocalTimeClock implements Clock {
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
     private final long HR  = ChronoUnit.HOURS.getDuration().toHours();
 
-    public LocalTimeClock(TimerRepository timerRepository, PublishSubject<CurrentClockState> currentClockStateObservable) {
-        this.currectClockStateObservable = currentClockStateObservable;
+    public LocalTimeClock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, PublishSubject<CurrentClockState> currentClockStateObservable) {
+        this.clockRepository = clockRepository;
         this.timerRepository = timerRepository;
+        this.clockmodes = clockModes;
+        this.currectClockStateObservable = currentClockStateObservable;
     }
 
     @PostConstruct
     public void initialize() {
-        this.mainClock = Optional.ofNullable(timerRepository.selectLatest()).orElseGet(() -> {
+        this.clockRepository.initialize(Optional.ofNullable(timerRepository.selectLatest()).orElseGet(() -> {
             com.robotzero.counter.entity.Clock savedTimer = new com.robotzero.counter.entity.Clock();
             savedTimer.setSavedTimer(LocalTime.of(22, 1, 10));
             return savedTimer;
-        }).getSavedTimer();
-        this.scrollSecondsClock = this.scrollSecondsClock.withSecond(mainClock.getSecond());
-        this.scrollMinutesClock = this.scrollMinutesClock.withMinute(mainClock.getMinute());
-        this.scrollHoursClock = this.scrollHoursClock.withHour(mainClock.getHour());
+        }).getSavedTimer());
     }
 
-    public Single<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType) {
-        if (timerType.equals(TimerType.TICK)) {
-            this.mainClock = tick.apply(ColumnType.SECONDS, Direction.UP.getDelta()).apply(this.mainClock);
-            if (columnType.equals(ColumnType.SECONDS)) {
-                this.scrollSecondsClock = tick.apply(ColumnType.SECONDS, direction.getDelta()).apply(this.scrollSecondsClock);
-            }
-            if (columnType.equals(ColumnType.MINUTES)) {
-                this.scrollMinutesClock = tick.apply(ColumnType.MINUTES, direction.getDelta()).apply(this.scrollMinutesClock);
-            }
-            if (columnType.equals(ColumnType.HOURS)) {
-                this.scrollHoursClock = tick.apply(ColumnType.HOURS, direction.getDelta()).apply(this.scrollHoursClock);
-            }
+    public Single<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType, List<Flowable<ChangeCell>> cells) {
+        clockmodes.get(timerType).applyNewClockState(tick, columnType, direction);
+        LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
+        LocalTime scrollSecondsClock = this.clockRepository.get(ColumnType.SECONDS);
+        LocalTime scrollMinutesClock = this.clockRepository.get(ColumnType.MINUTES);
+        LocalTime scrollHoursClock = this.clockRepository.get(ColumnType.HOURS);
 
-        }
-
-        if (timerType.equals(TimerType.SCROLL) || timerType.equals(TimerType.RESET)) {
-            if (columnType.equals(ColumnType.SECONDS)) {
-                this.scrollSecondsClock = tick.apply(columnType, direction.getDelta()).apply(this.scrollSecondsClock);
-                this.mainClock = this.mainClock.withSecond(this.scrollSecondsClock.getSecond());
-            }
-
-            if (columnType.equals(ColumnType.MINUTES)) {
-                this.scrollMinutesClock = tick.apply(columnType, direction.getDelta()).apply(this.scrollMinutesClock);
-                this.mainClock = this.mainClock.withMinute(this.scrollMinutesClock.getMinute());
-            }
-
-            if (columnType.equals(ColumnType.HOURS)) {
-                this.scrollHoursClock = tick.apply(columnType, direction.getDelta()).apply(this.scrollHoursClock);
-                this.mainClock = this.mainClock.withHour(this.scrollHoursClock.getHour());
-            }
-
-            this.mainClock = tick.apply(columnType, direction.getDelta() < 0 ? Direction.DOWN.getDelta() : Direction.UP.getDelta()).apply(this.mainClock);
-        }
         currectClockStateObservable.onNext(new CurrentClockState(
-                this.scrollSecondsClock.getSecond(),
-                this.scrollMinutesClock.getMinute(),
-                this.scrollHoursClock.getHour(),
+                scrollSecondsClock.getSecond(),
+                scrollMinutesClock.getMinute(),
+                scrollHoursClock.getHour(),
                 direction,
                 columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(this.mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
-                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
+                (shouldTick.test(mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
+                (shouldTick.test(mainClock.getSecond()) && shouldTick.test(mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
         ));
+
         return Single.just(new CurrentClockState(
-                this.scrollSecondsClock.getSecond(),
-                this.scrollMinutesClock.getMinute(),
-                this.scrollHoursClock.getHour(),
+                scrollSecondsClock.getSecond(),
+                scrollMinutesClock.getMinute(),
+                scrollHoursClock.getHour(),
                 direction,
                 columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(this.mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
-                (shouldTick.test(this.mainClock.getSecond()) && shouldTick.test(this.mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
+                (shouldTick.test(mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
+                (shouldTick.test(mainClock.getSecond()) && shouldTick.test(mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
             )
         );
     }
 
     @Override
     public Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection) {
+        LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
         return IntStream.rangeClosed(0, 3).mapToObj(index -> {
-            int second = this.tick.apply(ColumnType.SECONDS, index - 1).apply(this.mainClock).getSecond();
-            int minute = this.tick.apply(ColumnType.MINUTES, index - 1).apply(this.mainClock).getMinute();
-            int hour = this.tick.apply(ColumnType.HOURS, index - 1).apply(this.mainClock).getHour();
+            int second = this.tick.apply(ColumnType.SECONDS, index - 1).apply(mainClock).getSecond();
+            int minute = this.tick.apply(ColumnType.MINUTES, index - 1).apply(mainClock).getMinute();
+            int hour = this.tick.apply(ColumnType.HOURS, index - 1).apply(mainClock).getHour();
             return Map.of(ColumnType.SECONDS, second, ColumnType.MINUTES, minute, ColumnType.HOURS, hour);
         }).collect(Collector.of(
                 () -> Map.of(ColumnType.SECONDS, new ArrayList<Integer>(), ColumnType.MINUTES, new ArrayList<Integer>(), ColumnType.HOURS, new ArrayList<Integer>()),

@@ -1,20 +1,28 @@
 package com.robotzero.counter.domain;
 
+import javafx.scene.text.Text;
+
 public class ChangeCell {
 
-    private Cell cell;
+    private Text label;
     private double translateY;
+    private ColumnType columnType;
 
-    public ChangeCell(Cell cell, double translateY) {
-        this.cell = cell;
+    public ChangeCell(Text label, double translateY, ColumnType columnType) {
+        this.label = label;
         this.translateY = translateY;
+        this.columnType = columnType;
     }
 
-    public Cell getCell() {
-        return this.cell;
+    public Text getLabel() {
+        return label;
     }
 
     public double getTranslateY() {
         return translateY;
+    }
+
+    public ColumnType getColumnType() {
+        return columnType;
     }
 }

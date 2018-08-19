@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public class ResetService {
@@ -58,7 +57,7 @@ public class ResetService {
                 IntStream.range(0, Math.abs(hours)).mapToObj(index -> {
                     return new TickAction(hours, ColumnType.HOURS, TimerType.RESET);
                 }).forEach(emitter::onNext);
-            }).zipWith(Observable.interval(50, TimeUnit.MILLISECONDS), (observable, interval) -> (Action) observable);
+            }).zipWith(Observable.interval(10, TimeUnit.MILLISECONDS), (observable, interval) -> (Action) observable);
         }
         return Observable.just(new ClickAction(
                         ActionType.valueOf(buttonType.name()),
@@ -70,21 +69,15 @@ public class ResetService {
     private List<Long> howManyTicks() {
         LocalTime toReset = timeToReset();
         CurrentClockState currentClockState = Optional.ofNullable(this.currentClockState).orElseGet(() -> new CurrentClockState(toReset.getSecond(), toReset.getMinute(), toReset.getHour(), null, false, false, false));
-        long seconds, minutes, hours;
-        if (currentClockState.getSecond() == toReset.getSecond()) {
-            seconds = 0;
-        } else {
+        long seconds = 0, minutes = 0, hours = 0;
+        if (currentClockState.getSecond() != toReset.getSecond()) {
             seconds = ChronoUnit.SECONDS.between(toReset, toReset.withSecond(currentClockState.getSecond())) > baseMiddle ? baseBottom + (baseTop - ChronoUnit.SECONDS.between(toReset, toReset.withSecond(currentClockState.getSecond()).plusSeconds(1))) : ChronoUnit.SECONDS.between(toReset, toReset.withSecond(currentClockState.getSecond()).plusSeconds(1));
         }
-        if (currentClockState.getMinute() == toReset.getMinute()) {
-            minutes = 0;
-        } else {
+        if (currentClockState.getMinute() != toReset.getMinute()) {
             minutes = ChronoUnit.MINUTES.between(toReset, toReset.withMinute(currentClockState.getMinute())) > baseMiddle ? baseBottom + (baseTop - ChronoUnit.MINUTES.between(toReset, toReset.withMinute(currentClockState.getMinute()).plusMinutes(1))) : ChronoUnit.MINUTES.between(toReset, toReset.withMinute(currentClockState.getMinute()).plusMinutes(1));
         }
 
-        if (currentClockState.getHour() == toReset.getHour()) {
-            hours = 0;
-        } else {
+        if (currentClockState.getHour() != toReset.getHour()) {
             hours = ChronoUnit.HOURS.between(toReset, toReset.withHour(currentClockState.getHour())) > hoursMiddle ? hoursBottom + (hoursTop - ChronoUnit.HOURS.between(toReset, toReset.withHour(currentClockState.getHour()).plusHours(1))) : ChronoUnit.HOURS.between(toReset, toReset.withHour(currentClockState.getHour()).plusHours(1));
         }
 //        System.out.println("CURRENT " + currentClockState.getSecond());

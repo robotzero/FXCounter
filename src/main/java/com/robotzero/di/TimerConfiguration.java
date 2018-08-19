@@ -6,16 +6,12 @@ import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
-import com.robotzero.counter.domain.clock.Clock;
-import com.robotzero.counter.domain.clock.CurrentClockState;
-import com.robotzero.counter.domain.clock.LocalTimeClock;
-import com.robotzero.counter.domain.clock.TimerRepository;
+import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.TimerType;
+import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
+import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.Observer;
-import io.reactivex.internal.operators.observable.ObservableFlatMapCompletable;
 import io.reactivex.subjects.PublishSubject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -27,6 +23,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class TimerConfiguration {
@@ -81,7 +80,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public TimerRepository clockRepository(JdbcTemplate jdbcTemplate) {
+    public TimerRepository timerRepository(JdbcTemplate jdbcTemplate) {
         return new TimerDatabaseRepository(jdbcTemplate);
     }
 
@@ -91,8 +90,29 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock configureClocks(TimerRepository clockRepository) {
-        return new LocalTimeClock(clockRepository, clockState());
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, PublishSubject<CurrentClockState> clockState) {
+        return new LocalTimeClock(clockRepository, timerRepository, clockModes, clockState);
+    }
+
+    @Bean
+    public ClockRepository clockRepository() {
+        Map<ColumnType, LocalTime> inMemoryClockStateStorage = new HashMap<>();
+        inMemoryClockStateStorage.put(ColumnType.MAIN, LocalTime.of(0, 0, 0));
+        inMemoryClockStateStorage.put(ColumnType.SECONDS, LocalTime.of(0, 0, 0));
+        inMemoryClockStateStorage.put(ColumnType.MINUTES, LocalTime.of(0, 0, 0));
+        inMemoryClockStateStorage.put(ColumnType.HOURS, LocalTime.of(0, 0, 0));
+
+        return new InMemoryClockRepository(inMemoryClockStateStorage);
+    }
+
+    @Bean
+    public Map<TimerType, ClockMode> clockModes(ClockRepository clockRepository, ScrollResetMode scrollResetMode) {
+        return Map.of(TimerType.TICK, new TickMode(clockRepository), TimerType.SCROLL, scrollResetMode, TimerType.RESET, scrollResetMode);
+    }
+
+    @Bean
+    public ScrollResetMode scrollResetMode(ClockRepository clockRepository) {
+        return new ScrollResetMode(clockRepository);
     }
 
     @Bean
@@ -106,8 +126,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public ClockService clockService() {
-        return new ClockService(configureClocks(clockRepository(jdbcTemplate(jdbcDataSource()))));
+    public ClockService clockService(Clock clock) {
+        return new ClockService(clock);
     }
 
     @Bean
