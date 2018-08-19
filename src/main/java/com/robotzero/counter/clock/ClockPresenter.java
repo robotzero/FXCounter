@@ -157,7 +157,7 @@ public class ClockPresenter implements Initializable {
                 Flowable<ChangeCell> changeCell = timerColumns.get(action.getColumnType()).getChangeCell();
                 Flowable<Direction> observableDirection = changeCell.flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), action.getColumnType()));
                 Flowable<CurrentClockState> flowableCurrentClockState = observableDirection.flatMapSingle(direction -> {
-                    return clockService.tick(direction, action.getTimerType(), action.getColumnType(), List.of(changeCell, timerColumns.get(ColumnType.MINUTES).getChangeCell(), timerColumns.get(ColumnType.HOURS).getChangeCell()));
+                    return clockService.tick(direction, action, List.of(changeCell, timerColumns.get(ColumnType.MINUTES).getChangeCell(), timerColumns.get(ColumnType.HOURS).getChangeCell()));
                 }).flatMap(currentClockState -> {
                     Flowable<CurrentClockState> minutesStateObservable = Single.just(currentClockState).toFlowable();
                     Flowable<CurrentClockState> hoursStateObservable = minutesStateObservable;

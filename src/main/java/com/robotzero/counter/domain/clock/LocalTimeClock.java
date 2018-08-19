@@ -4,6 +4,8 @@ import com.robotzero.counter.domain.ChangeCell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
+import com.robotzero.counter.event.action.TickAction;
+import com.robotzero.counter.service.DirectionService;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
@@ -23,6 +25,7 @@ public class LocalTimeClock implements Clock {
     private final ClockRepository clockRepository;
     private final TimerRepository timerRepository;
     private final PublishSubject<CurrentClockState> currectClockStateObservable;
+    private final DirectionService directionService;
     private final Map<TimerType, ClockMode> clockmodes;
 
     private Comparator<Integer> clockSort = (num1, num2) -> {
@@ -50,11 +53,18 @@ public class LocalTimeClock implements Clock {
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
     private final long HR  = ChronoUnit.HOURS.getDuration().toHours();
 
-    public LocalTimeClock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, PublishSubject<CurrentClockState> currentClockStateObservable) {
+    public LocalTimeClock(
+            ClockRepository clockRepository,
+            TimerRepository timerRepository,
+            Map<TimerType, ClockMode> clockModes,
+            PublishSubject<CurrentClockState> currentClockStateObservable,
+            DirectionService directionService
+    ) {
         this.clockRepository = clockRepository;
         this.timerRepository = timerRepository;
         this.clockmodes = clockModes;
         this.currectClockStateObservable = currentClockStateObservable;
+        this.directionService = directionService;
     }
 
     @PostConstruct
@@ -66,12 +76,27 @@ public class LocalTimeClock implements Clock {
         }).getSavedTimer());
     }
 
-    public Single<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType, List<Flowable<ChangeCell>> cells) {
-        clockmodes.get(timerType).applyNewClockState(tick, columnType, direction);
+    public Single<CurrentClockState> tick(Direction direction, TickAction action, List<Flowable<ChangeCell>> cells) {
+        clockmodes.get(action.getTimerType()).applyNewClockState(tick, action.getColumnType(), direction);
         LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
         LocalTime scrollSecondsClock = this.clockRepository.get(ColumnType.SECONDS);
         LocalTime scrollMinutesClock = this.clockRepository.get(ColumnType.MINUTES);
         LocalTime scrollHoursClock = this.clockRepository.get(ColumnType.HOURS);
+        TimerType timerType = action.getTimerType();
+        ColumnType columnType = action.getColumnType();
+
+        //                        minutesStateObservable = timerColumns.get(ColumnType.MINUTES).getChangeCell().flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.MINUTES)).flatMapSingle(
+//                                direction -> clockService.tick(direction, action.getTimerType(), ColumnType.MINUTES)
+//                        );
+        if ((shouldTick.test(mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES))) {
+            cells.get(1).flatMapSingle(cell -> {
+                return directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.MINUTES);
+            });
+        }
+
+        if ((shouldTick.test(mainClock.getSecond()) && shouldTick.test(mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))) {
+
+        }
 
         currectClockStateObservable.onNext(new CurrentClockState(
                 scrollSecondsClock.getSecond(),
@@ -121,10 +146,5 @@ public class LocalTimeClock implements Clock {
                     return result;
                 })
         );
-    }
-
-    @Override
-    public void calculateResetDifference(LocalTime calculateTo) {
-
     }
 }

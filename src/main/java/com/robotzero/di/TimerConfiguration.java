@@ -90,8 +90,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, PublishSubject<CurrentClockState> clockState) {
-        return new LocalTimeClock(clockRepository, timerRepository, clockModes, clockState);
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, PublishSubject<CurrentClockState> clockState, DirectionService directionService) {
+        return new LocalTimeClock(clockRepository, timerRepository, clockModes, clockState, directionService);
     }
 
     @Bean

@@ -6,6 +6,7 @@ import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
+import com.robotzero.counter.event.action.TickAction;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
@@ -21,8 +22,8 @@ public class ClockService {
         this.clock = clock;
     }
 
-    public Single<CurrentClockState> tick(Direction direction, TimerType timerType, ColumnType columnType, List<Flowable<ChangeCell>> cells) {
-        return clock.tick(direction, timerType, columnType, cells);
+    public Single<CurrentClockState> tick(Direction direction, TickAction action, List<Flowable<ChangeCell>> cells) {
+        return clock.tick(direction, action, cells);
     }
 
     public Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection) {
