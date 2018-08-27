@@ -1,12 +1,8 @@
 package com.robotzero.counter.domain.clock;
 
-import com.robotzero.counter.domain.ChangeCell;
-import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
-import com.robotzero.counter.domain.TimerType;
+import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
 
@@ -76,46 +72,60 @@ public class LocalTimeClock implements Clock {
         }).getSavedTimer());
     }
 
-    public Single<CurrentClockState> tick(Direction direction, TickAction action, List<Flowable<ChangeCell>> cells) {
-        clockmodes.get(action.getTimerType()).applyNewClockState(tick, action.getColumnType(), direction);
+    public Single<CurrentClockState> tick(TickAction action, List<ChangeCell> cells) {
+        Map<ColumnType, Direction> directions = cells.stream().map(cell -> {
+            if (cell.getColumnType() == ColumnType.SECONDS) {
+                Direction directionSeconds = directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), cell.getColumnType());
+                clockmodes.get(action.getTimerType()).applyNewClockState(tick, cell.getColumnType(), directionSeconds);
+                return Map.of(cell.getColumnType(), directionSeconds);
+            }
+            if (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK && cell.getColumnType() == ColumnType.MINUTES) {
+                Direction directionMinutes = directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), cell.getColumnType());
+                clockmodes.get(action.getTimerType()).applyNewClockState(tick, action.getColumnType(), directionMinutes);
+                return Map.of(cell.getColumnType(), directionMinutes);
+            }
+
+            if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && action.getTimerType() == TimerType.TICK) && cell.getColumnType() == ColumnType.HOURS) {
+                Direction directionHours = directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), cell.getColumnType());
+                clockmodes.get(action.getTimerType()).applyNewClockState(tick, ColumnType.HOURS, directionHours);
+                return Map.of(cell.getColumnType(), directionHours);
+            }
+            return Map.of(cell.getColumnType(), Direction.VOID);
+        }).collect(HashMap::new, (previous, next) -> {
+            previous.putIfAbsent(ColumnType.SECONDS, next.get(ColumnType.SECONDS));
+            previous.putIfAbsent(ColumnType.MINUTES, next.get(ColumnType.MINUTES));
+            previous.putIfAbsent(ColumnType.HOURS, next.get(ColumnType.HOURS));
+        }, (b, c) -> {
+            System.out.println(b);
+            System.out.println(c);
+        });
+
         LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
-        LocalTime scrollSecondsClock = this.clockRepository.get(ColumnType.SECONDS);
-        LocalTime scrollMinutesClock = this.clockRepository.get(ColumnType.MINUTES);
-        LocalTime scrollHoursClock = this.clockRepository.get(ColumnType.HOURS);
         TimerType timerType = action.getTimerType();
         ColumnType columnType = action.getColumnType();
 
-        //                        minutesStateObservable = timerColumns.get(ColumnType.MINUTES).getChangeCell().flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.MINUTES)).flatMapSingle(
-//                                direction -> clockService.tick(direction, action.getTimerType(), ColumnType.MINUTES)
-//                        );
-        if ((shouldTick.test(mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES))) {
-            cells.get(1).flatMapSingle(cell -> {
-                return directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.MINUTES);
-            });
-        }
-
-        if ((shouldTick.test(mainClock.getSecond()) && shouldTick.test(mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))) {
-
-        }
-
         currectClockStateObservable.onNext(new CurrentClockState(
-                scrollSecondsClock.getSecond(),
-                scrollMinutesClock.getMinute(),
-                scrollHoursClock.getHour(),
-                direction,
-                columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
-                (shouldTick.test(mainClock.getSecond()) && shouldTick.test(mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
+                this.clockRepository.get(ColumnType.SECONDS).getSecond(),
+                this.clockRepository.get(ColumnType.MINUTES).getMinute(),
+                this.clockRepository.get(ColumnType.HOURS).getHour(),
+                directions.get(ColumnType.SECONDS),
+                directions.get(ColumnType.MINUTES),
+                directions.get(ColumnType.HOURS),
+                columnType == ColumnType.SECONDS,
+                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.MINUTES),
+                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.HOURS)
         ));
 
         return Single.just(new CurrentClockState(
-                scrollSecondsClock.getSecond(),
-                scrollMinutesClock.getMinute(),
-                scrollHoursClock.getHour(),
-                direction,
-                columnType.equals(ColumnType.SECONDS),
-                (shouldTick.test(mainClock.getSecond()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.MINUTES)),
-                (shouldTick.test(mainClock.getSecond()) && shouldTick.test(mainClock.getMinute()) && timerType.equals(TimerType.TICK)) || (!timerType.equals(TimerType.TICK) && columnType.equals(ColumnType.HOURS))
+                this.clockRepository.get(ColumnType.SECONDS).getSecond(),
+                this.clockRepository.get(ColumnType.MINUTES).getMinute(),
+                this.clockRepository.get(ColumnType.HOURS).getHour(),
+                directions.get(ColumnType.SECONDS),
+                directions.get(ColumnType.MINUTES),
+                directions.get(ColumnType.HOURS),
+                columnType == ColumnType.SECONDS,
+                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.MINUTES),
+                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.HOURS)
             )
         );
     }

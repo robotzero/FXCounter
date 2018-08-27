@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Single;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
@@ -56,12 +55,12 @@ public class Cell {
         }
     }
 
-    public Single<ChangeCell> getChangeCell() {
+    public ChangeCell getChangeCell() {
         if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
-            return Single.just(new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType));
+            return new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType);
         }
 
-        return Single.never();
+        return new ChangeCell(null, 0, ColumnType.VOID);
     }
 
     public void setLabel(int newLabel) {
@@ -92,5 +91,14 @@ public class Cell {
 
     public ColumnType getColumnType() {
         return columnType;
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "rectangle=" + rectangle.getTranslateY() +
+                "obj=" + this.rectangle +
+                ", label=" + label +
+                '}';
     }
 }

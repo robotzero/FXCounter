@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -154,44 +153,14 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
-                Flowable<ChangeCell> changeCell = timerColumns.get(action.getColumnType()).getChangeCell();
-                Flowable<Direction> observableDirection = changeCell.flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), action.getColumnType()));
-                Flowable<CurrentClockState> flowableCurrentClockState = observableDirection.flatMapSingle(direction -> {
-                    return clockService.tick(direction, action, List.of(changeCell, timerColumns.get(ColumnType.MINUTES).getChangeCell(), timerColumns.get(ColumnType.HOURS).getChangeCell()));
-                }).flatMap(currentClockState -> {
-                    Flowable<CurrentClockState> minutesStateObservable = Single.just(currentClockState).toFlowable();
-                    Flowable<CurrentClockState> hoursStateObservable = minutesStateObservable;
-                    if (currentClockState.shouldTickMinute() && currentClockState.shouldTickSecond()) {
-//                        minutesStateObservable = timerColumns.get(ColumnType.MINUTES).getChangeCell().flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.MINUTES)).flatMapSingle(
-//                                direction -> clockService.tick(direction, action.getTimerType(), ColumnType.MINUTES)
-//                        );
-                    }
+                ChangeCell secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
+                ChangeCell minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
+                ChangeCell hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
 
-                    if (currentClockState.shouldTickHour() && currentClockState.shouldTickSecond()) {
-//                        hoursStateObservable = timerColumns.get(ColumnType.HOURS).getChangeCell().flatMapSingle(cell -> directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), ColumnType.HOURS)).flatMapSingle(
-//                                direction -> clockService.tick(direction, action.getTimerType(), ColumnType.HOURS)
-//                        );
-                    }
-
-//                    return Flowable.merge(Flowable.just(currentClockState), minutesStateObservable, hoursStateObservable);
-                    return Flowable.zip(
-                            minutesStateObservable,
-                            hoursStateObservable,
-                            (minutesState, hoursState) -> {
-                                return new CurrentClockState(currentClockState.getSecond(), minutesState.getMinute(), hoursState.getHour(), currentClockState.getDirection(), currentClockState.shouldTickSecond(), currentClockState.shouldTickMinute(), currentClockState.shouldTickHour());
-                            }
-                    );
-                });
-
-                return Flowable.zip(
-                        action.getColumnType().equals(ColumnType.SECONDS) ? changeCell : timerColumns.get(ColumnType.SECONDS).getChangeCell(),
-                        action.getColumnType().equals(ColumnType.MINUTES) ? changeCell : timerColumns.get(ColumnType.MINUTES).getChangeCell(),
-                        action.getColumnType().equals(ColumnType.HOURS) ? changeCell : timerColumns.get(ColumnType.HOURS).getChangeCell(),
-                        flowableCurrentClockState,
-                        ((secondsChangeCell, minutesChangeCell, hoursChangeCell, currentClockState) -> {
-                            return new TickResult(secondsChangeCell.getLabel(), minutesChangeCell.getLabel(), hoursChangeCell.getLabel(), currentClockState, action.getColumnType(), action.getTimerType());
-                        })
-                ).toObservable();
+                Single<CurrentClockState> currentClockState = clockService.tick(action, List.of(secondsChangeCell, minutesChangeCell, hoursChangeCell));
+                return currentClockState.flatMap(clockState -> {
+                    return Single.just(new TickResult(secondsChangeCell.getLabel(), minutesChangeCell.getLabel(), hoursChangeCell.getLabel(), clockState, action.getColumnType(), action.getTimerType()));
+                }).toObservable();
             });
         };
 
@@ -255,22 +224,25 @@ public class ClockPresenter implements Initializable {
             Optional.of(currentViewState).filter(CurrentViewState::isTick).ifPresent(state -> {
                 TickResult tickResult = currentViewState.getData().getTickResult();
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickSecond()).ifPresent(result -> {
-                    Text secondsLabel = tickResult.getSecondsCell();
-                    secondsLabel.textProperty().setValue(String.format("%02d", tickResult.getLabels().getSecond()));
-                    System.out.println(LocalDateTime.now() + "SECONDS");
-                    timerColumns.get(tickResult.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
+                    Optional<Text> secondsLabel = Optional.ofNullable(tickResult.getSecondsCell());
+                    secondsLabel.ifPresent(textProperty -> {
+                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getSecond()));
+                        timerColumns.get(tickResult.getColumnType()).play(tickResult.getLabels().getDirectionSeconds(), tickResult.getDuration());
+                    });
                 });
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
-                    Text minutesLabel = tickResult.getMinutesCell();
-                    minutesLabel.textProperty().setValue(String.format("%02d", tickResult.getLabels().getMinute()));
-                    System.out.println(LocalDateTime.now() + "MINUTES");
-                    timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
+                    Optional<Text> minutesLabel = Optional.ofNullable(tickResult.getMinutesCell());
+                    minutesLabel.ifPresent(textProperty -> {
+                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getMinute()));
+                        timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirectionMinutes(), tickResult.getDuration());
+                    });
                 });
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
-//                    Cell hoursCell = tickResult.getHoursCell();
-//                    hoursCell.setLabel(tickResult.getLabels().getHour());
-//                    System.out.println(LocalDateTime.now() + "HOUR");
-//                    timerColumns.get(hoursCell.getColumnType()).play(tickResult.getLabels().getDirection(), tickResult.getDuration());
+                    Optional<Text> hoursLabel = Optional.ofNullable(tickResult.getHoursCell());
+                    hoursLabel.ifPresent(textProperty -> {
+                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getHour()));
+                        timerColumns.get(ColumnType.HOURS).play(tickResult.getLabels().getDirectionHours(), tickResult.getDuration());
+                    });
                 });
             });
         }, error -> {

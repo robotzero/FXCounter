@@ -3,11 +3,9 @@ package com.robotzero.counter.service;
 import com.robotzero.counter.domain.ChangeCell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
-import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 import com.robotzero.counter.event.action.TickAction;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 import java.util.ArrayList;
@@ -22,8 +20,8 @@ public class ClockService {
         this.clock = clock;
     }
 
-    public Single<CurrentClockState> tick(Direction direction, TickAction action, List<Flowable<ChangeCell>> cells) {
-        return clock.tick(direction, action, cells);
+    public Single<CurrentClockState> tick(TickAction action, List<ChangeCell> cells) {
+        return clock.tick(action, cells);
     }
 
     public Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection) {

@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Flowable;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -8,19 +7,16 @@ import java.util.List;
 public class Column {
 
     private List<Cell> columnList;
-    private ColumnType columnType;
 
-    public Column(List<Cell> columnList, ColumnType columnType) {
+    public Column(List<Cell> columnList) {
         this.columnList = columnList;
-        this.columnType = columnType;
     }
 
-    public Flowable<ChangeCell> getChangeCell() {
+    public ChangeCell getChangeCell() {
         return columnList.stream()
-                .map(cell -> cell.getChangeCell().toFlowable())
-                .reduce(Flowable.empty(), (previous, current) -> {
-                    return Flowable.merge(previous, current);
-                });
+                .map(Cell::getChangeCell)
+                .filter(cell -> cell.getColumnType() != ColumnType.VOID)
+                .findFirst().orElseThrow(() -> new RuntimeException("No CHANGE CELL"));
     }
 
     public void play(Direction direction, Duration duration) {

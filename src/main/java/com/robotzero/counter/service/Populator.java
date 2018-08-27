@@ -37,10 +37,11 @@ public class Populator {
                 })
                 .collect(Collectors.groupingBy(Cell::getColumnType));
 
+
         Map<ColumnType, Column> timerColumns = new HashMap<>();
-        timerColumns.put(ColumnType.SECONDS, new Column(collect.get(ColumnType.SECONDS), ColumnType.SECONDS));
-        timerColumns.put(ColumnType.MINUTES, new Column(collect.get(ColumnType.MINUTES), ColumnType.MINUTES));
-        timerColumns.put(ColumnType.HOURS, new Column(collect.get(ColumnType.HOURS), ColumnType.HOURS));
+        timerColumns.put(ColumnType.SECONDS, new Column(collect.get(ColumnType.SECONDS)));
+        timerColumns.put(ColumnType.MINUTES, new Column(collect.get(ColumnType.MINUTES)));
+        timerColumns.put(ColumnType.HOURS, new Column(collect.get(ColumnType.HOURS)));
 
         return timerColumns;
     }

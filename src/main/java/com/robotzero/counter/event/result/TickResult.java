@@ -1,6 +1,5 @@
 package com.robotzero.counter.event.result;
 
-import com.robotzero.counter.domain.Cell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
@@ -74,5 +73,17 @@ public class TickResult implements Result {
         }
 
         return Duration.millis(10);
+    }
+
+    @Override
+    public String toString() {
+        return "TickResult{" +
+                "secondsCell=" + secondsCell +
+                ", minutesCell=" + minutesCell +
+                ", hoursCell=" + hoursCell +
+                ", currentClockState=" + currentClockState.toString() +
+                ", columnType=" + columnType +
+                ", timerType=" + timerType +
+                '}';
     }
 }

@@ -1,7 +1,7 @@
 package com.robotzero.counter.domain;
 
 public enum Direction {
-    UP(-1), DOWN(1), SWITCHUP(-3), SWITCHDOWN(3), STARTUP(-2), STARTDOWN(2);
+    UP(-1), DOWN(1), SWITCHUP(-3), SWITCHDOWN(3), STARTUP(-2), STARTDOWN(2), VOID(0);
 
     private final int delta;
 
