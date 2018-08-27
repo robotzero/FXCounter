@@ -17,6 +17,7 @@ public class DirectionService {
         previousDirections.put(ColumnType.SECONDS, null);
         previousDirections.put(ColumnType.MINUTES, null);
         previousDirections.put(ColumnType.HOURS, null);
+        previousDirections.put(ColumnType.MAIN, null);
     }
 
     public Direction calculateDirection(double translateY, double delta, ColumnType columnType) {

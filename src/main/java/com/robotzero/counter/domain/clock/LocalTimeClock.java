@@ -31,15 +31,15 @@ public class LocalTimeClock implements Clock {
     private Predicate<Integer> shouldTick = clockState -> clockState == 59;
 
     private BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick = (columnType, direction) -> {
-        if (columnType.equals(ColumnType.SECONDS)) {
+        if (columnType == ColumnType.SECONDS || columnType == ColumnType.MAIN) {
             return localTime -> localTime.plusSeconds(direction);
         }
 
-        if (columnType.equals(ColumnType.MINUTES)) {
+        if (columnType == ColumnType.MINUTES) {
             return localTime -> localTime.plusMinutes(direction);
         }
 
-        if (columnType.equals(ColumnType.HOURS)) {
+        if (columnType == ColumnType.HOURS) {
             return localTime -> localTime.plusHours(direction);
         }
 
@@ -96,13 +96,7 @@ public class LocalTimeClock implements Clock {
             previous.putIfAbsent(ColumnType.MINUTES, next.get(ColumnType.MINUTES));
             previous.putIfAbsent(ColumnType.HOURS, next.get(ColumnType.HOURS));
         }, (b, c) -> {
-            System.out.println(b);
-            System.out.println(c);
         });
-
-        LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
-        TimerType timerType = action.getTimerType();
-        ColumnType columnType = action.getColumnType();
 
         currectClockStateObservable.onNext(new CurrentClockState(
                 this.clockRepository.get(ColumnType.SECONDS).getSecond(),
@@ -111,9 +105,9 @@ public class LocalTimeClock implements Clock {
                 directions.get(ColumnType.SECONDS),
                 directions.get(ColumnType.MINUTES),
                 directions.get(ColumnType.HOURS),
-                columnType == ColumnType.SECONDS,
-                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.MINUTES),
-                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.HOURS)
+                action.getColumnType() == ColumnType.SECONDS,
+                directions.get(ColumnType.MINUTES) != Direction.VOID,
+                directions.get(ColumnType.HOURS) != Direction.VOID
         ));
 
         return Single.just(new CurrentClockState(
@@ -123,9 +117,9 @@ public class LocalTimeClock implements Clock {
                 directions.get(ColumnType.SECONDS),
                 directions.get(ColumnType.MINUTES),
                 directions.get(ColumnType.HOURS),
-                columnType == ColumnType.SECONDS,
-                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.MINUTES),
-                (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && timerType == TimerType.TICK) || (timerType != TimerType.TICK && columnType == ColumnType.HOURS)
+                action.getColumnType() == ColumnType.SECONDS,
+                directions.get(ColumnType.MINUTES) != Direction.VOID,
+                directions.get(ColumnType.HOURS) != Direction.VOID
             )
         );
     }

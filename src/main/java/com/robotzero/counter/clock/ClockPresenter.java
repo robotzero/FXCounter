@@ -55,16 +55,10 @@ public class ClockPresenter implements Initializable {
     private StageController stageController;
 
     @Autowired
-    private DirectionService directionService;
-
-    @Autowired
     private ClockService clockService;
 
     @Autowired
     private ResetService resetService;
-
-//    @Autowired
-//    private Flowable<CurrentClockState> clockState;
 
     private Map<ColumnType, Column> timerColumns;
 

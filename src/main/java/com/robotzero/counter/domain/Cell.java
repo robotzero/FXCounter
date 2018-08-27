@@ -1,16 +1,10 @@
 package com.robotzero.counter.domain;
 
 import javafx.animation.TranslateTransition;
-import javafx.beans.binding.When;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-
-import java.util.stream.IntStream;
 
 public class Cell {
 
@@ -18,9 +12,7 @@ public class Cell {
     private Location location;
     private Text label;
     private TranslateTransition translateTransition;
-    private BooleanProperty isCellOnTop = new SimpleBooleanProperty(false);
     private IntegerProperty currentSize;
-    private IntegerProperty currentMultiplayer = new SimpleIntegerProperty(0);
     private ColumnType columnType;
 
     public Cell(
@@ -36,8 +28,6 @@ public class Cell {
         this.label = label;
         this.translateTransition = translateTransition;
         this.currentSize = currentSize;
-        this.currentMultiplayer.set(0);
-        this.isCellOnTop.bind(new When(rectangle.translateYProperty().isEqualTo(-90L).or(rectangle.translateYProperty().lessThan(-80L))).then(true).otherwise(false));
         this.columnType = columnType;
     }
 
@@ -48,13 +38,9 @@ public class Cell {
         translateTransition.setFromY(fromY);
         translateTransition.setToY(toY);
         translateTransition.play();
-        if (this.currentMultiplayer.get() == 3) {
-            this.currentMultiplayer.set(0);
-        } else {
-            this.currentMultiplayer.set(this.currentMultiplayer.get() + 1);
-        }
     }
 
+    //@TOOD the returned cell depends on the delta/direction.
     public ChangeCell getChangeCell() {
         if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
             return new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType);
@@ -66,26 +52,6 @@ public class Cell {
     public void setLabel(int newLabel) {
         if (!this.label.textProperty().getValue().equals(String.format("%02d", newLabel))) {
             this.label.textProperty().setValue(String.format("%02d", newLabel));
-        }
-    }
-
-    public void resetMultiplayer(boolean isOnTop) {
-        if (isOnTop) {
-            IntStream.range(1, 5).forEach(i -> {
-                if (translateTransition.fromYProperty().get() == currentSize.get() * i) {
-                    this.currentMultiplayer.set(i - 1);
-                }
-            });
-        } else {
-            IntStream.range(1, 5).forEach(i -> {
-                if (translateTransition.fromYProperty().get() == currentSize.get() * i) {
-                    if (i == 4) {
-                        this.currentMultiplayer.set(0);
-                    } else {
-                        this.currentMultiplayer.set(i);
-                    }
-                }
-            });
         }
     }
 
