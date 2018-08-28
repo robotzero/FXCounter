@@ -30,7 +30,7 @@ public class DirectionService {
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (!previousDirection.equals(Direction.UP) && translateY == -90)) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != Direction.UP && translateY == -90)) {
                 direction = Direction.UP;
             } else if (translateY == -90) {
                 direction = Direction.SWITCHDOWN;
@@ -44,7 +44,7 @@ public class DirectionService {
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (!previousDirection.equals(Direction.DOWN) && translateY == 270)) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != Direction.DOWN && translateY == 270)) {
                 direction = Direction.DOWN;
             } else if (translateY == -90) {
                 direction = Direction.SWITCHDOWN;

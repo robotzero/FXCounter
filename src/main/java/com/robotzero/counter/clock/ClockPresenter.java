@@ -111,8 +111,12 @@ public class ClockPresenter implements Initializable {
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
-                .buffer(3)
-                .map(scrollMouseEvent -> new com.robotzero.counter.event.ScrollEvent(((Node) scrollMouseEvent.get(0).getSource()).getId(), scrollMouseEvent.get(0).getDeltaY()));
+                .window(3)
+                .elementAt(0)
+                .map(scrollMouseEvent -> {
+                    return scrollMouseEvent;
+                    return new ScrollEvent(((Node) scrollMouseEvent.get(0).getSource()).getId(), scrollMouseEvent.get(0).getDeltaY());
+                });
 
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));

@@ -81,13 +81,13 @@ public class LocalTimeClock implements Clock {
             }
             if (shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK && cell.getColumnType() == ColumnType.MINUTES) {
                 Direction directionMinutes = directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), cell.getColumnType());
-                clockmodes.get(action.getTimerType()).applyNewClockState(tick, action.getColumnType(), directionMinutes);
+                clockmodes.get(action.getTimerType()).applyNewClockState(tick, cell.getColumnType(), directionMinutes);
                 return Map.of(cell.getColumnType(), directionMinutes);
             }
 
             if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && action.getTimerType() == TimerType.TICK) && cell.getColumnType() == ColumnType.HOURS) {
                 Direction directionHours = directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), cell.getColumnType());
-                clockmodes.get(action.getTimerType()).applyNewClockState(tick, ColumnType.HOURS, directionHours);
+                clockmodes.get(action.getTimerType()).applyNewClockState(tick, cell.getColumnType(), directionHours);
                 return Map.of(cell.getColumnType(), directionHours);
             }
             return Map.of(cell.getColumnType(), Direction.VOID);
