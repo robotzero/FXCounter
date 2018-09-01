@@ -1,15 +1,20 @@
 package com.robotzero.counter.domain;
 
-public enum Direction {
-    UP(-1), DOWN(1), SWITCHUP(-3), SWITCHDOWN(3), STARTUP(-2), STARTDOWN(2), VOID(0);
+public class Direction {
 
-    private final int delta;
+    private final ColumnType columnType;
+    private final DirectionType directionType;
 
-    Direction(int delta) {
-        this.delta = delta;
+    public Direction(ColumnType columnType, DirectionType directionType) {
+        this.columnType = columnType;
+        this.directionType = directionType;
     }
 
-    public int getDelta() {
-        return delta;
+    public ColumnType getColumnType() {
+        return columnType;
+    }
+
+    public DirectionType getDirectionType() {
+        return directionType;
     }
 }

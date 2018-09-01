@@ -2,7 +2,7 @@ package com.robotzero.counter.service;
 
 import com.robotzero.counter.domain.ChangeCell;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.DirectionType;
 import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 import com.robotzero.counter.event.action.TickAction;
@@ -24,7 +24,7 @@ public class ClockService {
         return clock.tick(action, cells);
     }
 
-    public Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection) {
+    public Map<ColumnType, ArrayList<Integer>> initialize(DirectionType fromDirection) {
         return clock.initialize(fromDirection);
     }
 }

@@ -1,7 +1,7 @@
 package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.DirectionType;
 
 import java.time.LocalTime;
 import java.util.function.BiFunction;
@@ -16,7 +16,7 @@ public class ScrollResetMode implements ClockMode {
     }
 
     @Override
-    public void applyNewClockState(BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick, ColumnType columnType, Direction direction) {
+    public void applyNewClockState(BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick, ColumnType columnType, DirectionType direction) {
         if (columnType.equals(ColumnType.SECONDS)) {
             this.clockRepository.save(ColumnType.SECONDS, tick.apply(columnType, direction.getDelta()).apply(this.clockRepository.get(ColumnType.SECONDS)));
             this.clockRepository.save(ColumnType.MAIN, this.clockRepository.get(ColumnType.MAIN).withSecond(this.clockRepository.get(ColumnType.SECONDS).getSecond()));
@@ -32,6 +32,6 @@ public class ScrollResetMode implements ClockMode {
             this.clockRepository.save(ColumnType.MAIN, this.clockRepository.get(ColumnType.MAIN).withHour(this.clockRepository.get(ColumnType.HOURS).getHour()));
         }
 
-        this.clockRepository.save(ColumnType.MAIN, tick.apply(columnType, direction.getDelta() < 0 ? Direction.DOWN.getDelta() : Direction.UP.getDelta()).apply(this.clockRepository.get(ColumnType.MAIN)));
+        this.clockRepository.save(ColumnType.MAIN, tick.apply(columnType, direction.getDelta() < 0 ? DirectionType.DOWN.getDelta() : DirectionType.UP.getDelta()).apply(this.clockRepository.get(ColumnType.MAIN)));
     }
 }

@@ -2,7 +2,7 @@ package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.ChangeCell;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.DirectionType;
 import com.robotzero.counter.event.action.TickAction;
 import io.reactivex.Single;
 
@@ -12,5 +12,5 @@ import java.util.Map;
 
 public interface Clock {
     Single<CurrentClockState> tick(TickAction tickAction, List<ChangeCell> cells);
-    Map<ColumnType, ArrayList<Integer>> initialize(Direction fromDirection);
+    Map<ColumnType, ArrayList<Integer>> initialize(DirectionType fromDirection);
 }

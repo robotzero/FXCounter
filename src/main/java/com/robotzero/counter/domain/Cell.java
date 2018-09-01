@@ -1,5 +1,6 @@
 package com.robotzero.counter.domain;
 
+import io.reactivex.Observable;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.layout.VBox;
@@ -31,7 +32,7 @@ public class Cell {
         this.columnType = columnType;
     }
 
-    public void animate(Direction direction, Duration duration) {
+    public void animate(DirectionType direction, Duration duration) {
         double fromY = location.calculateFromY(currentSize, direction.getDelta(), rectangle.getTranslateY());
         double toY = location.calculateToY(currentSize, direction.getDelta(), rectangle.getTranslateY());
         translateTransition.setDuration(duration);
@@ -40,13 +41,12 @@ public class Cell {
         translateTransition.play();
     }
 
-    //@TOOD the returned cell depends on the delta/direction.
-    public ChangeCell getChangeCell() {
+    public Observable<ChangeCell> getChangeCell() {
         if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
-            return new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType);
+            return Observable.just(new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType));
         }
 
-        return new ChangeCell(null, 0, ColumnType.VOID);
+        return Observable.empty();
     }
 
     public void setLabel(int newLabel) {

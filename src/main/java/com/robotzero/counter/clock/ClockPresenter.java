@@ -1,7 +1,6 @@
 package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.*;
-import com.robotzero.counter.domain.clock.CurrentClockState;
 import com.robotzero.counter.event.*;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
@@ -69,7 +68,7 @@ public class ClockPresenter implements Initializable {
 //        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
-        Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(Direction.DOWN);
+        Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
         IntStream.rangeClosed(0, 3).forEach(index -> {
             this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
             this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
@@ -111,11 +110,11 @@ public class ClockPresenter implements Initializable {
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
-                .window(3)
-                .elementAt(0)
+                .window(5)
+                .flatMapSingle(scrollEventObservable -> scrollEventObservable.reduce(new Object(), (reducedScrollEvent, nextScrollEvent) -> nextScrollEvent))
+                .cast(javafx.scene.input.ScrollEvent.class)
                 .map(scrollMouseEvent -> {
-                    return scrollMouseEvent;
-                    return new ScrollEvent(((Node) scrollMouseEvent.get(0).getSource()).getId(), scrollMouseEvent.get(0).getDeltaY());
+                    return new ScrollEvent(((Node) scrollMouseEvent.getSource()).getId(), scrollMouseEvent.getDeltaY());
                 });
 
 
@@ -151,14 +150,18 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
-                ChangeCell secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
-                ChangeCell minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
-                ChangeCell hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
+                Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
+                Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
+                Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
 
-                Single<CurrentClockState> currentClockState = clockService.tick(action, List.of(secondsChangeCell, minutesChangeCell, hoursChangeCell));
-                return currentClockState.flatMap(clockState -> {
-                    return Single.just(new TickResult(secondsChangeCell.getLabel(), minutesChangeCell.getLabel(), hoursChangeCell.getLabel(), clockState, action.getColumnType(), action.getTimerType()));
-                }).toObservable();
+                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
+                    return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
+                }).flatMapSingle(currentClockStateSingle -> {
+                    return currentClockStateSingle.flatMap(currentClockState -> {
+                        return Single.just(new TickResult(currentClockState.getLabelSeconds(), currentClockState.getLabelMinutes(), currentClockState.getLabelHours(), currentClockState, action.getColumnType(), action.getTimerType()));
+                    });
+                });
+
             });
         };
 
@@ -225,21 +228,21 @@ public class ClockPresenter implements Initializable {
                     Optional<Text> secondsLabel = Optional.ofNullable(tickResult.getSecondsCell());
                     secondsLabel.ifPresent(textProperty -> {
                         textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getSecond()));
-                        timerColumns.get(tickResult.getColumnType()).play(tickResult.getLabels().getDirectionSeconds(), tickResult.getDuration());
+                        timerColumns.get(tickResult.getColumnType()).play(tickResult.getLabels().getDirectionSeconds().getDirectionType(), tickResult.getDuration());
                     });
                 });
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
                     Optional<Text> minutesLabel = Optional.ofNullable(tickResult.getMinutesCell());
                     minutesLabel.ifPresent(textProperty -> {
                         textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getMinute()));
-                        timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirectionMinutes(), tickResult.getDuration());
+                        timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirectionMinutes().getDirectionType(), tickResult.getDuration());
                     });
                 });
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
                     Optional<Text> hoursLabel = Optional.ofNullable(tickResult.getHoursCell());
                     hoursLabel.ifPresent(textProperty -> {
                         textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getHour()));
-                        timerColumns.get(ColumnType.HOURS).play(tickResult.getLabels().getDirectionHours(), tickResult.getDuration());
+                        timerColumns.get(ColumnType.HOURS).play(tickResult.getLabels().getDirectionHours().getDirectionType(), tickResult.getDuration());
                     });
                 });
             });

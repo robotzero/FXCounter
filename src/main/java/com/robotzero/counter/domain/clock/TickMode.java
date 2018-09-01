@@ -1,7 +1,7 @@
 package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.DirectionType;
 
 import java.time.LocalTime;
 import java.util.function.BiFunction;
@@ -15,7 +15,7 @@ public class TickMode implements ClockMode {
         this.clockRepository = clockRepository;
     }
 
-    public void applyNewClockState(BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick, ColumnType columnType, Direction direction) {
+    public void applyNewClockState(BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick, ColumnType columnType, DirectionType direction) {
         if (columnType == ColumnType.SECONDS) {
             clockRepository.save(ColumnType.MAIN, tick.apply(ColumnType.SECONDS, direction.getDelta()).apply(clockRepository.get(ColumnType.MAIN)));
             clockRepository.save(ColumnType.SECONDS, tick.apply(ColumnType.SECONDS, direction.getDelta()).apply(clockRepository.get(ColumnType.SECONDS)));
