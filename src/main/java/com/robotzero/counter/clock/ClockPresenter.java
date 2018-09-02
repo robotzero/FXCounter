@@ -1,7 +1,10 @@
 package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.*;
+import com.robotzero.counter.domain.clock.CurrentClockState;
+import com.robotzero.counter.domain.clock.LocalTimeClock;
 import com.robotzero.counter.event.*;
+import com.robotzero.counter.event.action.Action;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.TickAction;
@@ -12,6 +15,7 @@ import io.reactivex.Observable;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -23,6 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,6 +63,10 @@ public class ClockPresenter implements Initializable {
 
     @Autowired
     private ResetService resetService;
+
+    @Qualifier("clockStateAutoConnect")
+    @Autowired
+    Observable<CurrentClockState> currentClockStatePublishSubject;
 
     private Map<ColumnType, Column> timerColumns;
 
@@ -122,12 +131,12 @@ public class ClockPresenter implements Initializable {
 
         Observable<MainViewEvent> mainViewEvents = Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent);
 
-        ObservableTransformer<ClickEvent, com.robotzero.counter.event.action.Action> clickEventTransformer = clickEvent -> clickEvent.flatMap(
+        ObservableTransformer<ClickEvent, Action> clickEventTransformer = clickEvent -> clickEvent.flatMap(
           event -> {
               return resetService.getActions(event.getButtonType(), event.getButtonState());
           });
 
-        ObservableTransformer<ScrollEvent, com.robotzero.counter.event.action.Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.flatMap(
+        ObservableTransformer<ScrollEvent, Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.flatMap(
                 event -> {
                     return Observable.just(new TickAction(event.getDelta(), event.getColumnType(), TimerType.SCROLL));
                 });
@@ -136,7 +145,7 @@ public class ClockPresenter implements Initializable {
             return Observable.just(new TickAction(-1, ColumnType.SECONDS, TimerType.TICK));
         });
 
-        ObservableTransformer<MainViewEvent, com.robotzero.counter.event.action.Action> actionTransformer = mainViewEvent -> mainViewEvent.publish(sharedObservable -> {
+        ObservableTransformer<MainViewEvent, Action> actionTransformer = mainViewEvent -> mainViewEvent.publish(sharedObservable -> {
             return Observable.merge(
               sharedObservable.ofType(ClickEvent.class).compose(clickEventTransformer),
               sharedObservable.ofType(ScrollEvent.class).compose(scrollEventTransformer),
@@ -148,24 +157,38 @@ public class ClockPresenter implements Initializable {
             return timerService.operateTimer(action);
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
+
+//        ObservableTransformer<CurrentClockState, TickResult> currentClockStateTransformer = currectClockStateSingle -> currectClockStateSingle.flatMap(currentClockState -> {
+//            return Single.just(new TickResult(currentClockState.getLabelSeconds(), currentClockState.getLabelMinutes(), currentClockState.getLabelHours(), currentClockState, ColumnType.SECONDS, TimerType.TICK)).toObservable();
+//        });
+
+//        currentClockStatePublishSubject.compose(currentClockStateTransformer);
+
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
                 Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
                 Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
                 Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
 
-                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
-                    return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
-                }).flatMapSingle(currentClockStateSingle -> {
-                    return currentClockStateSingle.flatMap(currentClockState -> {
-                        return Single.just(new TickResult(currentClockState.getLabelSeconds(), currentClockState.getLabelMinutes(), currentClockState.getLabelHours(), currentClockState, action.getColumnType(), action.getTimerType()));
-                    });
-                });
+//                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
+//                    return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
+//                }).flatMapSingle(currentClockStateSingle -> {
+//                    return currentClockStateSingle.flatMap(currentClockState -> {
+//                        return Single.just(new TickResult(currentClockState.getLabelSeconds(), currentClockState.getLabelMinutes(), currentClockState.getLabelHours(), currentClockState, action.getColumnType(), action.getTimerType()));
+//                    });
+//                });
 
+                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
+                    return clockService.blah(action, List.of(secondsCell, minutesCell, hoursCell));
+                }).flatMap(emptyCompletable -> {
+                    return currentClockStatePublishSubject.compose(currentClockStateSingle -> currentClockStateSingle.flatMap(currentClockState -> {
+                        return Single.just(new TickResult(currentClockState.getLabelSeconds(), currentClockState.getLabelMinutes(), currentClockState.getLabelHours(), currentClockState, action.getColumnType(), action.getTimerType())).toObservable();
+                    }));
+                });
             });
         };
 
-        Observable<com.robotzero.counter.event.action.Action> actions = mainViewEvents.compose(actionTransformer);
+        Observable<Action> actions = mainViewEvents.compose(actionTransformer);
 
         Observable<Result> results = actions.publish(action -> {
             return Observable.merge(

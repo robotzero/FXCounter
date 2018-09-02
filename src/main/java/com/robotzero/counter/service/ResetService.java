@@ -31,7 +31,7 @@ public class ResetService {
     private final long hoursMiddle = 12;
     private final long hoursBottom = 1;
 
-    public ResetService(PublishSubject<CurrentClockState> currentClockStateObservable) {
+    public ResetService(Observable<CurrentClockState> currentClockStateObservable) {
         currentClockStateObservable.subscribe(currentClockState -> {
             this.currentClockState = currentClockState;
         });
@@ -80,7 +80,6 @@ public class ResetService {
         if (currentClockState.getHour() != toReset.getHour()) {
             hours = ChronoUnit.HOURS.between(toReset, toReset.withHour(currentClockState.getHour())) > hoursMiddle ? hoursBottom + (hoursTop - ChronoUnit.HOURS.between(toReset, toReset.withHour(currentClockState.getHour()).plusHours(1))) : ChronoUnit.HOURS.between(toReset, toReset.withHour(currentClockState.getHour()).plusHours(1));
         }
-//        System.out.println("CURRENT " + currentClockState.getSecond());
         return Arrays.asList(seconds, minutes, hours);
     }
 

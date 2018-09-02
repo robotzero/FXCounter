@@ -12,6 +12,8 @@ import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
+import io.reactivex.Observable;
+import io.reactivex.internal.operators.observable.ObservableAutoConnect;
 import io.reactivex.subjects.PublishSubject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -132,11 +134,16 @@ public class TimerConfiguration {
 
     @Bean
     public ResetService resetService() {
-        return new ResetService(clockState());
+        return new ResetService(clockStateAutoConnect());
     }
 
     @Bean
     public PublishSubject<CurrentClockState> clockState() {
         return PublishSubject.create();
+    }
+
+    @Bean
+    public Observable<CurrentClockState> clockStateAutoConnect() {
+        return clockState().publish().autoConnect(2);
     }
 }

@@ -3,6 +3,7 @@ package com.robotzero.counter.domain.clock;
 import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.subjects.PublishSubject;
 import javafx.scene.text.Text;
@@ -105,8 +106,8 @@ public class LocalTimeClock implements Clock {
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).findFirst().get(),
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).findFirst().get(),
                 action.getColumnType() == ColumnType.SECONDS,
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).filter(direction -> direction.getDirectionType() != DirectionType.VOID).count() != 0,
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).filter(direction -> direction.getDirectionType() != DirectionType.VOID).count() != 0,
+                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
+                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
                 result.get(ColumnType.SECONDS),
                 result.get(ColumnType.MINUTES),
                 result.get(ColumnType.HOURS)
@@ -120,13 +121,18 @@ public class LocalTimeClock implements Clock {
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).findFirst().get(),
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).findFirst().get(),
                 action.getColumnType() == ColumnType.SECONDS,
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).filter(direction -> direction.getDirectionType() != DirectionType.VOID).count() != 0,
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).filter(direction -> direction.getDirectionType() != DirectionType.VOID).count() != 0,
+                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
+                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
                 result.get(ColumnType.SECONDS),
                 result.get(ColumnType.MINUTES),
                 result.get(ColumnType.HOURS)
             )
         );
+    }
+
+    public Completable blah(TickAction action, List<ChangeCell> cells) {
+        this.tick(action, cells);
+        return Completable.complete();
     }
 
     @Override
