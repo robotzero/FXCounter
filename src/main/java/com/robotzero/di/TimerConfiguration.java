@@ -12,9 +12,8 @@ import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
-import io.reactivex.Observable;
-import io.reactivex.internal.operators.observable.ObservableAutoConnect;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -92,7 +91,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, PublishSubject<CurrentClockState> clockState, DirectionService directionService) {
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, Subject<CurrentClockState> clockState, DirectionService directionService) {
         return new LocalTimeClock(clockRepository, timerRepository, clockModes, clockState, directionService);
     }
 
@@ -134,16 +133,11 @@ public class TimerConfiguration {
 
     @Bean
     public ResetService resetService() {
-        return new ResetService(clockStateAutoConnect());
+        return new ResetService(clockState());
     }
 
     @Bean
-    public PublishSubject<CurrentClockState> clockState() {
-        return PublishSubject.create();
-    }
-
-    @Bean
-    public Observable<CurrentClockState> clockStateAutoConnect() {
-        return clockState().publish().autoConnect(2);
+    public BehaviorSubject<CurrentClockState> clockState() {
+        return BehaviorSubject.create();
     }
 }

@@ -5,7 +5,7 @@ import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import javafx.scene.text.Text;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +23,7 @@ public class LocalTimeClock implements Clock {
 
     private final ClockRepository clockRepository;
     private final TimerRepository timerRepository;
-    private final PublishSubject<CurrentClockState> currectClockStateObservable;
+    private final Subject<CurrentClockState> currectClockStateObservable;
     private final DirectionService directionService;
     private final Map<TimerType, ClockMode> clockmodes;
 
@@ -56,7 +56,7 @@ public class LocalTimeClock implements Clock {
             ClockRepository clockRepository,
             TimerRepository timerRepository,
             Map<TimerType, ClockMode> clockModes,
-            PublishSubject<CurrentClockState> currentClockStateObservable,
+            Subject<CurrentClockState> currentClockStateObservable,
             DirectionService directionService
     ) {
         this.clockRepository = clockRepository;
@@ -75,7 +75,7 @@ public class LocalTimeClock implements Clock {
         }).getSavedTimer());
     }
 
-    public Single<CurrentClockState> tick(TickAction action, List<ChangeCell> cells) {
+    public Completable tick(TickAction action, List<ChangeCell> cells) {
         List<Direction> directions = cells.stream().map(cell -> {
             if (cell.getColumnType() == ColumnType.SECONDS && action.getColumnType() == ColumnType.SECONDS) {
                 Direction directionSeconds = directionService.calculateDirection(cell.getTranslateY(), action.getDelta(), cell.getColumnType());
@@ -113,25 +113,6 @@ public class LocalTimeClock implements Clock {
                 result.get(ColumnType.HOURS)
         ));
 
-        return Single.just(new CurrentClockState(
-                this.clockRepository.get(ColumnType.SECONDS).getSecond(),
-                this.clockRepository.get(ColumnType.MINUTES).getMinute(),
-                this.clockRepository.get(ColumnType.HOURS).getHour(),
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.SECONDS).findFirst().get(),
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).findFirst().get(),
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).findFirst().get(),
-                action.getColumnType() == ColumnType.SECONDS,
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
-                directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
-                result.get(ColumnType.SECONDS),
-                result.get(ColumnType.MINUTES),
-                result.get(ColumnType.HOURS)
-            )
-        );
-    }
-
-    public Completable blah(TickAction action, List<ChangeCell> cells) {
-        this.tick(action, cells);
         return Completable.complete();
     }
 

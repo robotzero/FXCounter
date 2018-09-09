@@ -1,7 +1,6 @@
 package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.Direction;
-import com.robotzero.counter.domain.DirectionType;
 import javafx.scene.text.Text;
 
 public class CurrentClockState {
