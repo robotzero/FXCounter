@@ -84,27 +84,6 @@ public class ClockPresenter implements Initializable {
 
 //        optionClicks.subscribe(click -> stageController.setView());
 
-//        resetClicks.subscribe(click -> {
-//            this.fetchFromDatabase.setValue(true);
-//            if (fetchFromDatabase.get()) {
-//                this.localTimeClock.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
-////                this.localTimeClock.initializeClocks(Optional.ofNullable(savedTimerRepository.selectLatest()).orElseGet(() -> {
-//                    LocalTimeClock savedTimer = new LocalTimeClock();
-//                    savedTimer.setSavedTimer(LocalTime.of(0, 0, 0));
-//                    return savedTimer;
-//                }).getSavedTimer());
-//            } else {
-//                this.localTimeClock.initializeClocks(LocalTime.of(0, 0, 0));
-//            }
-//            this.deltaStreamSeconds.onNext(0);
-//            this.deltaStreamMinutes.onNext(0);
-//            this.deltaStreamHours.onNext(0);
-//            timerColumns.forEach((columnType, column) -> {
-//                column.setLabels();
-//            });
-//            timerColumns.get(ColumnType.SECONDS).setLabels();
-//        });
-
         Observable<ClickEvent> startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
                 .map(ignored -> new ClickEvent(ButtonType.LEFT, ButtonState.valueOf(startButton.getText().toUpperCase())));

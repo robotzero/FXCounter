@@ -17,7 +17,7 @@ public class TickMode implements ClockMode {
 
     public void applyNewClockState(BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick, ColumnType columnType, DirectionType direction) {
         if (columnType == ColumnType.SECONDS) {
-            clockRepository.save(ColumnType.MAIN, tick.apply(ColumnType.SECONDS, direction.getDelta()).apply(clockRepository.get(ColumnType.MAIN)));
+            clockRepository.save(ColumnType.MAIN, tick.apply(ColumnType.MAIN, direction.getDelta() / Math.abs(direction.getDelta())).apply(clockRepository.get(ColumnType.MAIN)));
             clockRepository.save(ColumnType.SECONDS, tick.apply(ColumnType.SECONDS, direction.getDelta()).apply(clockRepository.get(ColumnType.SECONDS)));
         }
         if (columnType == ColumnType.MINUTES) {

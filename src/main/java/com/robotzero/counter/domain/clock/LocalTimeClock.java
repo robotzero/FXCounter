@@ -4,7 +4,6 @@ import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
 import io.reactivex.Completable;
-import io.reactivex.Single;
 import io.reactivex.subjects.Subject;
 import javafx.scene.text.Text;
 
@@ -110,9 +109,9 @@ public class LocalTimeClock implements Clock {
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
                 result.get(ColumnType.SECONDS),
                 result.get(ColumnType.MINUTES),
-                result.get(ColumnType.HOURS)
+                result.get(ColumnType.HOURS),
+                this.clockRepository.get(ColumnType.MAIN)
         ));
-
         return Completable.complete();
     }
 

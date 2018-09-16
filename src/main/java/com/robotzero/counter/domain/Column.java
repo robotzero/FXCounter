@@ -19,10 +19,6 @@ public class Column {
         }).reduce(Observable.empty(), (current, next) -> {
             return current.mergeWith(next);
         });
-//        return columnList.stream()
-//                .map(Cell::getChangeCell)
-//                .filter(cell -> cell.getColumnType() != ColumnType.VOID)
-//                .findFirst().orElseThrow(() -> new RuntimeException("No CHANGE CELL"));
     }
 
     public void play(DirectionType direction, Duration duration) {

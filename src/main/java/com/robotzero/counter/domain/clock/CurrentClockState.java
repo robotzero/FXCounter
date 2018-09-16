@@ -3,6 +3,8 @@ package com.robotzero.counter.domain.clock;
 import com.robotzero.counter.domain.Direction;
 import javafx.scene.text.Text;
 
+import java.time.LocalTime;
+
 public class CurrentClockState {
 
     private final Integer second;
@@ -17,8 +19,9 @@ public class CurrentClockState {
     private final Text labelSeconds;
     private final Text labelMinutes;
     private final Text labelHours;
+    private final LocalTime mainClockState;
 
-    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction directionSeconds, Direction directionMinutes, Direction directionHours, boolean tickSecond, boolean tickMinute, boolean tickHour, Text labelSeconds, Text labelMinutes, Text labelHours) {
+    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction directionSeconds, Direction directionMinutes, Direction directionHours, boolean tickSecond, boolean tickMinute, boolean tickHour, Text labelSeconds, Text labelMinutes, Text labelHours, LocalTime mainClockState) {
         this.second = second;
         this.minute = minute;
         this.hour = hour;
@@ -31,6 +34,7 @@ public class CurrentClockState {
         this.labelSeconds = labelSeconds;
         this.labelMinutes = labelMinutes;
         this.labelHours = labelHours;
+        this.mainClockState = mainClockState;
     }
 
     public Integer getSecond() {
@@ -81,6 +85,10 @@ public class CurrentClockState {
         return labelHours;
     }
 
+    public LocalTime getMainClockState() {
+        return mainClockState;
+    }
+
     @Override
     public String toString() {
         return "CurrentClockState{" +
@@ -93,6 +101,7 @@ public class CurrentClockState {
                 ", tickSecond=" + tickSecond +
                 ", tickMinute=" + tickMinute +
                 ", tickHour=" + tickHour +
+                ", mainClock=" + mainClockState +
                 '}';
     }
 }
