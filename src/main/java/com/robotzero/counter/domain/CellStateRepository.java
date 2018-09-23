@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface CellStateRepository {
 
-    void initialize(Map<ColumnType, List<CellState>> currentCellsState);
+    void initialize(Map<ColumnType, Map<Integer, CellState>> currentCellsState);
 
     void update(ColumnType columnType, int id, double position, double oldPosition, Direction direction);
 
