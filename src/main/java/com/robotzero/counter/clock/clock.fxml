@@ -48,7 +48,7 @@
          </GridPane.margin>
          <children>
             <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true"/>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875" mouseTransparent="true">
                      <font>
@@ -66,7 +66,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
@@ -84,7 +84,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
@@ -102,7 +102,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="4" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
@@ -126,7 +126,7 @@
       <StackPane id="minutes" fx:id="minutes" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <Rectangle id="bottomDarkMinutes" arcHeight="20.0" arcWidth="20.0" fill="#393c41" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true"/>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" wrappingWidth="84.013671875" mouseTransparent="true">
                      <font>
@@ -144,7 +144,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="6" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
@@ -162,7 +162,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="7" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
@@ -180,7 +180,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
+            <VBox alignment="TOP_CENTER" id="8" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER">
                <children>
                   <Text fill="WHITE" strokeType="OUTSIDE" style="-fx-base: rgb(255,255,255);" text="03" textAlignment="CENTER" mouseTransparent="true">
                      <font>
@@ -208,7 +208,7 @@
          <children>
             <Rectangle arcHeight="20.0" arcWidth="20.0" fill="WHITE" height="282.0" stroke="BLACK" strokeType="INSIDE" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true" />
             <Rectangle id="rectWhite" arcHeight="20.0" arcWidth="20.0" height="282.0" stroke="BLACK" strokeType="INSIDE" styleClass="rectangleWhiteSeconds" width="110.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true" />
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
+            <VBox alignment="TOP_CENTER" id="9" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="-90.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
@@ -226,7 +226,7 @@
                   </Text>
                </children>
             </VBox>
-            <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
+            <VBox alignment="TOP_CENTER" id="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
@@ -244,7 +244,7 @@
                   </Text>
                </children>
             </VBox>
-            <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
+            <VBox alignment="TOP_CENTER" id="11" layoutX="22.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="90.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>
@@ -262,7 +262,7 @@
                   </Text>
                </children>
             </VBox>
-            <VBox alignment="TOP_CENTER" layoutX="22.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
+            <VBox alignment="TOP_CENTER" id="12" layoutX="22.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" translateY="180.0" StackPane.alignment="TOP_CENTER" mouseTransparent="true">
                <StackPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </StackPane.margin>

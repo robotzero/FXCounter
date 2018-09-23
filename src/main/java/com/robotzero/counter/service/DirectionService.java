@@ -1,17 +1,20 @@
 package com.robotzero.counter.service;
 
+import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.DirectionType;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DirectionService {
 
     /* We have to track previous directions */
     private Map<ColumnType, DirectionType> previousDirections = new HashMap<>();
+    private Map<ColumnType, List<Double>> currentCellsState = new HashMap<>();
 
     @PostConstruct
     public void initialize() {
@@ -21,7 +24,7 @@ public class DirectionService {
         previousDirections.put(ColumnType.MAIN, null);
     }
 
-    public Direction calculateDirection(double translateY, double delta, ColumnType columnType) {
+    public Direction calculateDirection(double translateY, double delta, ColumnType columnType, CellState currentCellState) {
         Direction direction = null;
         DirectionType previousDirection = previousDirections.get(columnType);
         if (delta < 0) {

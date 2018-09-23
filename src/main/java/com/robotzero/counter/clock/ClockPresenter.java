@@ -49,6 +49,9 @@ public class ClockPresenter implements Initializable {
     @Autowired
     private TimerService timerService;
 
+    @Autowired
+    private CellService cellStateService;
+
     // Temp options simulating options screen
     @Autowired
     private BooleanProperty fetchFromDatabase;
@@ -75,7 +78,9 @@ public class ClockPresenter implements Initializable {
 //        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
+        this.cellStateService.initialize(this.populator.cellState(gridPane));
         Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
+        //@TODO initialize by sending the event.
         IntStream.rangeClosed(0, 3).forEach(index -> {
             this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
             this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
@@ -108,12 +113,12 @@ public class ClockPresenter implements Initializable {
 
         Observable<MainViewEvent> mainViewEvents = Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent);
 
-        ObservableTransformer<ClickEvent, Action> clickEventTransformer = clickEvent -> clickEvent.flatMap(
+        ObservableTransformer<ClickEvent, Action> clickEventTransformer = clickEvent -> clickEvent.concatMap(
           event -> {
               return resetService.getActions(event.getButtonType(), event.getButtonState());
           });
 
-        ObservableTransformer<ScrollEvent, Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.flatMap(
+        ObservableTransformer<ScrollEvent, Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.concatMap(
                 event -> {
                     return Observable.just(new TickAction(event.getDelta(), event.getColumnType(), TimerType.SCROLL));
                 });
@@ -130,7 +135,7 @@ public class ClockPresenter implements Initializable {
             );
         });
 
-        ObservableTransformer<ClickAction, ClickResult> clickActionTransformer = clickAction -> clickAction.flatMap(action -> {
+        ObservableTransformer<ClickAction, ClickResult> clickActionTransformer = clickAction -> clickAction.concatMap(action -> {
             return timerService.operateTimer(action);
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
@@ -139,16 +144,15 @@ public class ClockPresenter implements Initializable {
         });
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
-            return tickAction.flatMap(action -> {
+            return tickAction.concatMap(action -> {
                 Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
                 Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
                 Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
-
                 return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
                    return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
                 }).zipWith(currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer), (completableObservable, currentClockStateObservable) -> {
                     return currentClockStateObservable;
-                }).flatMap(currentClockState -> {
+                }).concatMap(currentClockState -> {
                     return Observable.just(
                             new TickResult(
                                     currentClockState.getLabelSeconds(),

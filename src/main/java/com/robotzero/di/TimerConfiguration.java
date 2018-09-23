@@ -6,10 +6,13 @@ import com.robotzero.counter.clock.ClockPresenter;
 import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
+import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.Location;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
+import com.robotzero.counter.infrastructure.memory.InMemoryCellStateRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
 import io.reactivex.subjects.BehaviorSubject;
@@ -91,8 +94,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, Map<TimerType, ClockMode> clockModes, Subject<CurrentClockState> clockState, DirectionService directionService) {
-        return new LocalTimeClock(clockRepository, timerRepository, clockModes, clockState, directionService);
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, Location locationService, Map<TimerType, ClockMode> clockModes, Subject<CurrentClockState> clockState, DirectionService directionService) {
+        return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, clockState, directionService);
     }
 
     @Bean
@@ -139,5 +142,20 @@ public class TimerConfiguration {
     @Bean
     public BehaviorSubject<CurrentClockState> clockState() {
         return BehaviorSubject.create();
+    }
+
+    @Bean
+    public CellStateRepository cellStateRepository() {
+        return new InMemoryCellStateRepository();
+    }
+
+    @Bean
+    public CellService cellService(CellStateRepository cellStateRepository) {
+        return new CellService(cellStateRepository);
+    }
+
+    @Bean
+    public Location locationService() {
+        return new Location();
     }
 }

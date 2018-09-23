@@ -12,10 +12,17 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 public class Populator {
 
@@ -44,6 +51,29 @@ public class Populator {
         timerColumns.put(ColumnType.HOURS, new Column(collect.get(ColumnType.HOURS)));
 
         return timerColumns;
+    }
+
+    public Map<ColumnType, List<CellState>> cellState(GridPane gridPane) {
+        //@TODO change to rxjava type of initialization.
+         Map<ColumnType, List<CellState>> result = gridPane.getChildrenUnmodifiable().filtered(
+                node -> node.getClass().equals(StackPane.class) &&
+                        (node.getId().equals("seconds") || node.getId().equals("minutes") || node.getId().equals("hours"))
+        ).stream()
+                .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
+                .filter(node -> node.getClass().equals(VBox.class))
+                .map(node -> {
+                    VBox vBox = (VBox) node;
+                    return new CellState(
+                            Integer.valueOf(vBox.getId()),
+                            vBox.getTranslateY(),
+                            0,
+                            new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
+                            new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
+                            ColumnType.valueOf(node.getParent().getId().toUpperCase())
+                    );
+                }).collect(Collectors.groupingBy(CellState::getColumnType));
+         
+         return null;
     }
 
 }

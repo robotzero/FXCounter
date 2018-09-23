@@ -59,6 +59,10 @@ public class Cell {
         return columnType;
     }
 
+    public int getId() {
+        return Integer.getInteger(this.rectangle.getId());
+    }
+
     @Override
     public String toString() {
         return "Cell{" +
