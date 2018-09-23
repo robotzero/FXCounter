@@ -1,6 +1,5 @@
 package com.robotzero.counter.service;
 
-import com.robotzero.counter.domain.ChangeCell;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.DirectionType;
 import com.robotzero.counter.domain.clock.Clock;
@@ -8,7 +7,6 @@ import com.robotzero.counter.event.action.TickAction;
 import io.reactivex.Completable;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class ClockService {
@@ -19,8 +17,8 @@ public class ClockService {
         this.clock = clock;
     }
 
-    public Completable tick(TickAction action, List<ChangeCell> cells) {
-        return clock.tick(action, cells);
+    public Completable tick(TickAction action) {
+        return clock.tick(action);
     }
 
     public Map<ColumnType, ArrayList<Integer>> initialize(DirectionType fromDirection) {

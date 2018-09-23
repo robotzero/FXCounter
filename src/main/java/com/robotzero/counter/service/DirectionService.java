@@ -24,43 +24,44 @@ public class DirectionService {
         previousDirections.put(ColumnType.MAIN, null);
     }
 
-    public Direction calculateDirection(double translateY, double delta, ColumnType columnType, CellState currentCellState) {
+    public Direction calculateDirection(CellState currentCellState, double delta) {
         Direction direction = null;
-        DirectionType previousDirection = previousDirections.get(columnType);
+//        DirectionType previousDirection = previousDirections.get(columnType);
+        DirectionType previousDirection = currentCellState.getPreviousDirection().getDirectionType();
         if (delta < 0) {
-            if (previousDirection == null) {
-                direction = new Direction(columnType, DirectionType.STARTUP);
-                previousDirections.put(columnType, direction.getDirectionType());
+            if (previousDirection == DirectionType.VOID) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.STARTUP);
+                previousDirections.put(currentCellState.getColumnType(), direction.getDirectionType());
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.UP && translateY == -90)) {
-                direction = new Direction(columnType, DirectionType.UP);
-            } else if (translateY == -90) {
-                direction = new Direction(columnType, DirectionType.SWITCHDOWN);
-            } else if (translateY == 270) {
-                direction = new Direction(columnType, DirectionType.SWITCHUP);
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.UP && currentCellState.getCurrentPosition() == -90)) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.UP);
+            } else if (currentCellState.getCurrentPosition() == -90) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
+            } else if (currentCellState.getCurrentPosition() == 270) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
             }
         } else {
-            if (previousDirection == null) {
-                direction = new Direction(columnType, DirectionType.STARTDOWN);
-                previousDirections.put(columnType, direction.getDirectionType());
+            if (previousDirection == DirectionType.VOID) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.STARTDOWN);
+                previousDirections.put(currentCellState.getColumnType(), direction.getDirectionType());
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && translateY == 270)) {
-                direction = new Direction(columnType, DirectionType.DOWN);
-            } else if (translateY == -90) {
-                direction = new Direction(columnType, DirectionType.SWITCHDOWN);
-            } else if (translateY == 270) {
-                direction = new Direction(columnType, DirectionType.SWITCHUP);
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && currentCellState.getCurrentPosition() == 270)) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
+            } else if (currentCellState.getCurrentPosition() == -90) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
+            } else if (currentCellState.getCurrentPosition() == 270) {
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
             }
         }
 
         if (direction == null) {
-            return new Direction(columnType, DirectionType.VOID);
+            return new Direction(currentCellState.getColumnType(), DirectionType.VOID);
         }
-        previousDirections.put(columnType, direction.getDirectionType());
+        previousDirections.put(currentCellState.getColumnType(), direction.getDirectionType());
         return direction;
     }
 }

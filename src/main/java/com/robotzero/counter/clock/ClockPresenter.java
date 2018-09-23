@@ -79,7 +79,6 @@ public class ClockPresenter implements Initializable {
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
         this.cellStateService.initialize(this.populator.cellState(gridPane));
-        System.out.println(this.cellStateService);
         Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
         //@TODO initialize by sending the event.
         IntStream.rangeClosed(0, 3).forEach(index -> {
@@ -146,16 +145,13 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.concatMap(action -> {
-                System.out.println("MAIN TICK");
-                Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
-                Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
-                Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
-                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
-                    System.out.println("TICK");
-                   return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
-                }).zipWith(currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer), (completableObservable, currentClockStateObservable) -> {
-                    return currentClockStateObservable;
-                }).concatMap(currentClockState -> {
+                return clockService.tick(action).toObservable()
+                        .zipWith(
+                                currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer),
+                                (completableObservable, currentClockStateObservable) -> {
+                                    return currentClockStateObservable;
+                                }
+                ).concatMap(currentClockState -> {
                     return Observable.just(
                             new TickResult(
                                     currentClockState.getLabelSeconds(),
@@ -167,6 +163,25 @@ public class ClockPresenter implements Initializable {
                             )
                     );
                 });
+//                Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
+//                Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
+//                Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
+//                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
+//                   return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
+//                }).zipWith(currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer), (completableObservable, currentClockStateObservable) -> {
+//                    return currentClockStateObservable;
+//                }).concatMap(currentClockState -> {
+//                    return Observable.just(
+//                            new TickResult(
+//                                    currentClockState.getLabelSeconds(),
+//                                    currentClockState.getLabelMinutes(),
+//                                    currentClockState.getLabelHours(),
+//                                    currentClockState,
+//                                    action.getColumnType(),
+//                                    action.getTimerType()
+//                            )
+//                    );
+//                });
             });
         };
 

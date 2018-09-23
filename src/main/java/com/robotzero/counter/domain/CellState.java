@@ -30,6 +30,14 @@ public class CellState {
         return previousPosition;
     }
 
+    public Direction getCurrentDirection() {
+        return currentDirection == null ? new Direction(columnType, DirectionType.VOID) : currentDirection;
+    }
+
+    public Direction getPreviousDirection() {
+        return previousDirection == null ? new Direction(columnType, DirectionType.VOID) : previousDirection;
+    }
+
     public ColumnType getColumnType() {
         return columnType;
     }
@@ -39,7 +47,7 @@ public class CellState {
     }
 
     public CellState createNew(double newPosition, double previousPosition, Direction newDirection) {
-        return new CellState(this.id, newPosition, previousPosition, newDirection, this.currentDirection, this.columnType);
+        return new CellState(this.id, newPosition, previousPosition, newDirection, this.getPreviousDirection(), this.columnType);
     }
 
     @Override
