@@ -1,6 +1,6 @@
 package com.robotzero.unit.counter.domain;
 
-import com.robotzero.counter.domain.Location;
+import com.robotzero.counter.service.LocationService;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 @RunWith(DataProviderRunner.class)
 public class LocationTest {
 
-    private Location location = new Location();
+    private LocationService location = new LocationService();
 
     @DataProvider
     public static Object[][] fromYValues() {

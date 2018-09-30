@@ -69,7 +69,7 @@ public class ResetService {
 
     private List<Long> howManyTicks() {
         LocalTime toReset = timeToReset();
-        CurrentClockState currentClockState = Optional.ofNullable(this.currentClockState).orElseGet(() -> new CurrentClockState(toReset.getSecond(), toReset.getMinute(), toReset.getHour(), null, null, null, false, false, false, null, null, null, null));
+        CurrentClockState currentClockState = Optional.ofNullable(this.currentClockState).orElseGet(() -> new CurrentClockState(toReset.getSecond(), toReset.getMinute(), toReset.getHour(), null, null, null, false, false, false, null, null));
         long seconds = 0, minutes = 0, hours = 0;
         if (currentClockState.getMainClockState().getSecond() != toReset.getSecond()) {
             seconds = ChronoUnit.SECONDS.between(toReset, toReset.withSecond(currentClockState.getMainClockState().getSecond())) > baseMiddle ? -1 * (baseBottom + (baseTop - ChronoUnit.SECONDS.between(toReset, toReset.withSecond(currentClockState.getMainClockState().getSecond())))) : ChronoUnit.SECONDS.between(toReset, toReset.withSecond(currentClockState.getMainClockState().getSecond()));

@@ -1,10 +1,12 @@
 package com.robotzero.counter.infrastructure.memory;
 
 import com.robotzero.counter.domain.*;
+import com.robotzero.counter.service.LocationService;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
@@ -24,7 +26,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     }
 
     @Override
-    public void update(Location location, Direction direction, ColumnType columnType) {
+    public void update(LocationService locationService, Direction direction, ColumnType columnType) {
         currentCellsState.entrySet().stream().filter(entry -> entry.getKey() == columnType)
                 .flatMap(entry -> {
                     return entry.getValue().entrySet().stream();
@@ -32,10 +34,17 @@ public class InMemoryCellStateRepository implements CellStateRepository {
                     return cellState.getValue();
                 })
                 .forEach(entry -> {
-                    double fromY = location.calculateFromY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getCurrentPosition());
-                    double toY = location.calculateToY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getCurrentPosition());
-                    this.update(columnType, entry.getId(), fromY, toY, direction);
+                    double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getFromY());
+                    double toY = locationService.calculateToY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
+                    this.update(columnType, entry.getId(), toY, fromY, direction);
                 });
+    }
+
+    @Override
+    public Optional<CellState> get(int id) {
+        return currentCellsState.entrySet().stream().map(entrySet -> {
+            return entrySet.getValue();
+        }).map(entry -> entry.get(id)).findAny();
     }
 
     @Override
@@ -43,6 +52,11 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         return currentCellsState.entrySet().stream().flatMap(entry -> {
             return entry.getValue().entrySet().stream().map(ent -> ent.getValue()).filter(CellState::isChangeable);
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Integer, CellState> getAll(ColumnType columnType) {
+        return this.currentCellsState.get(columnType);
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
 import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.Location;
+import com.robotzero.counter.service.LocationService;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
@@ -94,7 +94,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, Location locationService, Map<TimerType, ClockMode> clockModes, Subject<CurrentClockState> clockState, DirectionService directionService) {
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, LocationService locationService, Map<TimerType, ClockMode> clockModes, Subject<CurrentClockState> clockState, DirectionService directionService) {
         return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, clockState, directionService);
     }
 
@@ -155,7 +155,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Location locationService() {
-        return new Location();
+    public LocationService locationService() {
+        return new LocationService();
     }
 }

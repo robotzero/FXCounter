@@ -7,10 +7,14 @@ import com.robotzero.counter.event.action.Action;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.TickAction;
-import com.robotzero.counter.event.result.*;
+import com.robotzero.counter.event.result.ClickResult;
+import com.robotzero.counter.event.result.CurrentViewData;
+import com.robotzero.counter.event.result.Result;
+import com.robotzero.counter.event.result.TickResult;
 import com.robotzero.counter.service.*;
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.Single;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -23,7 +27,6 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -145,24 +148,31 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.concatMap(action -> {
-                return clockService.tick(action).toObservable()
-                        .zipWith(
-                                currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer),
-                                (completableObservable, currentClockStateObservable) -> {
-                                    return currentClockStateObservable;
-                                }
-                ).concatMap(currentClockState -> {
+                clockService.tick(action);
+                return currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer).concatMap(currentClockState -> {
                     return Observable.just(
                             new TickResult(
-                                    currentClockState.getLabelSeconds(),
-                                    currentClockState.getLabelMinutes(),
-                                    currentClockState.getLabelHours(),
                                     currentClockState,
                                     action.getColumnType(),
                                     action.getTimerType()
                             )
                     );
                 });
+//                return clockService.tick(action)
+//                        .zipWith(
+//                                currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer),
+//                                (completableObservable, currentClockStateObservable) -> {
+//                                    return currentClockStateObservable;
+//                                }
+//                ).concatMap(currentClockState -> {
+//                    return Observable.just(
+//                            new TickResult(
+//                                    currentClockState,
+//                                    action.getColumnType(),
+//                                    action.getTimerType()
+//                            )
+//                    );
+//                });
 //                Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
 //                Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
 //                Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
@@ -245,26 +255,34 @@ public class ClockPresenter implements Initializable {
             Optional.of(currentViewState).filter(CurrentViewState::isTick).ifPresent(state -> {
                 TickResult tickResult = currentViewState.getData().getTickResult();
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickSecond()).ifPresent(result -> {
-                    Optional<Text> secondsLabel = Optional.ofNullable(tickResult.getSecondsCell());
-                    secondsLabel.ifPresent(textProperty -> {
-                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getSecond()));
-                        timerColumns.get(tickResult.getColumnType()).play(tickResult.getLabels().getDirectionSeconds().getDirectionType(), tickResult.getDuration());
+                    List<CellState> cellStates = result.getLabels().getCellStates();
+                    Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.SECONDS).findFirst();
+//                    Optional<Text> secondsLabel = Optional.ofNullable(tickResult.getSecondsCell());
+                    cellState.ifPresent(cs -> {
+                        int vboxId =  cs.getId();
+                        Column column = this.timerColumns.get(ColumnType.SECONDS);
+                        column.setLabel(vboxId, tickResult.getLabels().getSecond());
+                        this.cellStateService.getAll(ColumnType.SECONDS).entrySet().stream().map(entry -> entry.getValue()).forEach(cellState1 -> {
+//                            System.out.println("Previous " + cellState1.getPreviousPosition() + " id" + cellState1.getId());
+//                            System.out.println("CUrrent " + cellState1.getCurrentPosition() + " id" + cellState1.getId());
+                            column.play(cellState1, tickResult.getDuration());
+                        });
                     });
                 });
-                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
-                    Optional<Text> minutesLabel = Optional.ofNullable(tickResult.getMinutesCell());
-                    minutesLabel.ifPresent(textProperty -> {
-                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getMinute()));
-                        timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirectionMinutes().getDirectionType(), tickResult.getDuration());
-                    });
-                });
-                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
-                    Optional<Text> hoursLabel = Optional.ofNullable(tickResult.getHoursCell());
-                    hoursLabel.ifPresent(textProperty -> {
-                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getHour()));
-                        timerColumns.get(ColumnType.HOURS).play(tickResult.getLabels().getDirectionHours().getDirectionType(), tickResult.getDuration());
-                    });
-                });
+//                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
+//                    Optional<Text> minutesLabel = Optional.ofNullable(tickResult.getMinutesCell());
+//                    minutesLabel.ifPresent(textProperty -> {
+//                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getMinute()));
+//                        timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirectionMinutes().getDirectionType(), tickResult.getDuration());
+//                    });
+//                });
+//                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
+//                    Optional<Text> hoursLabel = Optional.ofNullable(tickResult.getHoursCell());
+//                    hoursLabel.ifPresent(textProperty -> {
+//                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getHour()));
+//                        timerColumns.get(ColumnType.HOURS).play(tickResult.getLabels().getDirectionHours().getDirectionType(), tickResult.getDuration());
+//                    });
+//                });
             });
         }, error -> {
             System.out.println(error.getMessage());

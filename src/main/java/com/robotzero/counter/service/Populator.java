@@ -34,7 +34,7 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    return new Cell(vbox, new Location(), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
+                    return new Cell(vbox, new LocationService(), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
                 })
                 .collect(Collectors.groupingBy(Cell::getColumnType));
 
@@ -59,8 +59,8 @@ public class Populator {
                     VBox vBox = (VBox) node;
                     return new CellState(
                             Integer.valueOf(vBox.getId()),
-                            vBox.getTranslateY(),
-                            0,
+                            new Location(vBox.getTranslateY(), 0),
+                            new Location(0, 0),
                             new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
                             new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
                             ColumnType.valueOf(node.getParent().getId().toUpperCase())

@@ -2,32 +2,32 @@ package com.robotzero.counter.domain;
 
 public class CellState {
 
-    private final double currentPosition;
-    private final double previousPosition;
-    private final ColumnType columnType;
+    private final Location newLocation;
+    private final Location previousLocation;
     private final Direction currentDirection;
     private final Direction previousDirection;
+    private final ColumnType columnType;
     private final int id;
 
-    public CellState(int id, double currentPosition, double previousPosition, Direction currentDirection, Direction previousDirection, ColumnType columnType) {
+    public CellState(int id, Location newLocation, Location previousLocation, Direction currentDirection, Direction previousDirection, ColumnType columnType) {
         this.id = id;
-        this.currentPosition = currentPosition;
-        this.previousPosition = previousPosition;
+        this.previousLocation = previousLocation;
+        this.newLocation = newLocation;
         this.columnType = columnType;
         this.previousDirection = previousDirection;
         this.currentDirection = currentDirection;
     }
 
-    public double getCurrentPosition() {
-        return currentPosition;
+    public Location getNewLocation() {
+        return newLocation;
+    }
+
+    public Location getPreviousLocation() {
+        return previousLocation;
     }
 
     public boolean isChangeable() {
-        return currentPosition == 90 || currentPosition == 270;
-    }
-
-    public double getPreviousPosition() {
-        return previousPosition;
+        return newLocation.getFromY() == 90 || newLocation.getFromY() == 270;
     }
 
     public Direction getCurrentDirection() {
@@ -46,15 +46,15 @@ public class CellState {
         return id;
     }
 
-    public CellState createNew(double newPosition, double previousPosition, Direction newDirection) {
-        return new CellState(this.id, newPosition, previousPosition, newDirection, this.getPreviousDirection(), this.columnType);
+    public CellState createNew(double fromY, double toY, Direction newDirection) {
+        return new CellState(this.id, new Location(fromY, toY), this.getNewLocation(),  newDirection, this.getPreviousDirection(), this.columnType);
     }
 
     @Override
     public String toString() {
         return "CellState{" +
-                "currentPosition=" + currentPosition +
-                "previousPosition=" + previousPosition +
+                "newLocation=" + newLocation +
+                "previousLocation" + previousLocation +
                 "previousDirection=" + previousDirection +
                 "currentDirection=" + currentDirection +
                 ", columnType=" + columnType +

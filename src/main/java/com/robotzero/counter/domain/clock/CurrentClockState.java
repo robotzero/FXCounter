@@ -1,9 +1,10 @@
 package com.robotzero.counter.domain.clock;
 
+import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.Direction;
-import javafx.scene.text.Text;
 
 import java.time.LocalTime;
+import java.util.List;
 
 public class CurrentClockState {
 
@@ -16,12 +17,10 @@ public class CurrentClockState {
     private final boolean tickSecond;
     private final boolean tickMinute;
     private final boolean tickHour;
-    private final Text labelSeconds;
-    private final Text labelMinutes;
-    private final Text labelHours;
+    private final List<CellState> cellStates;
     private final LocalTime mainClockState;
 
-    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction directionSeconds, Direction directionMinutes, Direction directionHours, boolean tickSecond, boolean tickMinute, boolean tickHour, Text labelSeconds, Text labelMinutes, Text labelHours, LocalTime mainClockState) {
+    public CurrentClockState(Integer second, Integer minute, Integer hour, Direction directionSeconds, Direction directionMinutes, Direction directionHours, boolean tickSecond, boolean tickMinute, boolean tickHour, List<CellState> cellStates, LocalTime mainClockState) {
         this.second = second;
         this.minute = minute;
         this.hour = hour;
@@ -31,9 +30,7 @@ public class CurrentClockState {
         this.tickSecond = tickSecond;
         this.tickMinute = tickMinute;
         this.tickHour = tickHour;
-        this.labelSeconds = labelSeconds;
-        this.labelMinutes = labelMinutes;
-        this.labelHours = labelHours;
+        this.cellStates = cellStates;
         this.mainClockState = mainClockState;
     }
 
@@ -73,16 +70,8 @@ public class CurrentClockState {
         return directionHours;
     }
 
-    public Text getLabelSeconds() {
-        return labelSeconds;
-    }
-
-    public Text getLabelMinutes() {
-        return labelMinutes;
-    }
-
-    public Text getLabelHours() {
-        return labelHours;
+    public List<CellState> getCellStates() {
+        return cellStates;
     }
 
     public LocalTime getMainClockState() {

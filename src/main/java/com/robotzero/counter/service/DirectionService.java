@@ -35,11 +35,11 @@ public class DirectionService {
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.UP && currentCellState.getCurrentPosition() == -90)) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.UP && currentCellState.getNewLocation().getFromY() == -90)) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.UP);
-            } else if (currentCellState.getCurrentPosition() == -90) {
+            } else if (currentCellState.getNewLocation().getFromY() == -90) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
-            } else if (currentCellState.getCurrentPosition() == 270) {
+            } else if (currentCellState.getNewLocation().getFromY() == 270) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
             }
         } else {
@@ -49,11 +49,11 @@ public class DirectionService {
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && currentCellState.getCurrentPosition() == 270)) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && currentCellState.getNewLocation().getFromY() == 270)) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
-            } else if (currentCellState.getCurrentPosition() == -90) {
+            } else if (currentCellState.getNewLocation().getFromY() == -90) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
-            } else if (currentCellState.getCurrentPosition() == 270) {
+            } else if (currentCellState.getNewLocation().getFromY() == 270) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
             }
         }

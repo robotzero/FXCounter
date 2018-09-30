@@ -3,9 +3,9 @@ package com.robotzero.counter.domain.clock;
 import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
+import com.robotzero.counter.service.LocationService;
 import io.reactivex.Completable;
 import io.reactivex.subjects.Subject;
-import javafx.scene.text.Text;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
@@ -25,7 +25,7 @@ public class LocalTimeClock implements Clock {
     private final CellStateRepository cellStateRepository;
     private final Subject<CurrentClockState> currectClockStateObservable;
     private final DirectionService directionService;
-    private final Location locationService;
+    private final LocationService locationService;
     private final Map<TimerType, ClockMode> clockmodes;
 
     private Comparator<Integer> clockSort = (num1, num2) -> {
@@ -57,7 +57,7 @@ public class LocalTimeClock implements Clock {
             ClockRepository clockRepository,
             TimerRepository timerRepository,
             CellStateRepository cellStateRepository,
-            Location locationService,
+            LocationService locationService,
             Map<TimerType, ClockMode> clockModes,
             Subject<CurrentClockState> currentClockStateObservable,
             DirectionService directionService
@@ -81,6 +81,7 @@ public class LocalTimeClock implements Clock {
     }
 
     public Completable tick(TickAction action) {
+        System.out.println("TICK ");
         List<CellState> cellStates = cellStateRepository.getChangeCellStates();
         List<Direction> directions = cellStates.stream().map(cellState -> {
             if (cellState.getColumnType() == ColumnType.SECONDS && action.getColumnType() == ColumnType.SECONDS) {
@@ -89,6 +90,8 @@ public class LocalTimeClock implements Clock {
                 cellStateRepository.update(locationService, directionSeconds, cellState.getColumnType());
                 return directionSeconds;
             }
+            return new Direction(cellState.getColumnType(), DirectionType.VOID);
+        }).collect(Collectors.toList());
 
 //            if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK && cellState.getColumnType() == ColumnType.MINUTES) || (action.getColumnType() == ColumnType.MINUTES && cellState.getColumnType() == ColumnType.MINUTES)) {
 //                Direction directionMinutes = directionService.calculateDirection(cellState, action.getDelta());
@@ -101,8 +104,6 @@ public class LocalTimeClock implements Clock {
 //                clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellState.getColumnType(), directionHours.getDirectionType());
 //                return directionHours;
 //            }
-            return new Direction(cellState.getColumnType(), DirectionType.VOID);
-        }).collect(Collectors.toList());
 
 //        List<Direction> directions = cells.stream().map(cell -> {
 //            if (cell.getColumnType() == ColumnType.SECONDS && action.getColumnType() == ColumnType.SECONDS) {
@@ -136,9 +137,7 @@ public class LocalTimeClock implements Clock {
                 action.getColumnType() == ColumnType.SECONDS,
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
                 directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
-                null,
-                null,
-                null,
+                cellStates,
                 this.clockRepository.get(ColumnType.MAIN)
         ));
         return Completable.complete();
