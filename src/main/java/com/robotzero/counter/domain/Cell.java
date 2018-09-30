@@ -46,7 +46,7 @@ public class Cell {
         if (cellState.getId() == Integer.valueOf(rectangle.getId())) {
             translateTransition.setDuration(duration);
             translateTransition.setFromY(cellState.getNewLocation().getFromY());
-            translateTransition.setToY(cellState.getNewLocation().getFromY());
+            translateTransition.setToY(cellState.getNewLocation().getToY());
             translateTransition.play();
         }
     }

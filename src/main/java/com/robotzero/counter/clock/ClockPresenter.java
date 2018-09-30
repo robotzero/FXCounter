@@ -142,23 +142,34 @@ public class ClockPresenter implements Initializable {
             return timerService.operateTimer(action);
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
-        ObservableTransformer<CurrentClockState, CurrentClockState> currentClockStateTickResultObservableTransformer = currentClockStateObservable -> currentClockStateObservable.publish(currentClockState -> currentClockState).flatMap(currentClockState -> {
+        ObservableTransformer<CurrentClockState, CurrentClockState> currentClockStateTickResultObservableTransformer = currentClockStateObservable -> currentClockStateObservable.publish(currentClockState -> currentClockState).concatMap(currentClockState -> {
             return Single.just(currentClockState).toObservable();
         });
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
-            return tickAction.concatMap(action -> {
-                clockService.tick(action);
-                return currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer).concatMap(currentClockState -> {
+            return tickAction.flatMap(action -> {
+                return clockService.tick(action).andThen(currentClockStatePublishSubject.take(1).distinct().flatMap(currentClockState -> {
+                    // System.out.println(currentClockState);
                     return Observable.just(
                             new TickResult(
                                     currentClockState,
                                     action.getColumnType(),
                                     action.getTimerType()
-                            )
-                    );
-                });
-//                return clockService.tick(action)
+                            ));
+                }));
+//                return currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer).publish(shared -> {
+//                    return shared.concatMap(currentClockState -> {
+//                        System.out.println("TICKs");
+//                        return Observable.just(
+//                                new TickResult(
+//                                        currentClockState,
+//                                        action.getColumnType(),
+//                                        action.getTimerType()
+//                                )
+//                        );
+//                    });
+//                });
+//                return clockService.tick(action).toObservable()
 //                        .zipWith(
 //                                currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer),
 //                                (completableObservable, currentClockStateObservable) -> {
@@ -196,7 +207,6 @@ public class ClockPresenter implements Initializable {
         };
 
         Observable<Action> actions = mainViewEvents.compose(actionTransformer);
-
         Observable<Result> results = actions.publish(action -> {
             return Observable.merge(
                     action.ofType(ClickAction.class).compose(clickActionTransformer),

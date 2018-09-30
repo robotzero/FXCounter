@@ -59,8 +59,8 @@ public class Populator {
                     VBox vBox = (VBox) node;
                     return new CellState(
                             Integer.valueOf(vBox.getId()),
-                            new Location(vBox.getTranslateY(), 0),
-                            new Location(0, 0),
+                            new Location(vBox.getTranslateY(), vBox.getTranslateY()),
+                            new Location(vBox.getTranslateY(), vBox.getTranslateY()),
                             new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
                             new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
                             ColumnType.valueOf(node.getParent().getId().toUpperCase())

@@ -81,7 +81,6 @@ public class LocalTimeClock implements Clock {
     }
 
     public Completable tick(TickAction action) {
-        System.out.println("TICK ");
         List<CellState> cellStates = cellStateRepository.getChangeCellStates();
         List<Direction> directions = cellStates.stream().map(cellState -> {
             if (cellState.getColumnType() == ColumnType.SECONDS && action.getColumnType() == ColumnType.SECONDS) {

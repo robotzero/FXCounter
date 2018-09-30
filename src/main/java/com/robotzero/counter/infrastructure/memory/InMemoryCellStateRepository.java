@@ -34,9 +34,9 @@ public class InMemoryCellStateRepository implements CellStateRepository {
                     return cellState.getValue();
                 })
                 .forEach(entry -> {
-                    double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getFromY());
+                    double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
                     double toY = locationService.calculateToY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
-                    this.update(columnType, entry.getId(), toY, fromY, direction);
+                    this.update(columnType, entry.getId(), fromY, toY, direction);
                 });
     }
 
