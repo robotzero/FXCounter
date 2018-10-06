@@ -2,7 +2,6 @@ package com.robotzero.counter.service;
 
 import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.CellStateRepository;
-import com.robotzero.counter.domain.Column;
 import com.robotzero.counter.domain.ColumnType;
 
 import java.util.Map;

@@ -22,6 +22,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         CellState cellState = currentCellsState.get(columnType).get(id);
         CellState newCellState = cellState.createNew(position, oldPosition, direction);
         Map<Integer, CellState> currentList = currentCellsState.get(columnType);
+        currentList.remove(id);
         currentList.put(id, newCellState);
     }
 
@@ -36,6 +37,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
                 .forEach(entry -> {
                     double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
                     double toY = locationService.calculateToY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
+                    System.out.println("Cell with " + entry.getId() + " is updated to " + "FROM Y " + fromY + " TO Y " + toY);
                     this.update(columnType, entry.getId(), fromY, toY, direction);
                 });
     }

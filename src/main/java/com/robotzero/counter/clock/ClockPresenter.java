@@ -14,7 +14,6 @@ import com.robotzero.counter.event.result.TickResult;
 import com.robotzero.counter.service.*;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
-import io.reactivex.Single;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -142,67 +141,11 @@ public class ClockPresenter implements Initializable {
             return timerService.operateTimer(action);
         }).map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
-        ObservableTransformer<CurrentClockState, CurrentClockState> currentClockStateTickResultObservableTransformer = currentClockStateObservable -> currentClockStateObservable.publish(currentClockState -> currentClockState).concatMap(currentClockState -> {
-            return Single.just(currentClockState).toObservable();
-        });
-
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
-                return clockService.tick(action).andThen(currentClockStatePublishSubject.take(1).distinct().flatMap(currentClockState -> {
-                    // System.out.println(currentClockState);
-                    return Observable.just(
-                            new TickResult(
-                                    currentClockState,
-                                    action.getColumnType(),
-                                    action.getTimerType()
-                            ));
+                return clockService.tick(action).andThen(currentClockStatePublishSubject.take(1).flatMap(currentClockState -> {
+                    return Observable.just(new TickResult(currentClockState, action.getColumnType(), action.getTimerType()));
                 }));
-//                return currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer).publish(shared -> {
-//                    return shared.concatMap(currentClockState -> {
-//                        System.out.println("TICKs");
-//                        return Observable.just(
-//                                new TickResult(
-//                                        currentClockState,
-//                                        action.getColumnType(),
-//                                        action.getTimerType()
-//                                )
-//                        );
-//                    });
-//                });
-//                return clockService.tick(action).toObservable()
-//                        .zipWith(
-//                                currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer),
-//                                (completableObservable, currentClockStateObservable) -> {
-//                                    return currentClockStateObservable;
-//                                }
-//                ).concatMap(currentClockState -> {
-//                    return Observable.just(
-//                            new TickResult(
-//                                    currentClockState,
-//                                    action.getColumnType(),
-//                                    action.getTimerType()
-//                            )
-//                    );
-//                });
-//                Observable<ChangeCell> secondsChangeCell = timerColumns.get(ColumnType.SECONDS).getChangeCell();
-//                Observable<ChangeCell> minutesChangeCell = timerColumns.get(ColumnType.MINUTES).getChangeCell();
-//                Observable<ChangeCell> hoursChangeCell = timerColumns.get(ColumnType.HOURS).getChangeCell();
-//                return Observable.zip(secondsChangeCell, minutesChangeCell, hoursChangeCell, (secondsCell, minutesCell, hoursCell) -> {
-//                   return clockService.tick(action, List.of(secondsCell, minutesCell, hoursCell));
-//                }).zipWith(currentClockStatePublishSubject.compose(currentClockStateTickResultObservableTransformer), (completableObservable, currentClockStateObservable) -> {
-//                    return currentClockStateObservable;
-//                }).concatMap(currentClockState -> {
-//                    return Observable.just(
-//                            new TickResult(
-//                                    currentClockState.getLabelSeconds(),
-//                                    currentClockState.getLabelMinutes(),
-//                                    currentClockState.getLabelHours(),
-//                                    currentClockState,
-//                                    action.getColumnType(),
-//                                    action.getTimerType()
-//                            )
-//                    );
-//                });
             });
         };
 
@@ -267,32 +210,41 @@ public class ClockPresenter implements Initializable {
                 Optional.of(tickResult).filter(result -> result.getLabels().shouldTickSecond()).ifPresent(result -> {
                     List<CellState> cellStates = result.getLabels().getCellStates();
                     Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.SECONDS).findFirst();
-//                    Optional<Text> secondsLabel = Optional.ofNullable(tickResult.getSecondsCell());
                     cellState.ifPresent(cs -> {
                         int vboxId =  cs.getId();
                         Column column = this.timerColumns.get(ColumnType.SECONDS);
                         column.setLabel(vboxId, tickResult.getLabels().getSecond());
                         this.cellStateService.getAll(ColumnType.SECONDS).entrySet().stream().map(entry -> entry.getValue()).forEach(cellState1 -> {
-//                            System.out.println("Previous " + cellState1.getPreviousPosition() + " id" + cellState1.getId());
-//                            System.out.println("CUrrent " + cellState1.getCurrentPosition() + " id" + cellState1.getId());
                             column.play(cellState1, tickResult.getDuration());
                         });
                     });
                 });
-//                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
-//                    Optional<Text> minutesLabel = Optional.ofNullable(tickResult.getMinutesCell());
-//                    minutesLabel.ifPresent(textProperty -> {
-//                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getMinute()));
-//                        timerColumns.get(ColumnType.MINUTES).play(tickResult.getLabels().getDirectionMinutes().getDirectionType(), tickResult.getDuration());
-//                    });
-//                });
-//                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
-//                    Optional<Text> hoursLabel = Optional.ofNullable(tickResult.getHoursCell());
-//                    hoursLabel.ifPresent(textProperty -> {
-//                        textProperty.textProperty().setValue(String.format("%02d", tickResult.getLabels().getHour()));
-//                        timerColumns.get(ColumnType.HOURS).play(tickResult.getLabels().getDirectionHours().getDirectionType(), tickResult.getDuration());
-//                    });
-//                });
+                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
+                    List<CellState> cellStates = result.getLabels().getCellStates();
+                    Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.MINUTES).findFirst();
+                    cellState.ifPresent(cs -> {
+                        int vboxId =  cs.getId();
+                        Column column = this.timerColumns.get(ColumnType.MINUTES);
+                        column.setLabel(vboxId, tickResult.getLabels().getMinute());
+                        this.cellStateService.getAll(ColumnType.MINUTES).entrySet().stream().map(entry -> entry.getValue()).forEach(cellState1 -> {
+                            column.play(cellState1, tickResult.getDuration());
+                        });
+                    });
+                });
+
+                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
+                    List<CellState> cellStates = result.getLabels().getCellStates();
+                    Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.HOURS).findFirst();
+                    cellState.ifPresent(cs -> {
+                        int vboxId =  cs.getId();
+                        Column column = this.timerColumns.get(ColumnType.HOURS);
+                        column.setLabel(vboxId, tickResult.getLabels().getHour());
+                        this.cellStateService.getAll(ColumnType.HOURS).entrySet().stream().map(entry -> entry.getValue()).forEach(cellState1 -> {
+                            column.play(cellState1, tickResult.getDuration());
+                        });
+                    });
+                });
+
             });
         }, error -> {
             System.out.println(error.getMessage());

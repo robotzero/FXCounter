@@ -27,7 +27,35 @@ public class CellState {
     }
 
     public boolean isChangeable() {
-        return newLocation.getFromY() == 90 || newLocation.getFromY() == 270;
+        if (newLocation.getFromY() == -90 || newLocation.getFromY() == 270) {
+        }
+        if (columnType == ColumnType.SECONDS) {
+                System.out.println("==========");
+                System.out.println(this);
+                System.out.println("==========");
+                System.out.println(newLocation.getFromY());
+                System.out.println(getCurrentDirection().getDirectionType());
+        }
+
+        if (getCurrentDirection().getDirectionType() == DirectionType.VOID) {
+            return newLocation.getFromY() == -90;
+        }
+
+        if (getCurrentDirection().getDirectionType() == DirectionType.UP || getCurrentDirection().getDirectionType() == DirectionType.STARTUP) {
+            return newLocation.getFromY() == 270;
+        }
+
+        if (getCurrentDirection().getDirectionType() == DirectionType.STARTDOWN) {
+            return newLocation.getFromY() == -90;
+        }
+
+        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN) {
+            return newLocation.getFromY() == 270;
+        }
+
+        return false;
+
+//        return newLocation.getFromY() == -90 || newLocation.getFromY() == 270;
     }
 
     public Direction getCurrentDirection() {

@@ -16,6 +16,7 @@ import com.robotzero.counter.infrastructure.memory.InMemoryCellStateRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

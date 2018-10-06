@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ public class Populator {
                             ColumnType.valueOf(node.getParent().getId().toUpperCase())
                     );
                 }).collect(Collectors.groupingBy(CellState::getColumnType, Collector.of(
-                        HashMap::new,
+                        ConcurrentHashMap::new,
                         (map, cellState) -> {
                             map.put(cellState.getId(), cellState);
                         }, (left, right) -> {
