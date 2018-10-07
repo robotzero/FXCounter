@@ -20,5 +20,5 @@ public interface CellStateRepository {
 
     Map<Integer, CellState> getAll(ColumnType columnType);
 
-    List<CellState> getPreviousChangeCells();
+//    List<CellState> getPreviousChangeCells();
 }

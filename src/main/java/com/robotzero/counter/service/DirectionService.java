@@ -25,19 +25,22 @@ public class DirectionService {
     }
 
     public Direction calculateDirection(CellState currentCellState, double delta) {
+        System.out.println("delta" + delta);
         Direction direction = null;
 //        DirectionType previousDirection = previousDirections.get(columnType);
         DirectionType previousDirection = currentCellState.getCurrentDirection().getDirectionType();
-        System.out.println(delta);
 //        direction = new Direction(currentCellState.getColumnType(), DirectionType.STARTUP);
 //        System.out.println("=================");
 //        System.out.println("Previous direction " + previousDirection + " " + currentCellState.toString());
         if (delta < 0) {
             if (previousDirection == DirectionType.VOID) {
+                System.out.println(currentCellState.getNewLocation());
+                System.out.println(currentCellState.getPreviousLocation());
+                System.out.println(currentCellState.getId());
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.STARTUP);
                 previousDirections.put(currentCellState.getColumnType(), direction.getDirectionType());
-                System.out.println("New direction " + direction.getDirectionType() + " " + currentCellState.toString());
-                System.out.println("=================");
+                //System.out.println("New direction " + direction.getDirectionType() + " " + currentCellState.toString());
+                //System.out.println("=================");
                 return direction;
             }
 
@@ -55,20 +58,26 @@ public class DirectionService {
             if (previousDirection == DirectionType.VOID) {
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.STARTDOWN);
                 previousDirections.put(currentCellState.getColumnType(), direction.getDirectionType());
-                System.out.println("New direction " + direction.getDirectionType() + " " + currentCellState.toString());
-                System.out.println("=================");
+//                System.out.println(currentCellState.getNewLocation());
+//                System.out.println(currentCellState.getPreviousLocation());
+//                System.out.println(currentCellState.getId());
+//                System.out.println("New direction " + direction.getDirectionType() + " " + currentCellState.toString());
+//                System.out.println("=================");
                 return direction;
             }
 
-            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && (currentCellState.getPreviousLocation().getFromY() == 270))) {
+            if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && (currentCellState.getPreviousLocation().getFromY() == 180 || currentCellState.getPreviousLocation().getFromY() == -90))) {
                 System.out.println("BLAH");
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
             } else if (currentCellState.getNewLocation().getFromY() == -90) {
-                System.out.println("BLAH1");
-                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
+//                System.out.println("BLAH1");
+//                System.out.println(currentCellState.getNewLocation());
+//                System.out.println(currentCellState.getPreviousLocation());
+//                System.out.println(currentCellState.getId());
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
             } else if (currentCellState.getNewLocation().getFromY() == 270) {
                 System.out.println("BLAH2");
-                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
+                direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
             }
         }
 

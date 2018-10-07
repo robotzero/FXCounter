@@ -82,10 +82,8 @@ public class LocalTimeClock implements Clock {
     }
 
     public Completable tick(TickAction action) {
-        ++count;
-        System.out.println("count " + count);
         return Completable.fromRunnable(() -> {
-          List<CellState> cellStates = cellStateRepository.getPreviousChangeCells();
+          List<CellState> cellStates = cellStateRepository.getChangeCellStates();
 //        System.out.println("=====");
 //        System.out.println(cellStates);
 //        System.out.println("=====");
@@ -125,7 +123,7 @@ public class LocalTimeClock implements Clock {
                     action.getColumnType() == ColumnType.SECONDS,
                     directions.stream().filter(direction -> direction.getColumnType() == ColumnType.MINUTES).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
                     directions.stream().filter(direction -> direction.getColumnType() == ColumnType.HOURS).anyMatch(direction -> direction.getDirectionType() != DirectionType.VOID),
-                    cellStateRepository.getChangeCellStates(),
+                    this.cellStateRepository.getChangeCellStates(),
                     this.clockRepository.get(ColumnType.MAIN)
             ));
         });

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
     private Map<ColumnType, Map<Integer, CellState>> currentCellsState;
-    private List<CellState> previousChangeCells;
 
     @Override
     public void initialize(Map<ColumnType, Map<Integer, CellState>> currentCellsState) {
@@ -29,7 +28,6 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
     @Override
     public void update(LocationService locationService, Direction direction, ColumnType columnType) {
-        this.previousChangeCells = this.getChangeCellStates();
         currentCellsState.entrySet().stream().filter(entry -> entry.getKey() == columnType)
                 .flatMap(entry -> {
                     return entry.getValue().entrySet().stream();
@@ -46,15 +44,13 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
     @Override
     public Optional<CellState> get(int id) {
-        return currentCellsState.entrySet().stream().map(entrySet -> {
-            return entrySet.getValue();
-        }).map(entry -> entry.get(id)).findAny();
+        return currentCellsState.values().stream().map(entry -> entry.get(id)).findAny();
     }
 
     @Override
     public List<CellState> getChangeCellStates() {
         List<CellState> changeCellStates = currentCellsState.entrySet().stream().flatMap(entry -> {
-            return entry.getValue().entrySet().stream().map(ent -> ent.getValue()).filter(CellState::isChangeable);
+            return entry.getValue().values().stream().filter(CellState::isChangeable);
         }).collect(Collectors.toList());
 
         return changeCellStates;
@@ -65,13 +61,13 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         return this.currentCellsState.get(columnType);
     }
 
-    @Override
-    public List<CellState> getPreviousChangeCells() {
-        if (this.previousChangeCells == null) {
-            return getChangeCellStates();
-        }
-        return previousChangeCells;
-    }
+//    @Override
+//    public List<CellState> getPreviousChangeCells() {
+//        if (this.previousChangeCells == null) {
+//            return getChangeCellStates();
+//        }
+//        return previousChangeCells;
+//    }
 
     @Override
     public String toString() {

@@ -27,14 +27,12 @@ public class CellState {
     }
 
     public boolean isChangeable() {
-        if (newLocation.getFromY() == -90 || newLocation.getFromY() == 270) {
-        }
         if (columnType == ColumnType.SECONDS) {
                 System.out.println("==========");
                 System.out.println(this);
-                System.out.println("==========");
                 System.out.println(newLocation.getFromY());
                 System.out.println(getCurrentDirection().getDirectionType());
+                System.out.println("==========");
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.VOID) {
@@ -46,11 +44,19 @@ public class CellState {
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.STARTDOWN) {
+            return newLocation.getFromY() == 180;
+        }
+
+        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() == DirectionType.STARTDOWN) {
+            return newLocation.getFromY() == 180;
+        }
+
+        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() != DirectionType.STARTDOWN) {
             return newLocation.getFromY() == -90;
         }
 
-        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN) {
-            return newLocation.getFromY() == 270;
+        if (getCurrentDirection().getDirectionType() == DirectionType.SWITCHDOWN && getPreviousDirection().getDirectionType() == DirectionType.UP){
+            return newLocation.getFromY() == 180;
         }
 
         return false;
