@@ -27,6 +27,7 @@ public class LocalTimeClock implements Clock {
     private final DirectionService directionService;
     private final LocationService locationService;
     private final Map<TimerType, ClockMode> clockmodes;
+    private int count;
 
     private Comparator<Integer> clockSort = (num1, num2) -> {
         return num1.equals(num2) ? 0 : num1 == 0 ? -1 : num1 > num2 ? -1 : 1;
@@ -81,8 +82,10 @@ public class LocalTimeClock implements Clock {
     }
 
     public Completable tick(TickAction action) {
+        ++count;
+        System.out.println("count " + count);
         return Completable.fromRunnable(() -> {
-            List<CellState> cellStates = cellStateRepository.getChangeCellStates();
+          List<CellState> cellStates = cellStateRepository.getPreviousChangeCells();
 //        System.out.println("=====");
 //        System.out.println(cellStates);
 //        System.out.println("=====");
@@ -111,7 +114,7 @@ public class LocalTimeClock implements Clock {
                 return new Direction(cellState.getColumnType(), DirectionType.VOID);
             }).collect(Collectors.toList());
 
-            directions.stream().forEach(c -> System.out.println(c.getDirectionType() + " " + c.getColumnType()));
+//            directions.stream().forEach(c -> System.out.println(c.getDirectionType() + " " + c.getColumnType()));
             currectClockStateObservable.onNext(new CurrentClockState(
                     this.clockRepository.get(ColumnType.SECONDS).getSecond(),
                     this.clockRepository.get(ColumnType.MINUTES).getMinute(),

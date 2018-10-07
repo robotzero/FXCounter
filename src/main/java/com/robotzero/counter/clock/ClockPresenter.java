@@ -103,6 +103,7 @@ public class ClockPresenter implements Initializable {
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
+                .filter(event -> event.getDeltaY() != 0L)
                 .window(5)
                 .flatMapSingle(scrollEventObservable -> scrollEventObservable.reduce(new Object(), (reducedScrollEvent, nextScrollEvent) -> nextScrollEvent))
                 .cast(javafx.scene.input.ScrollEvent.class)

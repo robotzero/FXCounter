@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
     private Map<ColumnType, Map<Integer, CellState>> currentCellsState;
+    private List<CellState> previousChangeCells;
 
     @Override
     public void initialize(Map<ColumnType, Map<Integer, CellState>> currentCellsState) {
@@ -28,6 +29,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
     @Override
     public void update(LocationService locationService, Direction direction, ColumnType columnType) {
+        this.previousChangeCells = this.getChangeCellStates();
         currentCellsState.entrySet().stream().filter(entry -> entry.getKey() == columnType)
                 .flatMap(entry -> {
                     return entry.getValue().entrySet().stream();
@@ -37,7 +39,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
                 .forEach(entry -> {
                     double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
                     double toY = locationService.calculateToY(new SimpleIntegerProperty(90), direction.getDirectionType().getDelta(), entry.getNewLocation().getToY());
-                    System.out.println("Cell with " + entry.getId() + " is updated to " + "FROM Y " + fromY + " TO Y " + toY);
+//                    System.out.println("Cell with " + entry.getId() + " is updated to " + "FROM Y " + fromY + " TO Y " + toY);
                     this.update(columnType, entry.getId(), fromY, toY, direction);
                 });
     }
@@ -51,14 +53,24 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
     @Override
     public List<CellState> getChangeCellStates() {
-        return currentCellsState.entrySet().stream().flatMap(entry -> {
+        List<CellState> changeCellStates = currentCellsState.entrySet().stream().flatMap(entry -> {
             return entry.getValue().entrySet().stream().map(ent -> ent.getValue()).filter(CellState::isChangeable);
         }).collect(Collectors.toList());
+
+        return changeCellStates;
     }
 
     @Override
     public Map<Integer, CellState> getAll(ColumnType columnType) {
         return this.currentCellsState.get(columnType);
+    }
+
+    @Override
+    public List<CellState> getPreviousChangeCells() {
+        if (this.previousChangeCells == null) {
+            return getChangeCellStates();
+        }
+        return previousChangeCells;
     }
 
     @Override
