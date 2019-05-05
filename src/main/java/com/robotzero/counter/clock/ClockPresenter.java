@@ -77,7 +77,6 @@ public class ClockPresenter implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        startButton.textProperty().bind(new When(scrollMuteProperty.isEqualTo(new SimpleBooleanProperty(false))).then("Start").otherwise("Pause"));
         timerMute.bind(startButton.armedProperty());
         this.timerColumns = this.populator.timerColumns(this.gridPane);
         this.cellStateService.initialize(this.populator.cellState(gridPane));
