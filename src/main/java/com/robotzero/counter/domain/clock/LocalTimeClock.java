@@ -83,6 +83,7 @@ public class LocalTimeClock implements Clock {
 
     public Completable tick(TickAction action) {
         return Completable.fromRunnable(() -> {
+          //@TODO remove double call to cellStateRepository.getChangeCellStates();
           List<CellState> cellStates = cellStateRepository.getChangeCellStates();
 //        System.out.println("=====");
 //        System.out.println(cellStates);

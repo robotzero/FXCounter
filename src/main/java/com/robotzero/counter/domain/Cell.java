@@ -41,18 +41,10 @@ public class Cell {
     public void animate(CellState cellState, Duration duration) {
         if (cellState.getId() == Integer.valueOf(rectangle.getId())) {
             translateTransition.setDuration(duration);
-            translateTransition.setFromY(cellState.getNewLocation().getFromY());
-            translateTransition.setToY(cellState.getNewLocation().getToY());
+            translateTransition.setFromY(cellState.getCurrentLocation().getFromY());
+            translateTransition.setToY(cellState.getCurrentLocation().getToY());
             translateTransition.play();
         }
-    }
-
-    public Observable<ChangeCell> getChangeCell() {
-        if (rectangle.translateYProperty().get() == -90 || rectangle.translateYProperty().get() == 270) {
-            return Observable.just(new ChangeCell(this.label, rectangle.getTranslateY(), this.columnType));
-        }
-
-        return Observable.empty();
     }
 
     public void setLabel(int newLabel) {

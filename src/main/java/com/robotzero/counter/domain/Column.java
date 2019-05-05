@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Observable;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -16,14 +15,6 @@ public class Column {
 //                System.out.println(c);
 //            }
 //        });
-    }
-
-    public Observable<ChangeCell> getChangeCell() {
-        return columnList.stream().map(cell -> {
-            return cell.getChangeCell();
-        }).reduce(Observable.empty(), (current, next) -> {
-            return current.mergeWith(next);
-        });
     }
 
     public void play(DirectionType direction, Duration duration) {

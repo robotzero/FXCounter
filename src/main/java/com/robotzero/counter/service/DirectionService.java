@@ -7,14 +7,12 @@ import com.robotzero.counter.domain.DirectionType;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DirectionService {
 
     /* We have to track previous directions */
     private Map<ColumnType, DirectionType> previousDirections = new HashMap<>();
-    private Map<ColumnType, List<Double>> currentCellsState = new HashMap<>();
 
     @PostConstruct
     public void initialize() {
@@ -34,7 +32,7 @@ public class DirectionService {
 //        System.out.println("Previous direction " + previousDirection + " " + currentCellState.toString());
         if (delta < 0) {
             if (previousDirection == DirectionType.VOID) {
-                System.out.println(currentCellState.getNewLocation());
+                System.out.println(currentCellState.getCurrentLocation());
                 System.out.println(currentCellState.getPreviousLocation());
                 System.out.println(currentCellState.getId());
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.STARTUP);
@@ -47,10 +45,10 @@ public class DirectionService {
             if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.UP && currentCellState.getPreviousLocation().getFromY() == -90)) {
                 System.out.println("BLAH3");
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.UP);
-            } else if (currentCellState.getNewLocation().getFromY() == -90) {
+            } else if (currentCellState.getCurrentLocation().getFromY() == -90) {
                 System.out.println("BLAH4");
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
-            } else if (currentCellState.getNewLocation().getFromY() == 270) {
+            } else if (currentCellState.getCurrentLocation().getFromY() == 270) {
                 System.out.println("BLAH5");
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
             }
@@ -69,13 +67,13 @@ public class DirectionService {
             if (previousDirection.getDelta() == (int) (delta / Math.abs(delta)) || (previousDirection != DirectionType.DOWN && (currentCellState.getPreviousLocation().getFromY() == 180 || currentCellState.getPreviousLocation().getFromY() == -90))) {
                 System.out.println("BLAH");
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
-            } else if (currentCellState.getNewLocation().getFromY() == -90) {
+            } else if (currentCellState.getCurrentLocation().getFromY() == -90) {
 //                System.out.println("BLAH1");
 //                System.out.println(currentCellState.getNewLocation());
 //                System.out.println(currentCellState.getPreviousLocation());
 //                System.out.println(currentCellState.getId());
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
-            } else if (currentCellState.getNewLocation().getFromY() == 270) {
+            } else if (currentCellState.getCurrentLocation().getFromY() == 270) {
                 System.out.println("BLAH2");
                 direction = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
             }

@@ -2,24 +2,24 @@ package com.robotzero.counter.domain;
 
 public class CellState {
 
-    private final Location newLocation;
+    private final Location currentLocation;
     private final Location previousLocation;
     private final Direction currentDirection;
     private final Direction previousDirection;
     private final ColumnType columnType;
     private final int id;
 
-    public CellState(int id, Location newLocation, Location previousLocation, Direction currentDirection, Direction previousDirection, ColumnType columnType) {
+    public CellState(int id, Location currentLocation, Location previousLocation, Direction currentDirection, Direction previousDirection, ColumnType columnType) {
         this.id = id;
         this.previousLocation = previousLocation;
-        this.newLocation = newLocation;
+        this.currentLocation = currentLocation;
         this.columnType = columnType;
         this.previousDirection = previousDirection;
         this.currentDirection = currentDirection;
     }
 
-    public Location getNewLocation() {
-        return newLocation;
+    public Location getCurrentLocation() {
+        return currentLocation;
     }
 
     public Location getPreviousLocation() {
@@ -30,33 +30,33 @@ public class CellState {
         if (columnType == ColumnType.SECONDS) {
                 System.out.println("==========");
                 System.out.println(this);
-                System.out.println(newLocation.getFromY());
+                System.out.println(currentLocation.getFromY());
                 System.out.println(getCurrentDirection().getDirectionType());
                 System.out.println("==========");
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.VOID) {
-            return newLocation.getFromY() == -90;
+            return currentLocation.getFromY() == -90;
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.UP || getCurrentDirection().getDirectionType() == DirectionType.STARTUP) {
-            return newLocation.getFromY() == 270;
+            return currentLocation.getFromY() == 270;
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.STARTDOWN) {
-            return newLocation.getFromY() == 180;
+            return currentLocation.getFromY() == 180;
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() == DirectionType.STARTDOWN) {
-            return newLocation.getFromY() == 180;
+            return currentLocation.getFromY() == 180;
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() != DirectionType.STARTDOWN) {
-            return newLocation.getFromY() == -90;
+            return currentLocation.getFromY() == -90;
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.SWITCHDOWN && getPreviousDirection().getDirectionType() == DirectionType.UP){
-            return newLocation.getFromY() == 180;
+            return currentLocation.getFromY() == 180;
         }
 
         return false;
@@ -81,13 +81,13 @@ public class CellState {
     }
 
     public CellState createNew(double fromY, double toY, Direction newDirection) {
-        return new CellState(this.id, new Location(fromY, toY), this.getNewLocation(),  newDirection, this.getPreviousDirection(), this.columnType);
+        return new CellState(this.id, new Location(fromY, toY), this.currentLocation,  newDirection, this.getPreviousDirection(), this.columnType);
     }
 
     @Override
     public String toString() {
         return "CellState{" +
-                "newLocation=" + newLocation +
+                "currentLocation=" + currentLocation +
                 "previousLocation" + previousLocation +
                 "previousDirection=" + previousDirection +
                 "currentDirection=" + currentDirection +
