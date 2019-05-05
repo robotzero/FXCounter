@@ -17,8 +17,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         this.currentCellsState = currentCellsState;
     }
 
-    @Override
-    public void update(ColumnType columnType, int id, double position, double oldPosition, Direction direction) {
+    private void update(ColumnType columnType, int id, double position, double oldPosition, Direction direction) {
         CellState cellState = currentCellsState.get(columnType).get(id);
         CellState newCellState = cellState.createNew(position, oldPosition, direction);
         Map<Integer, CellState> currentList = currentCellsState.get(columnType);
@@ -60,14 +59,6 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     public Map<Integer, CellState> getAll(ColumnType columnType) {
         return this.currentCellsState.get(columnType);
     }
-
-//    @Override
-//    public List<CellState> getPreviousChangeCells() {
-//        if (this.previousChangeCells == null) {
-//            return getChangeCellStates();
-//        }
-//        return previousChangeCells;
-//    }
 
     @Override
     public String toString() {

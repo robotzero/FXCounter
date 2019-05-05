@@ -12,37 +12,41 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+;
 
 public class Populator {
 
     private IntegerProperty cellSize = new SimpleIntegerProperty(60);
     private ObjectProperty<Font> fontTracking = new SimpleObjectProperty<>(Font.getDefault());
+    private Collector<Map.Entry<ColumnType, List<Cell>>, HashMap<ColumnType, Column>, HashMap<ColumnType, Column>> timerColumnsCollector = Collector.of(
+            HashMap::new,
+            (intermediateContainer, cellList) -> {
+                intermediateContainer.put(cellList.getKey(), new Column(cellList.getValue()));
+            },
+            (finalContainer, intermediateContainer) -> {
+                Optional.of(intermediateContainer.get(ColumnType.SECONDS)).ifPresent(column -> {
+                    finalContainer.put(ColumnType.SECONDS, column);
+                });
+                Optional.of(intermediateContainer.get(ColumnType.MINUTES)).ifPresent(column -> {
+                    finalContainer.put(ColumnType.MINUTES, column);
+                });
+                Optional.of(intermediateContainer.get(ColumnType.HOURS)).ifPresent(column -> {
+                    finalContainer.put(ColumnType.HOURS, column);
+                });
+
+                return finalContainer;
+            }
+    );
 
     public Map<ColumnType, Column> timerColumns(GridPane gridPane) {
-        Collector<Map.Entry<ColumnType, List<Cell>>, HashMap<ColumnType, Column>, HashMap<ColumnType, Column>> timerColumnsCollector = Collector.of(
-                HashMap::new,
-                (intermediateContainer, cellList) -> {
-                    intermediateContainer.put(cellList.getKey(), new Column(cellList.getValue()));
-                },
-                (finalContainer, intermediateContainer) -> {
-                    Optional.of(intermediateContainer.get(ColumnType.SECONDS)).ifPresent(column -> {
-                        finalContainer.put(ColumnType.SECONDS, column);
-                    });
-                    Optional.of(intermediateContainer.get(ColumnType.MINUTES)).ifPresent(column -> {
-                        finalContainer.put(ColumnType.MINUTES, column);
-                    });
-                    Optional.of(intermediateContainer.get(ColumnType.HOURS)).ifPresent(column -> {
-                        finalContainer.put(ColumnType.HOURS, column);
-                    });
-
-                    return finalContainer;
-                }
-        );
-
         return gridPane.getChildrenUnmodifiable().filtered(
                 node -> node.getClass().equals(StackPane.class) &&
                         (node.getId().equals("seconds") || node.getId().equals("minutes") || node.getId().equals("hours"))
@@ -53,7 +57,7 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    return new Cell(vbox, new LocationService(), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
+                    return new Cell(vbox, ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
                 }).collect(Collectors.groupingBy(Cell::getColumnType)).entrySet().stream().collect(timerColumnsCollector);
     }
 
@@ -86,5 +90,4 @@ public class Populator {
                 )
         );
     }
-
 }

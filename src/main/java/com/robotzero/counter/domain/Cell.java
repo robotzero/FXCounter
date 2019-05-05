@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain;
 
-import com.robotzero.counter.service.LocationService;
 import io.reactivex.Observable;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
@@ -11,7 +10,6 @@ import javafx.util.Duration;
 public class Cell {
 
     private VBox rectangle;
-    private LocationService locationService;
     private Text label;
     private TranslateTransition translateTransition;
     private IntegerProperty currentSize;
@@ -19,14 +17,12 @@ public class Cell {
 
     public Cell(
             VBox rectangle,
-            LocationService locationService,
             Text label,
             TranslateTransition translateTransition,
             IntegerProperty currentSize,
             ColumnType columnType
     ) {
         this.rectangle = rectangle;
-        this.locationService = locationService;
         this.label = label;
         this.translateTransition = translateTransition;
         this.currentSize = currentSize;

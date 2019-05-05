@@ -8,7 +8,6 @@ import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
 import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.service.LocationService;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
@@ -16,12 +15,9 @@ import com.robotzero.counter.infrastructure.memory.InMemoryCellStateRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
 import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.fxml.FXML;
-import javafx.scene.layout.StackPane;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,9 +31,6 @@ import java.util.Map;
 @Configuration
 public class TimerConfiguration {
 
-    @FXML
-    StackPane paneSeconds;
-
     @Bean
     public FXMLView clockView() {
         return new ClockView();
@@ -47,8 +40,8 @@ public class TimerConfiguration {
     public FXMLView optionsView() { return new OptionsView(); }
 
     @Bean
-    public StageController stageController() {
-        return new StageController(sceneConfiguration(), clockView(), optionsView());
+    public StageController stageController(SceneConfiguration sceneConfiguration, FXMLView clockView, FXMLView optionsView) {
+        return new StageController(sceneConfiguration, clockView, optionsView);
     }
 
     @Bean
@@ -136,8 +129,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public ResetService resetService() {
-        return new ResetService(clockState());
+    public ResetService resetService(BehaviorSubject<CurrentClockState> clockState) {
+        return new ResetService(clockState);
     }
 
     @Bean
