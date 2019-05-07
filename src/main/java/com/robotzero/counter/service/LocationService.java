@@ -25,7 +25,7 @@ public class LocationService {
         return (delta, pivot) -> () -> 4;
     };
 
-    public double calculateFromY(IntegerProperty currentCellSize, Integer delta, double translateY)
+    public double calculateFromY(IntegerProperty currentCellSize, double delta, double translateY)
     {
         if (delta <= 0) {
             if (translateY <= -90) {
@@ -42,7 +42,7 @@ public class LocationService {
         }
     }
 
-    public double calculateToY(IntegerProperty currentCellSize, Integer delta, double translateY)
+    public double calculateToY(IntegerProperty currentCellSize, double delta, double translateY)
     {
         if (delta <= 0) {
             if (translateY <= -90) {

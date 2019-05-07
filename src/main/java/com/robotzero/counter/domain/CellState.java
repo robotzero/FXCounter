@@ -29,35 +29,45 @@ public class CellState {
     public boolean isChangeable() {
         if (columnType == ColumnType.SECONDS) {
                 System.out.println("==========");
-                System.out.println(this);
-                System.out.println(currentLocation.getFromY());
-                System.out.println(getCurrentDirection().getDirectionType());
+                System.out.println("From y " + currentLocation.getFromY());
+                System.out.println("To y " + currentLocation.getToY());
+                System.out.println("Dir type" + getCurrentDirection().getDirectionType());
+                System.out.println("Prev dir type " + getPreviousDirection().getDirectionType());
+                System.out.println("Prev from y " + getPreviousLocation().getFromY());
+                System.out.println("Prev to y " + getPreviousLocation().getToY());
                 System.out.println("==========");
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.VOID) {
-            return currentLocation.getFromY() == -90;
+            return currentLocation.getFromY() == 270 || currentLocation.getFromY() == -90;
         }
 
-        if (getCurrentDirection().getDirectionType() == DirectionType.UP || getCurrentDirection().getDirectionType() == DirectionType.STARTUP) {
+        if (getCurrentDirection().getDirectionType() == DirectionType.UP) {
             return currentLocation.getFromY() == 270;
         }
 
-        if (getCurrentDirection().getDirectionType() == DirectionType.STARTDOWN) {
-            return currentLocation.getFromY() == 180;
-        }
-
-        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() == DirectionType.STARTDOWN) {
-            return currentLocation.getFromY() == 180;
-        }
-
-        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() != DirectionType.STARTDOWN) {
+        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN) {
             return currentLocation.getFromY() == -90;
         }
-
-        if (getCurrentDirection().getDirectionType() == DirectionType.SWITCHDOWN && getPreviousDirection().getDirectionType() == DirectionType.UP){
-            return currentLocation.getFromY() == 180;
-        }
+//        if (getCurrentDirection().getDirectionType() == DirectionType.UP || getCurrentDirection().getDirectionType() == DirectionType.STARTUP) {
+//            return currentLocation.getFromY() == 270;
+//        }
+//
+//        if (getCurrentDirection().getDirectionType() == DirectionType.STARTDOWN) {
+//            return currentLocation.getFromY() == 180;
+//        }
+//
+//        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() == DirectionType.STARTDOWN) {
+//            return currentLocation.getFromY() == 180;
+//        }
+//
+//        if (getCurrentDirection().getDirectionType() == DirectionType.DOWN && getPreviousDirection().getDirectionType() != DirectionType.STARTDOWN) {
+//            return currentLocation.getFromY() == -90;
+//        }
+//
+//        if (getCurrentDirection().getDirectionType() == DirectionType.SWITCHDOWN && getPreviousDirection().getDirectionType() == DirectionType.UP){
+//            return currentLocation.getFromY() == 180;
+//        }
 
         return false;
 
@@ -80,8 +90,12 @@ public class CellState {
         return id;
     }
 
-    public CellState createNew(double fromY, double toY, Direction newDirection) {
-        return new CellState(this.id, new Location(fromY, toY), this.currentLocation,  newDirection, this.getPreviousDirection(), this.columnType);
+    public CellState createNew(double fromY, double toY) {
+        return new CellState(this.id, new Location(fromY, toY), this.currentLocation,  this.currentDirection, this.getPreviousDirection(), this.columnType);
+    }
+
+    public CellState createNew(Direction direction) {
+        return new CellState(this.id, this.currentLocation, this.previousLocation,  direction, this.currentDirection, this.columnType);
     }
 
     @Override

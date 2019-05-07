@@ -10,7 +10,9 @@ public interface CellStateRepository {
 
     void initialize(Map<ColumnType, Map<Integer, CellState>> currentCellsState);
 
-    void update(LocationService locationService, Direction direction, ColumnType columnType);
+    void update(LocationService locationService, ColumnType columnType, double delta);
+
+    void update(Direction direction, ColumnType columnType);
 
     Optional<CellState> get(int id);
 
