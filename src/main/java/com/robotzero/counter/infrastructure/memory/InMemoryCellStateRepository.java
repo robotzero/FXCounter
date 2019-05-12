@@ -9,9 +9,20 @@ import java.util.stream.Collectors;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
     private Map<ColumnType, Map<Integer, CellState>> currentCellsState;
+    private ArrayDeque<CellState> seconds;
+    private ArrayDeque<CellState> previous;
 
     @Override
     public void initialize(Map<ColumnType, Map<Integer, CellState>> currentCellsState) {
+        this.seconds = currentCellsState.get(ColumnType.SECONDS).entrySet().stream().map(entry -> {
+            return entry.getValue();
+        }).sorted((i1, i2) -> {
+            Integer test = (int) i1.getCurrentLocation().getFromY();
+            Integer test2 = (int) i2.getCurrentLocation().getFromY();
+            return test.compareTo(test2);
+        }).collect(Collectors.toCollection(ArrayDeque::new));
+
+        this.previous = this.seconds.clone();
         this.currentCellsState = currentCellsState;
     }
 
@@ -56,6 +67,39 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 //                    System.out.println("Cell with " + entry.getId() + " is updated to " + "FROM Y " + fromY + " TO Y " + toY);
                     this.update(columnType, entry.getId(), fromY, toY);
                 });
+
+//        this.seconds = currentCellsState.get(ColumnType.SECONDS).entrySet().stream().map(entry -> {
+//            return entry.getValue();
+//        }).sorted((i1, i2) -> {
+//            Integer test = (int) i1.getCurrentLocation().getFromY();
+//            Integer test2 = (int) i2.getCurrentLocation().getFromY();
+//            return test.compareTo(test2);
+//        }).collect(Collectors.toCollection(ArrayDeque::new));
+
+        ArrayDeque<CellState> clone = this.seconds.clone();
+        if (delta < 0) {
+            CellState cellState = this.seconds.removeFirst();
+            this.seconds.addLast(cellState);
+        }
+
+        if (delta > 0) {
+            seconds.forEach(c -> {
+//                System.out.println(c.getCurrentLocation().getFromY());
+//                System.out.println(c.getCurrentLocation().getToY());
+            });
+            CellState cellState = this.seconds.getLast();
+            CellState c = this.currentCellsState.get(ColumnType.SECONDS).get(cellState.getId());
+            if (c.getCurrentLocation().getFromY() == 180 && c.getCurrentLocation().getToY() == 270) {
+
+            } else {
+                this.seconds.getLast();
+                System.out.println(c.getCurrentLocation().getFromY());
+                System.out.println(c.getCurrentLocation().getToY());
+                this.seconds.addFirst(cellState);
+            }
+        }
+
+        this.previous = clone;
     }
 
     @Override
@@ -70,6 +114,14 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         }).collect(Collectors.toList());
 
         return changeCellStates;
+    }
+
+    @Override
+    public CellState getChangeCellState(double delta) {
+        if (delta < 0) {
+            return this.seconds.getLast();
+        }
+        return this.seconds.getLast();
     }
 
     @Override

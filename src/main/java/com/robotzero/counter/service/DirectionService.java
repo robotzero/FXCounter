@@ -13,6 +13,8 @@ public class DirectionService {
 
     /* We have to track previous directions */
     private Map<ColumnType, DirectionType> previousDirections = new HashMap<>();
+    private Map<ColumnType, Map<Integer, DirectionType>> currentDir = new HashMap<>();
+    private Map<ColumnType, Map<Integer, DirectionType>> previousDir;
 
     @PostConstruct
     public void initialize() {
@@ -20,6 +22,10 @@ public class DirectionService {
         previousDirections.put(ColumnType.MINUTES, null);
         previousDirections.put(ColumnType.HOURS, null);
         previousDirections.put(ColumnType.MAIN, null);
+
+        currentDir.put(ColumnType.SECONDS, Map.of(9, DirectionType.VOID, 10, DirectionType.VOID, 11, DirectionType.VOID, 12, DirectionType.VOID));
+        currentDir.put(ColumnType.MINUTES, Map.of(5, DirectionType.VOID, 6, DirectionType.VOID, 7, DirectionType.VOID, 8, DirectionType.VOID));
+        currentDir.put(ColumnType.HOURS, Map.of(1, DirectionType.VOID, 2, DirectionType.VOID, 3, DirectionType.VOID, 4, DirectionType.VOID));
     }
 
     public Direction calculateDirection(CellState currentCellState, double delta) {

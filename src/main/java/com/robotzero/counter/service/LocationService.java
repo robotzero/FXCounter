@@ -1,13 +1,21 @@
 package com.robotzero.counter.service;
 
+import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.DirectionType;
+import com.robotzero.counter.domain.Location;
 import javafx.beans.property.IntegerProperty;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class LocationService {
+    private Map<ColumnType, Map<Integer, Location>> currentLocation = new HashMap<>();
+    private Map<ColumnType, Map<Integer, Location>> previousLocation;
+
     private Function<Integer, Predicate<Integer>> isLessOrEqualThan = pivot -> {
         return candidate -> candidate <= pivot;
     };

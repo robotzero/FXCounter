@@ -28,14 +28,14 @@ public class CellState {
 
     public boolean isChangeable() {
         if (columnType == ColumnType.SECONDS) {
-                System.out.println("==========");
-                System.out.println("From y " + currentLocation.getFromY());
-                System.out.println("To y " + currentLocation.getToY());
-                System.out.println("Dir type" + getCurrentDirection().getDirectionType());
-                System.out.println("Prev dir type " + getPreviousDirection().getDirectionType());
-                System.out.println("Prev from y " + getPreviousLocation().getFromY());
-                System.out.println("Prev to y " + getPreviousLocation().getToY());
-                System.out.println("==========");
+//                System.out.println("==========");
+//                System.out.println("From y " + currentLocation.getFromY());
+//                System.out.println("To y " + currentLocation.getToY());
+//                System.out.println("Dir type" + getCurrentDirection().getDirectionType());
+//                System.out.println("Prev dir type " + getPreviousDirection().getDirectionType());
+//                System.out.println("Prev from y " + getPreviousLocation().getFromY());
+//                System.out.println("Prev to y " + getPreviousLocation().getToY());
+//                System.out.println("==========");
         }
 
         if (getCurrentDirection().getDirectionType() == DirectionType.VOID) {

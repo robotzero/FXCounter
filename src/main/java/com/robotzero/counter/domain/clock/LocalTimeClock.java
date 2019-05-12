@@ -52,7 +52,7 @@ public class LocalTimeClock implements Clock {
     };
 
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
-    private final long HR  = ChronoUnit.HOURS.getDuration().toHours();
+    private final long HR = ChronoUnit.HOURS.getDuration().toHours();
 
     public LocalTimeClock(
             ClockRepository clockRepository,
@@ -83,14 +83,18 @@ public class LocalTimeClock implements Clock {
 
     public Completable tick(TickAction action) {
         return Completable.fromRunnable(() -> {
-          this.cellStateRepository.update(locationService, action.getColumnType(), action.getDelta());
-          List<CellState> cellStates = cellStateRepository.getChangeCellStates();
-
+            this.cellStateRepository.update(locationService, action.getColumnType(), action.getDelta());
+            List<CellState> cellStates = cellStateRepository.getChangeCellStates();
+            CellState cellStateSeconds = cellStateRepository.getChangeCellState(action.getDelta());
+            Direction directionSeconds = directionService.calculateDirection(cellStateSeconds, action.getDelta());
+            clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellStateSeconds.getColumnType(), directionSeconds.getDirectionType());
+            cellStateRepository.update(directionSeconds, cellStateSeconds.getColumnType());
+            cellStates = List.of(cellStateSeconds);
             List<Direction> directions = cellStates.stream().map(cellState -> {
                 if (cellState.getColumnType() == ColumnType.SECONDS && action.getColumnType() == ColumnType.SECONDS) {
-                    Direction directionSeconds = directionService.calculateDirection(cellState, action.getDelta());
-                    clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellState.getColumnType(), directionSeconds.getDirectionType());
-                    cellStateRepository.update(directionSeconds, cellState.getColumnType());
+//                    Direction directionSeconds = directionService.calculateDirection(cellState, action.getDelta());
+//                    clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellState.getColumnType(), directionSeconds.getDirectionType());
+//                    cellStateRepository.update(directionSeconds, cellState.getColumnType());
                     return directionSeconds;
                 }
 
@@ -111,10 +115,6 @@ public class LocalTimeClock implements Clock {
                 return new Direction(cellState.getColumnType(), DirectionType.VOID);
             }).collect(Collectors.toList());
 
-            directions.forEach(c -> {
-                System.out.println(c.getDirectionType());
-            });
-//            directions.stream().forEach(c -> System.out.println(c.getDirectionType() + " " + c.getColumnType()));
             currectClockStateObservable.onNext(new CurrentClockState(
                     this.clockRepository.get(ColumnType.SECONDS).getSecond(),
                     this.clockRepository.get(ColumnType.MINUTES).getMinute(),
