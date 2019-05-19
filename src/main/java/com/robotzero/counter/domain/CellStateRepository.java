@@ -1,5 +1,6 @@
 package com.robotzero.counter.domain;
 
+import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
 
 import java.util.List;
@@ -10,9 +11,7 @@ public interface CellStateRepository {
 
     void initialize(Map<ColumnType, Map<Integer, CellState>> currentCellsState);
 
-    void update(LocationService locationService, ColumnType columnType, double delta);
-
-    void update(Direction direction, ColumnType columnType);
+    void update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta);
 
     Optional<CellState> get(int id);
 

@@ -75,8 +75,8 @@ public class Populator {
                             Integer.valueOf(vBox.getId()),
                             new Location(vBox.getTranslateY(), vBox.getTranslateY()),
                             new Location(vBox.getTranslateY(), vBox.getTranslateY()),
-                            new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
-                            new Direction(ColumnType.valueOf(node.getParent().getId().toUpperCase()), DirectionType.VOID),
+                            DirectionType.VOID,
+                            DirectionType.VOID,
                             ColumnType.valueOf(node.getParent().getId().toUpperCase())
                     );
                 }).collect(Collectors.groupingBy(CellState::getColumnType, Collector.of(

@@ -1,6 +1,7 @@
 package com.robotzero.counter.infrastructure.memory;
 
 import com.robotzero.counter.domain.*;
+import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -26,35 +27,15 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         this.currentCellsState = currentCellsState;
     }
 
-    private void update(ColumnType columnType, int id, double position, double oldPosition) {
+    private void update(ColumnType columnType, int id, double position, double oldPosition, DirectionType current, DirectionType previous) {
         CellState cellState = currentCellsState.get(columnType).get(id);
-        CellState newCellState = cellState.createNew(position, oldPosition);
-        Map<Integer, CellState> currentList = currentCellsState.get(columnType);
-        currentList.put(id, newCellState);
-    }
-
-    private void update(ColumnType columnType, int id, Direction direction) {
-        CellState cellState = currentCellsState.get(columnType).get(id);
-        CellState newCellState = cellState.createNew(direction);
+        CellState newCellState = cellState.createNew(position, oldPosition, current, previous);
         Map<Integer, CellState> currentList = currentCellsState.get(columnType);
         currentList.put(id, newCellState);
     }
 
     @Override
-    public void update(Direction direction, ColumnType columnType) {
-        currentCellsState.entrySet().stream().filter(entry -> entry.getKey() == columnType)
-                .flatMap(entry -> {
-                    return entry.getValue().entrySet().stream();
-                }).map(cellState -> {
-            return cellState.getValue();
-        })
-                .forEach(entry -> {
-                    this.update(columnType, entry.getId(), direction);
-                });
-    }
-
-    @Override
-    public void update(LocationService locationService, ColumnType columnType, double delta) {
+    public void update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta) {
         currentCellsState.entrySet().stream().filter(entry -> entry.getKey() == columnType)
                 .flatMap(entry -> {
                     return entry.getValue().entrySet().stream();
@@ -65,7 +46,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
                     double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), delta, entry.getCurrentLocation().getToY());
                     double toY = locationService.calculateToY(new SimpleIntegerProperty(90), delta, entry.getCurrentLocation().getToY());
 //                    System.out.println("Cell with " + entry.getId() + " is updated to " + "FROM Y " + fromY + " TO Y " + toY);
-                    this.update(columnType, entry.getId(), fromY, toY);
+                    this.update(columnType, entry.getId(),  fromY, toY, directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
                 });
 
 //        this.seconds = currentCellsState.get(ColumnType.SECONDS).entrySet().stream().map(entry -> {
@@ -109,11 +90,9 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
     @Override
     public List<CellState> getChangeCellStates() {
-        List<CellState> changeCellStates = currentCellsState.entrySet().stream().flatMap(entry -> {
+        return currentCellsState.entrySet().stream().flatMap(entry -> {
             return entry.getValue().values().stream().filter(CellState::isChangeable);
         }).collect(Collectors.toList());
-
-        return changeCellStates;
     }
 
     @Override

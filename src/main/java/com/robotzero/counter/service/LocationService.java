@@ -1,7 +1,6 @@
 package com.robotzero.counter.service;
 
 import com.robotzero.counter.domain.ColumnType;
-import com.robotzero.counter.domain.DirectionType;
 import com.robotzero.counter.domain.Location;
 import javafx.beans.property.IntegerProperty;
 
