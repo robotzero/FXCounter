@@ -85,7 +85,9 @@ public class LocalTimeClock implements Clock {
         return Completable.fromRunnable(() -> {
             this.cellStateRepository.update(locationService, directionService, action.getColumnType(), action.getDelta());
             List<CellState> cellStates = cellStateRepository.getChangeCellStates();
-
+            cellStates.stream().filter(c -> c.getColumnType() == ColumnType.SECONDS).forEach(c -> {
+                System.out.println("ID " +c.getId());
+            });
 //            CellState cellStateSeconds = cellStates.stream().filter(cellState -> cellState.getColumnType() == ColumnType.SECONDS).findAny().orElseThrow();
 //            System.out.println("ID " + cellStateSeconds.getId());
 //            System.out.println("FROM " + cellStateSeconds.getCurrentLocation().getFromY());
