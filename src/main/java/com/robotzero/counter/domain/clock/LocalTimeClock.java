@@ -84,19 +84,6 @@ public class LocalTimeClock implements Clock {
     public Completable tick(TickAction action) {
         return Completable.fromRunnable(() -> {
             List<CellState> cellStates = this.cellStateRepository.update(locationService, directionService, action.getColumnType(), action.getDelta());
-//            List<CellState> cellStates = cellStateRepository.getChangeCellStates();
-//            cellStates.stream().filter(c -> c.getColumnType() == ColumnType.SECONDS).forEach(c -> {
-//                System.out.println("ID " +c.getId());
-//            });
-//            CellState cellStateSeconds = cellStates.stream().filter(cellState -> cellState.getColumnType() == ColumnType.SECONDS).findAny().orElseThrow();
-//            System.out.println("ID " + cellStateSeconds.getId());
-//            System.out.println("FROM " + cellStateSeconds.getCurrentLocation().getFromY());
-//            System.out.println("TO " + cellStateSeconds.getCurrentLocation().getToY());
-//            CellState cellStateSeconds = cellStateRepository.getChangeCellState(action.getDelta());
-//            Direction directionSeconds = directionService.calculateDirection(cellStateSeconds, action.getDelta());
-//            clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellStateSeconds.getColumnType(), directionSeconds.getDirectionType());
-//            cellStateRepository.update(directionSeconds, cellStateSeconds.getColumnType());
-//            cellStates = List.of(cellStateSeconds);
             List<Direction> directions = cellStates.stream().map(cellState -> {
                 if (cellState.getColumnType() == ColumnType.SECONDS && action.getColumnType() == ColumnType.SECONDS) {
                     Direction directionSeconds = directionService.calculateDirection(cellState, action.getDelta());
