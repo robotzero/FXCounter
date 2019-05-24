@@ -12,11 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -61,7 +57,7 @@ public class Populator {
                 }).collect(Collectors.groupingBy(Cell::getColumnType)).entrySet().stream().collect(timerColumnsCollector);
     }
 
-    public Map<ColumnType, Map<Integer, CellState>> cellState(GridPane gridPane) {
+    public Map<ColumnType, ArrayDeque<CellState>> cellState(GridPane gridPane) {
         //@TODO change to rxjava type of initialization.
         return gridPane.getChildrenUnmodifiable().filtered(
                 node -> node.getClass().equals(StackPane.class) &&
@@ -79,15 +75,11 @@ public class Populator {
                             DirectionType.VOID,
                             ColumnType.valueOf(node.getParent().getId().toUpperCase())
                     );
-                }).collect(Collectors.groupingBy(CellState::getColumnType, Collector.of(
-                        ConcurrentHashMap::new,
-                        (map, cellState) -> {
-                            map.put(cellState.getId(), cellState);
-                        }, (left, right) -> {
-                            left.putAll(right); return left;
-                        }
-                    )
-                )
+                }).sorted((i1, i2) -> {
+                    Integer test = (int) i1.getCurrentLocation().getFromY();
+                    Integer test2 = (int) i2.getCurrentLocation().getFromY();
+                    return test.compareTo(test2);
+                }).collect(Collectors.groupingBy(CellState::getColumnType, Collectors.toCollection(ArrayDeque::new))
         );
     }
 }

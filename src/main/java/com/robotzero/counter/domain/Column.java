@@ -10,11 +10,6 @@ public class Column {
 
     public Column(List<Cell> columnList) {
         this.columnList = columnList;
-//        this.columnList.forEach(c -> {
-//            if (c.getColumnType() == ColumnType.SECONDS) {
-//                System.out.println(c);
-//            }
-//        });
     }
 
     public void play(DirectionType direction, Duration duration) {
@@ -30,11 +25,6 @@ public class Column {
     }
 
     public void setLabel(int id, Integer value) {
-//        this.columnList.forEach(c -> {
-//            if (c.getColumnType() == ColumnType.SECONDS) {
-//                System.out.println(c);
-//            }
-//        });
         this.columnList.stream().filter(cell -> {
             return cell.getId() == id;
         }).findFirst().ifPresent(cell -> {

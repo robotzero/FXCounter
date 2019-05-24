@@ -214,7 +214,7 @@ public class ClockPresenter implements Initializable {
                         int vboxId =  cs.getId();
                         Column column = this.timerColumns.get(ColumnType.SECONDS);
                         column.setLabel(vboxId, tickResult.getLabels().getSecond());
-                        this.cellStateService.getAll(ColumnType.SECONDS).values().forEach(cellState1 -> {
+                        this.cellStateService.getAll(ColumnType.SECONDS).forEach(cellState1 -> {
                             column.play(cellState1, tickResult.getDuration());
                         });
                     });
@@ -226,7 +226,7 @@ public class ClockPresenter implements Initializable {
                         int vboxId =  cs.getId();
                         Column column = this.timerColumns.get(ColumnType.MINUTES);
                         column.setLabel(vboxId, tickResult.getLabels().getMinute());
-                        this.cellStateService.getAll(ColumnType.MINUTES).values().forEach(cellState1 -> {
+                        this.cellStateService.getAll(ColumnType.MINUTES).forEach(cellState1 -> {
                             column.play(cellState1, tickResult.getDuration());
                         });
                     });
@@ -239,7 +239,7 @@ public class ClockPresenter implements Initializable {
                         int vboxId =  cs.getId();
                         Column column = this.timerColumns.get(ColumnType.HOURS);
                         column.setLabel(vboxId, tickResult.getLabels().getHour());
-                        this.cellStateService.getAll(ColumnType.HOURS).values().forEach(cellState1 -> {
+                        this.cellStateService.getAll(ColumnType.HOURS).forEach(cellState1 -> {
                             column.play(cellState1, tickResult.getDuration());
                         });
                     });
