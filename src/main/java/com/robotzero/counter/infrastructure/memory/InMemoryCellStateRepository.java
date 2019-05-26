@@ -17,11 +17,11 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     }
 
     @Override
-    public List<CellState> update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta) {
+    public CellState update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta) {
         ArrayDeque<CellState> updatedCellState = this.currentCellsState.get(columnType).stream().map(cellState -> {
             double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
             double toY = locationService.calculateToY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
-            return cellState.createNew(fromY, toY, directionService.getCurrentDirection().get(ColumnType.SECONDS), directionService.getPreviousDirection().get(ColumnType.SECONDS));
+            return cellState.createNew(fromY, toY, directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
         }).collect(Collectors.toCollection(ArrayDeque::new));
         this.currentCellsState.put(columnType, updatedCellState);
 
@@ -30,21 +30,21 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         if (top.getCurrentLocation().getFromY() == 270 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.SWITCHUP)) {
             this.currentCellsState.get(columnType).removeFirst();
             this.currentCellsState.get(columnType).addLast(top);
-            return List.of(top);
+            return top;
         }
 
         if (bottom.getCurrentLocation().getFromY() == -90 && (bottom.getCurrentDirection() == DirectionType.STARTDOWN || bottom.getCurrentDirection() == DirectionType.DOWN || bottom.getCurrentDirection() == DirectionType.SWITCHDOWN)) {
             this.currentCellsState.get(columnType).removeLast();
             this.currentCellsState.get(columnType).offerFirst(bottom);
-            return List.of(bottom);
+            return bottom;
         }
 
         if (top.getCurrentLocation().getFromY() == -90 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.UP)) {
-            return List.of(top);
+            return top;
         }
 
         if (bottom.getCurrentLocation().getFromY() == 270 && bottom.getCurrentDirection() == DirectionType.DOWN) {
-            return List.of(bottom);
+            return bottom;
         }
         throw new RuntimeException("NAH");
     }

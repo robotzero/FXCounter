@@ -18,10 +18,6 @@ public class DirectionService {
 
     @PostConstruct
     public void initialize() {
-//        currentDir.put(ColumnType.SECONDS, Map.of(9, DirectionType.VOID, 10, DirectionType.VOID, 11, DirectionType.VOID, 12, DirectionType.VOID));
-//        currentDir.put(ColumnType.MINUTES, Map.of(5, DirectionType.VOID, 6, DirectionType.VOID, 7, DirectionType.VOID, 8, DirectionType.VOID));
-//        currentDir.put(ColumnType.HOURS, Map.of(1, DirectionType.VOID, 2, DirectionType.VOID, 3, DirectionType.VOID, 4, DirectionType.VOID));
-
         currentDirection.put(ColumnType.SECONDS, DirectionType.VOID);
         previousDirection.put(ColumnType.SECONDS, DirectionType.VOID);
         currentDirection.put(ColumnType.MINUTES, DirectionType.VOID);
