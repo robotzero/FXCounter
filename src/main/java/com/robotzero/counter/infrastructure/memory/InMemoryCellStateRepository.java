@@ -19,9 +19,10 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     @Override
     public CellState update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta) {
         ArrayDeque<CellState> updatedCellState = this.currentCellsState.get(columnType).stream().map(cellState -> {
-            double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
-            double toY = locationService.calculateToY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
-            return cellState.createNew(fromY, toY, directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
+//            double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
+//            double toY = locationService.calculateToY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
+            Location newLocation = locationService.calculate(delta, cellState.getCurrentLocation().getToY());
+            return cellState.createNew(newLocation.getFromY(), newLocation.getToY(), directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
         }).collect(Collectors.toCollection(ArrayDeque::new));
         this.currentCellsState.put(columnType, updatedCellState);
 
@@ -46,6 +47,8 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         if (bottom.getCurrentLocation().getFromY() == 270 && bottom.getCurrentDirection() == DirectionType.DOWN) {
             return bottom;
         }
+        System.out.println(top);
+        System.out.println(bottom);
         throw new RuntimeException("NAH");
     }
 
