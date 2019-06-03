@@ -3,7 +3,6 @@ package com.robotzero.counter.infrastructure.memory;
 import com.robotzero.counter.domain.*;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
-import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,8 +18,6 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     @Override
     public CellState update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta) {
         ArrayDeque<CellState> updatedCellState = this.currentCellsState.get(columnType).stream().map(cellState -> {
-//            double fromY = locationService.calculateFromY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
-//            double toY = locationService.calculateToY(new SimpleIntegerProperty(90), delta, cellState.getCurrentLocation().getToY());
             Location newLocation = locationService.calculate(delta, cellState.getCurrentLocation().getToY());
             return cellState.createNew(newLocation.getFromY(), newLocation.getToY(), directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
         }).collect(Collectors.toCollection(ArrayDeque::new));
@@ -40,11 +37,11 @@ public class InMemoryCellStateRepository implements CellStateRepository {
             return bottom;
         }
 
-        if (top.getCurrentLocation().getFromY() == -90 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.UP)) {
+        if (top.getCurrentLocation().getFromY() == -90 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.SWITCHUP)) {
             return top;
         }
 
-        if (bottom.getCurrentLocation().getFromY() == 270 && bottom.getCurrentDirection() == DirectionType.DOWN) {
+        if (bottom.getCurrentLocation().getFromY() == 270 && (bottom.getCurrentDirection() == DirectionType.DOWN || bottom.getCurrentDirection() == DirectionType.STARTDOWN || bottom.getCurrentDirection() == DirectionType.SWITCHDOWN)) {
             return bottom;
         }
         System.out.println(top);

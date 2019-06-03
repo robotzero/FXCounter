@@ -37,36 +37,15 @@ public class LocationService {
         if (delta <= 0) {
             if (translateY <= -90) {
                 return new Location(270, 180);
-//                return currentCellSize.multiply(3).get();
             } else {
                 return new Location(translateY, translateY - 90);
-//                return translateY;
             }
         } else {
             if (translateY == 270) {
                 return new Location(-90, 0);
-//                return -90;
             } else {
                 return new Location(translateY, translateY + 90);
-//                return translateY;
             }
         }
     }
-
-//    public double calculateToY(IntegerProperty currentCellSize, double delta, double translateY)
-//    {
-//        if (delta <= 0) {
-//            if (translateY <= -90) {
-//                return currentCellSize.multiply(3).get() - currentCellSize.get();
-//            } else {
-//                return translateY - currentCellSize.get();
-//            }
-//        } else {
-//            if (translateY == currentCellSize.multiply(3).get()) {
-//                return 0;
-//            } else {
-//                return translateY + currentCellSize.get();
-//            }
-//        }
-//    }
 }

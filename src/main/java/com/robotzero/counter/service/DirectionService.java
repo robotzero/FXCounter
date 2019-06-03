@@ -30,6 +30,8 @@ public class DirectionService {
         Direction newdirection = null;
         DirectionType currentDirection = this.currentDirection.get(currentCellState.getColumnType());
         DirectionType previousDirection = this.previousDirection.get(currentCellState.getColumnType());
+        System.out.println(currentDirection);
+        System.out.println(delta);
         if (delta < 0) {
             if (currentDirection == DirectionType.VOID) {
                 newdirection = new Direction(currentCellState.getColumnType(), DirectionType.STARTUP);
@@ -48,6 +50,14 @@ public class DirectionService {
 
             if (currentDirection == DirectionType.SWITCHUP) {
                 newdirection = new Direction(currentCellState.getColumnType(), DirectionType.UP);
+            }
+
+            if (currentDirection == DirectionType.STARTDOWN) {
+                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
+            }
+
+            if (currentDirection == DirectionType.SWITCHDOWN) {
+                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
             }
         } else {
             if (currentDirection == DirectionType.VOID) {
@@ -68,6 +78,14 @@ public class DirectionService {
 
             if (currentDirection == DirectionType.SWITCHDOWN) {
                 newdirection = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
+            }
+
+            if (currentDirection == DirectionType.STARTUP) {
+                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
+            }
+
+            if (currentDirection == DirectionType.SWITCHUP) {
+                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.UP);
             }
         }
 
