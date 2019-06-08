@@ -1,11 +1,8 @@
 package com.robotzero.counter.infrastructure.memory;
 
 import com.robotzero.counter.domain.*;
-import com.robotzero.counter.service.DirectionService;
-import com.robotzero.counter.service.LocationService;
-
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
     private Map<ColumnType, ArrayDeque<CellState>> currentCellsState;
@@ -16,13 +13,18 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     }
 
     @Override
-    public CellState update(LocationService locationService, DirectionService directionService, ColumnType columnType, double delta) {
-        ArrayDeque<CellState> updatedCellState = this.currentCellsState.get(columnType).stream().map(cellState -> {
-            Location newLocation = locationService.calculate(delta, cellState.getCurrentLocation().getToY());
-            return cellState.createNew(newLocation.getFromY(), newLocation.getToY(), directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
-        }).collect(Collectors.toCollection(ArrayDeque::new));
-        this.currentCellsState.put(columnType, updatedCellState);
+    public void save(ColumnType columnType, ArrayDeque<CellState> newCellState) {
+        this.currentCellsState.put(columnType, newCellState);
+    }
 
+
+    @Override
+    public CellState get(ColumnType columnType, Function<ArrayDeque<CellState>, CellState> retriever) {
+        return retriever.apply(this.currentCellsState.get(columnType));
+    }
+
+    @Override
+    public CellState getChangeable(ColumnType columnType) {
         CellState top = this.currentCellsState.get(columnType).peekFirst();
         CellState bottom = this.currentCellsState.get(columnType).peekLast();
         if (top.getCurrentLocation().getFromY() == 270 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.SWITCHUP)) {
@@ -37,7 +39,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
             return bottom;
         }
 
-        if (top.getCurrentLocation().getFromY() == -90 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.SWITCHUP)) {
+        if (top.getCurrentLocation().getFromY() == -90 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.SWITCHUP || top.getCurrentDirection() == DirectionType.DOWN)) {
             return top;
         }
 

@@ -26,74 +26,74 @@ public class DirectionService {
         previousDirection.put(ColumnType.HOURS, DirectionType.VOID);
     }
 
-    public Direction calculateDirection(CellState currentCellState, double delta) {
+    public Direction calculateDirection(ColumnType columnType, double delta) {
         Direction newdirection = null;
-        DirectionType currentDirection = this.currentDirection.get(currentCellState.getColumnType());
-        DirectionType previousDirection = this.previousDirection.get(currentCellState.getColumnType());
+        DirectionType currentDirection = this.currentDirection.get(columnType);
+        DirectionType previousDirection = this.previousDirection.get(columnType);
         System.out.println(currentDirection);
         System.out.println(delta);
         if (delta < 0) {
             if (currentDirection == DirectionType.VOID) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.STARTUP);
-                this.currentDirection.put(currentCellState.getColumnType(), newdirection.getDirectionType());
-                this.previousDirection.put(currentCellState.getColumnType(), currentDirection);
+                newdirection = new Direction(columnType, DirectionType.STARTUP);
+                this.currentDirection.put(columnType, newdirection.getDirectionType());
+                this.previousDirection.put(columnType, currentDirection);
                 return newdirection;
             }
 
             if (currentDirection == DirectionType.UP || currentDirection == DirectionType.STARTUP) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.UP);
+                newdirection = new Direction(columnType, DirectionType.UP);
             }
 
             if (currentDirection == DirectionType.DOWN) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
+                newdirection = new Direction(columnType, DirectionType.SWITCHUP);
             }
 
             if (currentDirection == DirectionType.SWITCHUP) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.UP);
+                newdirection = new Direction(columnType, DirectionType.UP);
             }
 
             if (currentDirection == DirectionType.STARTDOWN) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHUP);
+                newdirection = new Direction(columnType, DirectionType.SWITCHUP);
             }
 
             if (currentDirection == DirectionType.SWITCHDOWN) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
+                newdirection = new Direction(columnType, DirectionType.DOWN);
             }
         } else {
             if (currentDirection == DirectionType.VOID) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.STARTDOWN);
+                newdirection = new Direction(columnType, DirectionType.STARTDOWN);
 
-                this.currentDirection.put(currentCellState.getColumnType(), newdirection.getDirectionType());
-                this.previousDirection.put(currentCellState.getColumnType(), currentDirection);
+                this.currentDirection.put(columnType, newdirection.getDirectionType());
+                this.previousDirection.put(columnType, currentDirection);
                 return newdirection;
             }
 
             if (currentDirection == DirectionType.DOWN || currentDirection == DirectionType.STARTDOWN) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
+                newdirection = new Direction(columnType, DirectionType.DOWN);
             }
 
             if (currentDirection == DirectionType.UP) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
+                newdirection = new Direction(columnType, DirectionType.SWITCHDOWN);
             }
 
             if (currentDirection == DirectionType.SWITCHDOWN) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.DOWN);
+                newdirection = new Direction(columnType, DirectionType.DOWN);
             }
 
             if (currentDirection == DirectionType.STARTUP) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.SWITCHDOWN);
+                newdirection = new Direction(columnType, DirectionType.SWITCHDOWN);
             }
 
             if (currentDirection == DirectionType.SWITCHUP) {
-                newdirection = new Direction(currentCellState.getColumnType(), DirectionType.UP);
+                newdirection = new Direction(columnType, DirectionType.UP);
             }
         }
 
         if (newdirection == null) {
             throw new RuntimeException("BLAH");
         }
-        this.currentDirection.put(currentCellState.getColumnType(), newdirection.getDirectionType());
-        this.previousDirection.put(currentCellState.getColumnType(), currentDirection);
+        this.currentDirection.put(columnType, newdirection.getDirectionType());
+        this.previousDirection.put(columnType, currentDirection);
         return newdirection;
     }
 

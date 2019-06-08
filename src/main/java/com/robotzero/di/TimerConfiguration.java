@@ -14,8 +14,6 @@ import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryCellStateRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
 import com.robotzero.counter.service.*;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.Subject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.springframework.context.annotation.Bean;
@@ -88,8 +86,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, LocationService locationService, Map<TimerType, ClockMode> clockModes, Subject<CurrentClockState> clockState, DirectionService directionService) {
-        return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, clockState, directionService);
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, LocationService locationService, Map<TimerType, ClockMode> clockModes, DirectionService directionService) {
+        return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, directionService);
     }
 
     @Bean
@@ -129,13 +127,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public ResetService resetService(BehaviorSubject<CurrentClockState> clockState) {
-        return new ResetService(clockState);
-    }
-
-    @Bean
-    public BehaviorSubject<CurrentClockState> clockState() {
-        return BehaviorSubject.create();
+    public ResetService resetService() {
+        return new ResetService();
     }
 
     @Bean

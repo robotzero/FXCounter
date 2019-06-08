@@ -6,6 +6,7 @@ import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
 import com.sun.javafx.property.adapter.Disposer;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.subjects.Subject;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +17,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class LocalTimeClock implements Clock {
@@ -23,7 +25,6 @@ public class LocalTimeClock implements Clock {
     private final ClockRepository clockRepository;
     private final TimerRepository timerRepository;
     private final CellStateRepository cellStateRepository;
-    private final Subject<CurrentClockState> currectClockStateObservable;
     private final DirectionService directionService;
     private final LocationService locationService;
     private final Map<TimerType, ClockMode> clockmodes;
@@ -60,7 +61,6 @@ public class LocalTimeClock implements Clock {
             CellStateRepository cellStateRepository,
             LocationService locationService,
             Map<TimerType, ClockMode> clockModes,
-            Subject<CurrentClockState> currentClockStateObservable,
             DirectionService directionService
     ) {
         this.clockRepository = clockRepository;
@@ -68,7 +68,6 @@ public class LocalTimeClock implements Clock {
         this.cellStateRepository = cellStateRepository;
         this.locationService = locationService;
         this.clockmodes = clockModes;
-        this.currectClockStateObservable = currentClockStateObservable;
         this.directionService = directionService;
     }
 
@@ -81,49 +80,38 @@ public class LocalTimeClock implements Clock {
         }).getSavedTimer());
     }
 
-    public Completable tick(TickAction action) {
-        return Completable.fromRunnable(() -> {
-            List<Direction> directions = new ArrayList<>();
-            List<CellState> cellStates = new ArrayList<>();
+    public List<CellState> blah(ColumnType columnType, TickAction action, List<CellState> currentCellState) {
+        ArrayDeque<CellState> updatedCellState = cellStateRepository.getAll(columnType).stream().map(cellState -> {
+            Location newLocation = locationService.calculate(action.getDelta(), cellState.getCurrentLocation().getToY());
+            return cellState.createNew(newLocation.getFromY(), newLocation.getToY(), directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
+        }).collect(Collectors.toCollection(ArrayDeque::new));
+        cellStateRepository.save(columnType, updatedCellState);
 
-            if (action.getColumnType() == ColumnType.SECONDS) {
-                CellState mainActionCellState = this.cellStateRepository.update(locationService, directionService, action.getColumnType(), action.getDelta());
-                Direction directionSeconds = directionService.calculateDirection(mainActionCellState, action.getDelta());
-                clockmodes.get(action.getTimerType()).applyNewClockState(tick, mainActionCellState.getColumnType(), directionSeconds.getDirectionType());
-                directions.add(directionSeconds);
-                cellStates.add(mainActionCellState);
-            }
+        CellState mainActionCellState = this.cellStateRepository.getChangeable(columnType);
+        Direction directionSeconds = directionService.calculateDirection(columnType, action.getDelta());
+        clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType, directionSeconds.getDirectionType());
+        List<CellState> c = new ArrayList<>(currentCellState);
+        c.add(mainActionCellState);
+        return c;
+    }
 
-            if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK) || (action.getColumnType() == ColumnType.MINUTES)) {
-                CellState cellStateMinutes = cellStateRepository.update(locationService, directionService, ColumnType.MINUTES, action.getDelta());
-                Direction directionMinutes = directionService.calculateDirection(cellStateMinutes, action.getDelta());
-                clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellStateMinutes.getColumnType(), directionMinutes.getDirectionType());
-                directions.add(directionMinutes);
-                cellStates.add(cellStateMinutes);
-            }
+    public Observable<CurrentClockState> tick(TickAction action) {
+        List<CellState> cellStatesSoFar = blah(action.getColumnType(), action, List.of());
+        if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK)) {
+            cellStatesSoFar = blah(ColumnType.MINUTES, action, cellStatesSoFar);
+        }
 
-            if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK) || (action.getColumnType() == ColumnType.HOURS)) {
-                CellState cellStateHours = cellStateRepository.update(locationService, directionService, ColumnType.HOURS, action.getDelta());
-                Direction directionHours = directionService.calculateDirection(cellStateHours, action.getDelta());
-                clockmodes.get(action.getTimerType()).applyNewClockState(tick, cellStateHours.getColumnType(), directionHours.getDirectionType());
-                directions.add(directionHours);
-                cellStates.add(cellStateHours);
-            }
+        if ((shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK)) {
+            cellStatesSoFar = blah(ColumnType.HOURS, action, cellStatesSoFar);
+        }
 
-
-
-            currectClockStateObservable.onNext(new CurrentClockState(
-                    this.clockRepository.get(ColumnType.SECONDS).getSecond(),
-                    this.clockRepository.get(ColumnType.MINUTES).getMinute(),
-                    this.clockRepository.get(ColumnType.HOURS).getHour(),
-                    action.getColumnType() == ColumnType.SECONDS,
-                    directions.stream().anyMatch(direction -> direction.getColumnType() == ColumnType.MINUTES),
-                    directions.stream().anyMatch(direction -> direction.getColumnType() == ColumnType.HOURS),
-                    cellStates,
-                    this.clockRepository.get(ColumnType.MAIN)
-            ));
-        });
-//        return Completable.complete();
+        return Observable.just(new CurrentClockState(
+                this.clockRepository.get(ColumnType.SECONDS).getSecond(),
+                this.clockRepository.get(ColumnType.MINUTES).getMinute(),
+                this.clockRepository.get(ColumnType.HOURS).getHour(),
+                cellStatesSoFar,
+                this.clockRepository.get(ColumnType.MAIN)
+        ));
     }
 
     @Override

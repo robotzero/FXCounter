@@ -10,19 +10,13 @@ public class CurrentClockState {
     private final Integer second;
     private final Integer minute;
     private final Integer hour;
-    private final boolean tickSecond;
-    private final boolean tickMinute;
-    private final boolean tickHour;
     private final List<CellState> cellStates;
     private final LocalTime mainClockState;
 
-    public CurrentClockState(Integer second, Integer minute, Integer hour, boolean tickSecond, boolean tickMinute, boolean tickHour, List<CellState> cellStates, LocalTime mainClockState) {
+    public CurrentClockState(Integer second, Integer minute, Integer hour, List<CellState> cellStates, LocalTime mainClockState) {
         this.second = second;
         this.minute = minute;
         this.hour = hour;
-        this.tickSecond = tickSecond;
-        this.tickMinute = tickMinute;
-        this.tickHour = tickHour;
         this.cellStates = cellStates;
         this.mainClockState = mainClockState;
     }
@@ -39,18 +33,6 @@ public class CurrentClockState {
         return hour;
     }
 
-    public boolean shouldTickSecond() {
-        return tickSecond;
-    }
-
-    public boolean shouldTickMinute() {
-        return tickMinute;
-    }
-
-    public boolean shouldTickHour() {
-        return tickHour;
-    }
-
     public List<CellState> getCellStates() {
         return cellStates;
     }
@@ -65,9 +47,6 @@ public class CurrentClockState {
                 "second=" + second +
                 ", minute=" + minute +
                 ", hour=" + hour +
-                ", tickSecond=" + tickSecond +
-                ", tickMinute=" + tickMinute +
-                ", tickHour=" + tickHour +
                 ", mainClock=" + mainClockState +
                 '}';
     }

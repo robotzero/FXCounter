@@ -67,10 +67,6 @@ public class ClockPresenter implements Initializable {
     @Autowired
     private ResetService resetService;
 
-    @Qualifier("clockState")
-    @Autowired
-    Observable<CurrentClockState> currentClockStatePublishSubject;
-
     private Map<ColumnType, Column> timerColumns;
 
     private BooleanProperty timerMute = new SimpleBooleanProperty(true);
@@ -143,9 +139,9 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
-                return clockService.tick(action).andThen(currentClockStatePublishSubject.take(1).flatMap(currentClockState -> {
+                return clockService.tick(action).flatMap(currentClockState -> {
                     return Observable.just(new TickResult(currentClockState, action.getColumnType(), action.getTimerType()));
-                }));
+                });
             });
         };
 
@@ -207,44 +203,31 @@ public class ClockPresenter implements Initializable {
 
             Optional.of(currentViewState).filter(CurrentViewState::isTick).ifPresent(state -> {
                 TickResult tickResult = currentViewState.getData().getTickResult();
-                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickSecond()).ifPresent(result -> {
-                    List<CellState> cellStates = result.getLabels().getCellStates();
-                    Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.SECONDS).findFirst();
-                    cellState.ifPresent(cs -> {
-                        int vboxId =  cs.getId();
-                        Column column = this.timerColumns.get(ColumnType.SECONDS);
-                        column.setLabel(vboxId, tickResult.getLabels().getSecond());
-                        this.cellStateService.getAll(ColumnType.SECONDS).forEach(cellState1 -> {
-                            column.play(cellState1, tickResult.getDuration());
-                        });
+                List<CellState> cellStates = tickResult.getLabels().getCellStates();
+                cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.SECONDS).findFirst().ifPresent(cs -> {
+                    int vboxId =  cs.getId();
+                    Column column = this.timerColumns.get(ColumnType.SECONDS);
+                    column.setLabel(vboxId, tickResult.getLabels().getSecond());
+                    this.cellStateService.getAll(ColumnType.SECONDS).forEach(cellState1 -> {
+                        column.play(cellState1, tickResult.getDuration());
                     });
                 });
-                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickMinute()).ifPresent(result -> {
-                    List<CellState> cellStates = result.getLabels().getCellStates();
-                    Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.MINUTES).findFirst();
-                    cellState.ifPresent(cs -> {
-                        int vboxId =  cs.getId();
-                        Column column = this.timerColumns.get(ColumnType.MINUTES);
-                        column.setLabel(vboxId, tickResult.getLabels().getMinute());
-                        this.cellStateService.getAll(ColumnType.MINUTES).forEach(cellState1 -> {
-                            column.play(cellState1, tickResult.getDuration());
-                        });
-                    });
-                });
-
-                Optional.of(tickResult).filter(result -> result.getLabels().shouldTickHour()).ifPresent(result -> {
-                    List<CellState> cellStates = result.getLabels().getCellStates();
-                    Optional<CellState> cellState = cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.HOURS).findFirst();
-                    cellState.ifPresent(cs -> {
-                        int vboxId =  cs.getId();
-                        Column column = this.timerColumns.get(ColumnType.HOURS);
-                        column.setLabel(vboxId, tickResult.getLabels().getHour());
-                        this.cellStateService.getAll(ColumnType.HOURS).forEach(cellState1 -> {
-                            column.play(cellState1, tickResult.getDuration());
-                        });
-                    });
-                });
-
+                 cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.MINUTES).findFirst().ifPresent(cs -> {
+                     int vboxId =  cs.getId();
+                     Column column = this.timerColumns.get(ColumnType.MINUTES);
+                     column.setLabel(vboxId, tickResult.getLabels().getMinute());
+                     this.cellStateService.getAll(ColumnType.MINUTES).forEach(cellState1 -> {
+                         column.play(cellState1, tickResult.getDuration());
+                     });
+                 });
+                 cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.HOURS).findFirst().ifPresent(cs -> {
+                     int vboxId =  cs.getId();
+                     Column column = this.timerColumns.get(ColumnType.HOURS);
+                     column.setLabel(vboxId, tickResult.getLabels().getHour());
+                     this.cellStateService.getAll(ColumnType.HOURS).forEach(cellState1 -> {
+                         column.play(cellState1, tickResult.getDuration());
+                     });
+                 });
             });
         }, error -> {
             System.out.println(error.getMessage());
