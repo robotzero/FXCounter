@@ -34,8 +34,12 @@ public class CellState {
         return currentDirection;
     }
 
-    public CellState createNew(double fromY, double toY, DirectionType currentDirection, DirectionType previousDirection) {
-        return new CellState(this.id, new Location(fromY, toY), this.currentLocation,  currentDirection, previousDirection, this.columnType);
+    public DirectionType getPreviousDirection() {
+        return previousDirection;
+    }
+
+    public CellState createNew(Location location, DirectionType currentDirection, DirectionType previousDirection) {
+        return new CellState(this.id, location, this.currentLocation,  currentDirection, previousDirection, this.columnType);
     }
 
     @Override

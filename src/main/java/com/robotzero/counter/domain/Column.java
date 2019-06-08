@@ -12,12 +12,8 @@ public class Column {
         this.columnList = columnList;
     }
 
-    public void play(DirectionType direction, Duration duration) {
-        this.columnList.forEach(cell -> cell.animate(direction, duration));
-    }
-
     public void play(CellState cellState, Duration duration) {
-        this.columnList.forEach(cell -> cell.animate(cellState, duration));
+        this.columnList.parallelStream().forEach(cell -> cell.animate(cellState, duration));
     }
 
     public void setLabels(int index, Integer value) {

@@ -17,7 +17,6 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         this.currentCellsState.put(columnType, newCellState);
     }
 
-
     @Override
     public CellState get(ColumnType columnType, Function<ArrayDeque<CellState>, CellState> retriever) {
         return retriever.apply(this.currentCellsState.get(columnType));
@@ -27,23 +26,23 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     public CellState getChangeable(ColumnType columnType) {
         CellState top = this.currentCellsState.get(columnType).peekFirst();
         CellState bottom = this.currentCellsState.get(columnType).peekLast();
-        if (top.getCurrentLocation().getFromY() == 270 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.SWITCHUP)) {
+        if (top.getCurrentLocation().getFromY() == 270 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.SWITCHUP)) {
             this.currentCellsState.get(columnType).removeFirst();
             this.currentCellsState.get(columnType).addLast(top);
             return top;
         }
 
-        if (bottom.getCurrentLocation().getFromY() == -90 && (bottom.getCurrentDirection() == DirectionType.STARTDOWN || bottom.getCurrentDirection() == DirectionType.DOWN || bottom.getCurrentDirection() == DirectionType.SWITCHDOWN)) {
+        if (bottom.getCurrentLocation().getFromY() == -90 && (bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
             this.currentCellsState.get(columnType).removeLast();
             this.currentCellsState.get(columnType).offerFirst(bottom);
             return bottom;
         }
 
-        if (top.getCurrentLocation().getFromY() == -90 && (top.getCurrentDirection() == DirectionType.VOID || top.getCurrentDirection() == DirectionType.UP || top.getCurrentDirection() == DirectionType.STARTUP || top.getCurrentDirection() == DirectionType.SWITCHUP || top.getCurrentDirection() == DirectionType.DOWN)) {
+        if (top.getCurrentLocation().getFromY() == -90 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.SWITCHUP || top.getPreviousDirection() == DirectionType.DOWN)) {
             return top;
         }
 
-        if (bottom.getCurrentLocation().getFromY() == 270 && (bottom.getCurrentDirection() == DirectionType.DOWN || bottom.getCurrentDirection() == DirectionType.STARTDOWN || bottom.getCurrentDirection() == DirectionType.SWITCHDOWN)) {
+        if (bottom.getCurrentLocation().getFromY() == 270 && (bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
             return bottom;
         }
         System.out.println(top);

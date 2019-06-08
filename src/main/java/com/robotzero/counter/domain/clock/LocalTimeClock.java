@@ -83,13 +83,13 @@ public class LocalTimeClock implements Clock {
     public List<CellState> blah(ColumnType columnType, TickAction action, List<CellState> currentCellState) {
         ArrayDeque<CellState> updatedCellState = cellStateRepository.getAll(columnType).stream().map(cellState -> {
             Location newLocation = locationService.calculate(action.getDelta(), cellState.getCurrentLocation().getToY());
-            return cellState.createNew(newLocation.getFromY(), newLocation.getToY(), directionService.getCurrentDirection().get(columnType), directionService.getPreviousDirection().get(columnType));
+            Direction directionSeconds = directionService.calculateDirection(columnType, cellState.getCurrentDirection(), action.getDelta());
+            return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection());
         }).collect(Collectors.toCollection(ArrayDeque::new));
         cellStateRepository.save(columnType, updatedCellState);
 
         CellState mainActionCellState = this.cellStateRepository.getChangeable(columnType);
-        Direction directionSeconds = directionService.calculateDirection(columnType, action.getDelta());
-        clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType, directionSeconds.getDirectionType());
+        clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType, mainActionCellState.getCurrentDirection());
         List<CellState> c = new ArrayList<>(currentCellState);
         c.add(mainActionCellState);
         return c;
