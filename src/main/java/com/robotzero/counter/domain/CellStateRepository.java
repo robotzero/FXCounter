@@ -9,7 +9,7 @@ public interface CellStateRepository {
 
     void initialize(Map<ColumnType, ArrayDeque<CellState>> currentCellsState);
 
-    CellState getChangeable(ColumnType columnType);
+    //CellState getChangeable(ColumnType columnType);
 
     Optional<CellState> get(int id);
 

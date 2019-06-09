@@ -24,6 +24,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import javax.sql.DataSource;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -86,8 +87,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, LocationService locationService, Map<TimerType, ClockMode> clockModes, DirectionService directionService) {
-        return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, directionService);
+    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, LocationService locationService, Map<TimerType, ClockMode> clockModes, DirectionService directionService, List<ChangeableState> changeableStates) {
+        return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, directionService, changeableStates);
     }
 
     @Bean
@@ -104,6 +105,11 @@ public class TimerConfiguration {
     @Bean
     public Map<TimerType, ClockMode> clockModes(ClockRepository clockRepository, ScrollResetMode scrollResetMode) {
         return Map.of(TimerType.TICK, new TickMode(clockRepository), TimerType.SCROLL, scrollResetMode, TimerType.RESET, scrollResetMode);
+    }
+
+    @Bean
+    public List<ChangeableState> changeableStates() {
+        return List.of(ChangeableState.FIRSTBOTTOM, ChangeableState.FIRSTTOP, ChangeableState.LASTBOTTOM, ChangeableState.LASTTOP);
     }
 
     @Bean

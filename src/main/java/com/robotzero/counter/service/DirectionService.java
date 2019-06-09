@@ -8,8 +8,8 @@ public class DirectionService {
 
     public Direction calculateDirection(ColumnType columnType, DirectionType currentDirection, double delta) {
         Direction newdirection = null;
-        System.out.println(currentDirection);
-        System.out.println(delta);
+//        System.out.println(currentDirection);
+//        System.out.println(delta);
         if (delta < 0) {
             if (currentDirection == DirectionType.VOID) {
                 newdirection = new Direction(columnType, DirectionType.STARTUP);

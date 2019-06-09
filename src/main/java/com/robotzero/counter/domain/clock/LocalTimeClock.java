@@ -28,6 +28,7 @@ public class LocalTimeClock implements Clock {
     private final DirectionService directionService;
     private final LocationService locationService;
     private final Map<TimerType, ClockMode> clockmodes;
+    private final List<ChangeableState> changeableStates;
     private int count;
 
     private Comparator<Integer> clockSort = (num1, num2) -> {
@@ -61,7 +62,8 @@ public class LocalTimeClock implements Clock {
             CellStateRepository cellStateRepository,
             LocationService locationService,
             Map<TimerType, ClockMode> clockModes,
-            DirectionService directionService
+            DirectionService directionService,
+            List<ChangeableState> changeableStates
     ) {
         this.clockRepository = clockRepository;
         this.timerRepository = timerRepository;
@@ -69,6 +71,7 @@ public class LocalTimeClock implements Clock {
         this.locationService = locationService;
         this.clockmodes = clockModes;
         this.directionService = directionService;
+        this.changeableStates = changeableStates;
     }
 
     @PostConstruct
@@ -87,8 +90,22 @@ public class LocalTimeClock implements Clock {
             return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection());
         }).collect(Collectors.toCollection(ArrayDeque::new));
         cellStateRepository.save(columnType, updatedCellState);
+        CellState top = this.cellStateRepository.get(columnType, (repo) -> repo.peekFirst());
+        CellState bottom = this.cellStateRepository.get(columnType, (repo) -> repo.peekLast());
 
-        CellState mainActionCellState = this.cellStateRepository.getChangeable(columnType);
+        CellState mainActionCellState = this.changeableStates.stream().filter(state -> {
+            return state.supports(top.getCurrentLocation().getFromY(), top.getPreviousDirection());
+        }).map(state -> {
+            return state.getChangeable().apply(top);
+        }).findAny().orElseGet(() -> {
+            return this.changeableStates.stream().filter(state -> {
+                return state.supports(bottom.getCurrentLocation().getFromY(), bottom.getPreviousDirection());
+            }).map(state -> {
+                return state.getChangeable().apply(bottom);
+            }).findAny().orElseThrow(() -> new RuntimeException("NAH"));
+        }).apply(this.cellStateRepository.getAll(columnType));
+
+//        CellState mainActionCellState = this.cellStateRepository.getChangeable(columnType);
         clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType, mainActionCellState.getCurrentDirection());
         List<CellState> c = new ArrayList<>(currentCellState);
         c.add(mainActionCellState);

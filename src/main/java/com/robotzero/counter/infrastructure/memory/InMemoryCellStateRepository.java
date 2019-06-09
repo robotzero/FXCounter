@@ -22,33 +22,37 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         return retriever.apply(this.currentCellsState.get(columnType));
     }
 
-    @Override
-    public CellState getChangeable(ColumnType columnType) {
-        CellState top = this.currentCellsState.get(columnType).peekFirst();
-        CellState bottom = this.currentCellsState.get(columnType).peekLast();
-        if (top.getCurrentLocation().getFromY() == 270 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.SWITCHUP)) {
-            this.currentCellsState.get(columnType).removeFirst();
-            this.currentCellsState.get(columnType).addLast(top);
-            return top;
-        }
-
-        if (bottom.getCurrentLocation().getFromY() == -90 && (bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
-            this.currentCellsState.get(columnType).removeLast();
-            this.currentCellsState.get(columnType).offerFirst(bottom);
-            return bottom;
-        }
-
-        if (top.getCurrentLocation().getFromY() == -90 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.SWITCHUP || top.getPreviousDirection() == DirectionType.DOWN)) {
-            return top;
-        }
-
-        if (bottom.getCurrentLocation().getFromY() == 270 && (bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
-            return bottom;
-        }
-        System.out.println(top);
-        System.out.println(bottom);
-        throw new RuntimeException("NAH");
-    }
+//    @Override
+//    public CellState getChangeable(ColumnType columnType) {
+//        CellState top = this.currentCellsState.get(columnType).peekFirst();
+//        CellState bottom = this.currentCellsState.get(columnType).peekLast();
+//        if (top.getCurrentLocation().getFromY() == 270 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.SWITCHUP)) {
+//            System.out.println("BLAH");
+//            this.currentCellsState.get(columnType).removeFirst();
+//            this.currentCellsState.get(columnType).addLast(top);
+//            return top;
+//        }
+//
+//        if (bottom.getCurrentLocation().getFromY() == -90 && (bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
+//            System.out.println("BLAH1");
+//            this.currentCellsState.get(columnType).removeLast();
+//            this.currentCellsState.get(columnType).offerFirst(bottom);
+//            return bottom;
+//        }
+//
+//        if (top.getCurrentLocation().getFromY() == -90 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.SWITCHUP || top.getPreviousDirection() == DirectionType.DOWN)) {
+//            System.out.println("BLAH2");
+//            return top;
+//        }
+//
+//        if (bottom.getCurrentLocation().getFromY() == 270 && (bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
+//            System.out.println("BLAH3");
+//            return bottom;
+//        }
+////        System.out.println(top);
+////        System.out.println(bottom);
+//        throw new RuntimeException("NAH");
+//    }
 
     @Override
     public Optional<CellState> get(int id) {
