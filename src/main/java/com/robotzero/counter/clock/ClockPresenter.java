@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class ClockPresenter implements Initializable {
@@ -93,18 +94,23 @@ public class ClockPresenter implements Initializable {
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
                 .map(ignored -> new ClickEvent(ButtonType.RIGHT, ButtonState.valueOf(resetButton.getText().toUpperCase())));
-
         Observable<ScrollEvent> scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
                 .filter(event -> event.getDeltaY() != 0L)
-                .window(5)
-                .flatMapSingle(scrollEventObservable -> scrollEventObservable.reduce(new Object(), (reducedScrollEvent, nextScrollEvent) -> nextScrollEvent))
-                .cast(javafx.scene.input.ScrollEvent.class)
-                .map(scrollMouseEvent -> {
-                    return new ScrollEvent(((Node) scrollMouseEvent.getSource()).getId(), scrollMouseEvent.getDeltaY());
-                });
+                //@TODO calculate speed of scrolling based of of number of scroll events send
+                .buffer(100, TimeUnit.MILLISECONDS, 5)
+                .filter(scrollEventList -> scrollEventList.size() > 0)
+                .map(scrollEventList -> {
+                    return new ScrollEvent(((Node) scrollEventList.get(0).getSource()).getId(), scrollEventList.get(0).getDeltaY(), scrollEventList.size());
+                })
+                .throttleFirst(200, TimeUnit.MILLISECONDS);
+
+//                .map(scrollMouseEvent -> {
+////                    return new ScrollEvent(ColumnType.SECONDS.name(), -40);
+//                    return new ScrollEvent(((Node) scrollMouseEvent.getSource()).getId(), scrollMouseEvent.getDeltaY());
+//                });
 
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));

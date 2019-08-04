@@ -4,10 +4,7 @@ import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
-import com.sun.javafx.property.adapter.Disposer;
-import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.subjects.Subject;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
@@ -93,22 +90,13 @@ public class LocalTimeClock implements Clock {
         CellState top = this.cellStateRepository.get(columnType, (repo) -> repo.peekFirst());
         CellState bottom = this.cellStateRepository.get(columnType, (repo) -> repo.peekLast());
 
-        CellState mainActionCellState = this.changeableStates.stream().filter(state -> {
-            return state.supports(top.getCurrentLocation().getFromY(), top.getPreviousDirection());
-        }).map(state -> {
-            return state.getChangeable().apply(top);
-        }).findAny().orElseGet(() -> {
-            return this.changeableStates.stream().filter(state -> {
-                return state.supports(bottom.getCurrentLocation().getFromY(), bottom.getPreviousDirection());
-            }).map(state -> {
-                return state.getChangeable().apply(bottom);
-            }).findAny().orElseThrow(() -> new RuntimeException("NAH"));
-        }).apply(this.cellStateRepository.getAll(columnType));
+        CellState changeableCellState = this.changeableStates.stream().map(state -> {
+            return state.moveCellStates(top).or(() -> state.moveCellStates(bottom));
+        }).filter(Optional::isPresent).map(changeableCellFunc -> changeableCellFunc.get().apply(this.cellStateRepository.getAll(columnType))).findFirst().orElseThrow(() -> new RuntimeException("NAH"));
 
-//        CellState mainActionCellState = this.cellStateRepository.getChangeable(columnType);
-        clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType, mainActionCellState.getCurrentDirection());
+        clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType,  changeableCellState.getCurrentDirection());
         List<CellState> c = new ArrayList<>(currentCellState);
-        c.add(mainActionCellState);
+        c.add(changeableCellState);
         return c;
     }
 

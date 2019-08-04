@@ -53,4 +53,11 @@ public class CellState {
                 ", id=" + id +
                 '}';
     }
+
+    public class Id {
+        private final int id;
+        public Id() {
+            this.id = CellState.this.id;
+        }
+    }
 }

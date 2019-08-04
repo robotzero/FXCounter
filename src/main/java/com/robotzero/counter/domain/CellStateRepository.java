@@ -1,21 +1,19 @@
 package com.robotzero.counter.domain;
 
-import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 public interface CellStateRepository {
 
-    void initialize(Map<ColumnType, ArrayDeque<CellState>> currentCellsState);
-
-    //CellState getChangeable(ColumnType columnType);
+    void initialize(Map<ColumnType, Deque<CellState>> currentCellsState);
 
     Optional<CellState> get(int id);
 
-    ArrayDeque<CellState> getAll(ColumnType columnType);
+    Deque<CellState> getAll(ColumnType columnType);
 
-    void save(ColumnType columnType, ArrayDeque<CellState> updatedCellState);
+    void save(ColumnType columnType, Deque<CellState> updatedCellState);
 
-    CellState get(ColumnType columnType, Function<ArrayDeque<CellState>, CellState> retriever);
+    CellState get(ColumnType columnType, Function<Deque<CellState>, CellState> retriever);
 }

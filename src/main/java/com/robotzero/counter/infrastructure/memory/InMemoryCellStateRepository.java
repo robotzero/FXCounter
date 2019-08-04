@@ -5,54 +5,22 @@ import java.util.*;
 import java.util.function.Function;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
-    private Map<ColumnType, ArrayDeque<CellState>> currentCellsState;
+    private Map<ColumnType, Deque<CellState>> currentCellsState;
 
     @Override
-    public void initialize(Map<ColumnType, ArrayDeque<CellState>> currentCellsState) {
+    public void initialize(Map<ColumnType, Deque<CellState>> currentCellsState) {
         this.currentCellsState = currentCellsState;
     }
 
     @Override
-    public void save(ColumnType columnType, ArrayDeque<CellState> newCellState) {
+    public void save(ColumnType columnType, Deque<CellState> newCellState) {
         this.currentCellsState.put(columnType, newCellState);
     }
 
     @Override
-    public CellState get(ColumnType columnType, Function<ArrayDeque<CellState>, CellState> retriever) {
+    public CellState get(ColumnType columnType, Function<Deque<CellState>, CellState> retriever) {
         return retriever.apply(this.currentCellsState.get(columnType));
     }
-
-//    @Override
-//    public CellState getChangeable(ColumnType columnType) {
-//        CellState top = this.currentCellsState.get(columnType).peekFirst();
-//        CellState bottom = this.currentCellsState.get(columnType).peekLast();
-//        if (top.getCurrentLocation().getFromY() == 270 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.SWITCHUP)) {
-//            System.out.println("BLAH");
-//            this.currentCellsState.get(columnType).removeFirst();
-//            this.currentCellsState.get(columnType).addLast(top);
-//            return top;
-//        }
-//
-//        if (bottom.getCurrentLocation().getFromY() == -90 && (bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
-//            System.out.println("BLAH1");
-//            this.currentCellsState.get(columnType).removeLast();
-//            this.currentCellsState.get(columnType).offerFirst(bottom);
-//            return bottom;
-//        }
-//
-//        if (top.getCurrentLocation().getFromY() == -90 && (top.getPreviousDirection() == DirectionType.VOID || top.getPreviousDirection() == DirectionType.UP || top.getPreviousDirection() == DirectionType.STARTUP || top.getPreviousDirection() == DirectionType.SWITCHUP || top.getPreviousDirection() == DirectionType.DOWN)) {
-//            System.out.println("BLAH2");
-//            return top;
-//        }
-//
-//        if (bottom.getCurrentLocation().getFromY() == 270 && (bottom.getPreviousDirection() == DirectionType.DOWN || bottom.getPreviousDirection() == DirectionType.STARTDOWN || bottom.getPreviousDirection() == DirectionType.SWITCHDOWN)) {
-//            System.out.println("BLAH3");
-//            return bottom;
-//        }
-////        System.out.println(top);
-////        System.out.println(bottom);
-//        throw new RuntimeException("NAH");
-//    }
 
     @Override
     public Optional<CellState> get(int id) {
@@ -60,7 +28,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     }
 
     @Override
-    public ArrayDeque<CellState> getAll(ColumnType columnType) {
+    public Deque<CellState> getAll(ColumnType columnType) {
         return this.currentCellsState.get(columnType);
     }
 

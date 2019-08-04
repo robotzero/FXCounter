@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-;
-
 public class Populator {
 
     private IntegerProperty cellSize = new SimpleIntegerProperty(60);
@@ -57,7 +55,7 @@ public class Populator {
                 }).collect(Collectors.groupingBy(Cell::getColumnType)).entrySet().stream().collect(timerColumnsCollector);
     }
 
-    public Map<ColumnType, ArrayDeque<CellState>> cellState(GridPane gridPane) {
+    public Map<ColumnType, Deque<CellState>> cellState(GridPane gridPane) {
         //@TODO change to rxjava type of initialization.
         return gridPane.getChildrenUnmodifiable().filtered(
                 node -> node.getClass().equals(StackPane.class) &&

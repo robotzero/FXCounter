@@ -4,7 +4,7 @@ import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.ColumnType;
 
-import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class CellService {
         this.cellStateRepository = cellStateRepository;
     }
 
-    public void initialize(Map<ColumnType, ArrayDeque<CellState>> currentCellsState) {
+    public void initialize(Map<ColumnType, Deque<CellState>> currentCellsState) {
         this.cellStateRepository.initialize(currentCellsState);
     }
 
@@ -23,7 +23,7 @@ public class CellService {
         return this.cellStateRepository.get(id);
     }
 
-    public ArrayDeque<CellState> getAll(ColumnType columnType) {
+    public Deque<CellState> getAll(ColumnType columnType) {
         return this.cellStateRepository.getAll(columnType);
     }
 }
