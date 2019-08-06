@@ -6,7 +6,6 @@ import com.robotzero.counter.domain.ColumnType;
 
 import java.util.Deque;
 import java.util.Map;
-import java.util.Optional;
 
 public class CellService {
     private final CellStateRepository cellStateRepository;
@@ -19,7 +18,7 @@ public class CellService {
         this.cellStateRepository.initialize(currentCellsState);
     }
 
-    public Optional<CellState> get(int id) {
+    public CellState get(int id) {
         return this.cellStateRepository.get(id);
     }
 

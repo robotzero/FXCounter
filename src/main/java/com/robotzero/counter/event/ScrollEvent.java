@@ -6,12 +6,10 @@ public final class ScrollEvent implements MainViewEvent {
 
     private String parentNodeId;
     private double delta;
-    private int numOfScrolls;
 
-    public ScrollEvent(String parentNodeId, double delta, int numOfScrolls) {
+    public ScrollEvent(String parentNodeId, double delta) {
         this.parentNodeId = parentNodeId;
         this.delta = delta;
-        this.numOfScrolls = numOfScrolls;
     }
 
     public double getDelta() {
@@ -20,9 +18,5 @@ public final class ScrollEvent implements MainViewEvent {
 
     public ColumnType getColumnType() {
         return ColumnType.valueOf(parentNodeId.toUpperCase());
-    }
-
-    public int getNumOfScrolls() {
-        return numOfScrolls;
     }
 }

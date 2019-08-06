@@ -99,19 +99,13 @@ public class ClockPresenter implements Initializable {
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
                 .filter(event -> event.getDeltaY() != 0L)
-                //@TODO calculate speed of scrolling based of of number of scroll events send
-                .buffer(100, TimeUnit.MILLISECONDS, 5)
-                .filter(scrollEventList -> scrollEventList.size() > 0)
-                .map(scrollEventList -> {
-                    return new ScrollEvent(((Node) scrollEventList.get(0).getSource()).getId(), scrollEventList.get(0).getDeltaY(), scrollEventList.size());
-                })
-                .throttleFirst(200, TimeUnit.MILLISECONDS);
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .map(event -> {
+                    return new ScrollEvent(((Node) event.getSource()).getId(), event.getDeltaY());
+                });
 
-//                .map(scrollMouseEvent -> {
-////                    return new ScrollEvent(ColumnType.SECONDS.name(), -40);
-//                    return new ScrollEvent(((Node) scrollMouseEvent.getSource()).getId(), scrollMouseEvent.getDeltaY());
-//                });
-
+//        //@TODO set up init event?
+//        Observable<InitEvent> blah = Observable.just()
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
 

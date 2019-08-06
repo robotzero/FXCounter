@@ -23,8 +23,8 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     }
 
     @Override
-    public Optional<CellState> get(int id) {
-        return currentCellsState.values().stream().flatMap(Collection::stream).filter(cellState -> cellState.getId() == id).findFirst();
+    public CellState get(int id) {
+        return currentCellsState.values().stream().flatMap(Collection::stream).filter(cellState -> cellState.getId() == id).findFirst().orElseThrow(() -> new RuntimeException("Invalid cell state id"));
     }
 
     @Override

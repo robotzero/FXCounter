@@ -2,14 +2,13 @@ package com.robotzero.counter.domain;
 
 import java.util.Deque;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 public interface CellStateRepository {
 
     void initialize(Map<ColumnType, Deque<CellState>> currentCellsState);
 
-    Optional<CellState> get(int id);
+    CellState get(int id);
 
     Deque<CellState> getAll(ColumnType columnType);
 
