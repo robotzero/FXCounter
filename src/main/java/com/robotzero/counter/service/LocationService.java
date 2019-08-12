@@ -16,6 +16,7 @@ public class LocationService {
 
     public Location calculate(double delta, double translateY)
     {
+
         if (delta <= 0 && translateY <= -90) {
             return new Location(270, 180);
         }

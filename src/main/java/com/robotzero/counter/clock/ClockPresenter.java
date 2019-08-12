@@ -1,7 +1,6 @@
 package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.*;
-import com.robotzero.counter.domain.clock.CurrentClockState;
 import com.robotzero.counter.event.*;
 import com.robotzero.counter.event.action.Action;
 import com.robotzero.counter.event.action.ActionType;
@@ -27,7 +26,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.IOException;
 import java.net.URL;
@@ -72,18 +70,28 @@ public class ClockPresenter implements Initializable {
 
     private BooleanProperty timerMute = new SimpleBooleanProperty(true);
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        timerMute.bind(startButton.armedProperty());
-        this.timerColumns = this.populator.timerColumns(this.gridPane);
+    public void setTimerColumns(Map<ColumnType, Column> timerColumns) {
+        this.timerColumns = timerColumns;
         this.cellStateService.initialize(this.populator.cellState(gridPane));
         Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
-        //@TODO initialize by sending the event.
         IntStream.rangeClosed(0, 3).forEach(index -> {
             this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
             this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
             this.timerColumns.get(ColumnType.HOURS).setLabels(index, initialValues.get(ColumnType.HOURS).get(index));
         });
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        timerMute.bind(startButton.armedProperty());
+//        this.timerColumns = this.populator.timerColumns(this.gridPane);
+//        this.cellStateService.initialize(this.populator.cellState(gridPane));
+        //@TODO initialize by sending the event.
+//        IntStream.rangeClosed(0, 3).forEach(index -> {
+//            this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
+//            this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
+//            this.timerColumns.get(ColumnType.HOURS).setLabels(index, initialValues.get(ColumnType.HOURS).get(index));
+//        });
 
 //        optionClicks.subscribe(click -> stageController.setView());
 

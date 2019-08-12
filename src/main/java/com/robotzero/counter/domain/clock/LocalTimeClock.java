@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -32,7 +33,7 @@ public class LocalTimeClock implements Clock {
         return num1.equals(num2) ? 0 : num1 == 0 ? -1 : num1 > num2 ? -1 : 1;
     };
 
-    private Predicate<Integer> shouldTick = clockState -> clockState == 0;
+    private BiPredicate<Integer, TimerType> shouldTick = (clockState, timerType) -> clockState == 0 && timerType == TimerType.TICK;
 
     private BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick = (columnType, direction) -> {
         if (columnType == ColumnType.SECONDS || columnType == ColumnType.MAIN) {
@@ -80,7 +81,7 @@ public class LocalTimeClock implements Clock {
         }).getSavedTimer());
     }
 
-    public List<CellState> blah(TickAction action, List<ColumnType> tickRequestForColumns) {
+    public List<CellState> blah(TickAction action, Set<ColumnType> tickRequestForColumns) {
         return tickRequestForColumns.stream().map(columnType -> {
             ArrayDeque<CellState> updatedCellState = cellStateRepository.getAll(columnType).stream().map(cellState -> {
                 Location newLocation = locationService.calculate(action.getDelta(), cellState.getCurrentLocation().getToY());
@@ -101,20 +102,17 @@ public class LocalTimeClock implements Clock {
 
     public Observable<CurrentClockState> tick(TickAction action) {
 
-        List<ColumnType> minutes = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK)
+        Set<ColumnType> minutes = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
-                .stream().map(ignore -> ColumnType.MINUTES).collect(Collectors.toList());
+                .stream().map(ignore -> ColumnType.MINUTES).collect(Collectors.toSet());
 
-        List<ColumnType> hours = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond()) && action.getTimerType() == TimerType.TICK)
+        Set<ColumnType> hours = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute(), action.getTimerType()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
-                .stream().map(ignore -> ColumnType.HOURS).collect(Collectors.toList());
+                .stream().map(ignore -> ColumnType.HOURS).collect(Collectors.toSet());
 
-        minutes.addAll(hours);
         minutes.add(action.getColumnType());
-        minutes.sort(Comparator.reverseOrder());
-
+        minutes.addAll(hours);
         List<CellState> cellStatesSoFar = blah(action, minutes);
-
 
         return Observable.just(new CurrentClockState(
                 this.clockRepository.get(ColumnType.SECONDS).getSecond(),

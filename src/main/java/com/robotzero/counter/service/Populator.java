@@ -66,7 +66,7 @@ public class Populator {
                 .map(node -> {
                     VBox vBox = (VBox) node;
                     return new CellState(
-                            Integer.valueOf(vBox.getId()),
+                            Integer.parseInt(vBox.getId()),
                             new Location(vBox.getTranslateY(), vBox.getTranslateY()),
                             new Location(vBox.getTranslateY(), vBox.getTranslateY()),
                             DirectionType.VOID,
