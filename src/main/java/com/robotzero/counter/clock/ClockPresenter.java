@@ -2,14 +2,8 @@ package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.*;
-import com.robotzero.counter.event.action.Action;
-import com.robotzero.counter.event.action.ActionType;
-import com.robotzero.counter.event.action.ClickAction;
-import com.robotzero.counter.event.action.TickAction;
-import com.robotzero.counter.event.result.ClickResult;
-import com.robotzero.counter.event.result.CurrentViewData;
-import com.robotzero.counter.event.result.Result;
-import com.robotzero.counter.event.result.TickResult;
+import com.robotzero.counter.event.action.*;
+import com.robotzero.counter.event.result.*;
 import com.robotzero.counter.service.*;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
@@ -112,12 +106,11 @@ public class ClockPresenter implements Initializable {
                     return new ScrollEvent(((Node) event.getSource()).getId(), event.getDeltaY());
                 });
 
-//        //@TODO set up init event?
-//        Observable<InitEvent> blah = Observable.just()
+        Observable<InitViewEvent> initViewEvent = Observable.just(new InitViewEvent());
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
 
-        Observable<MainViewEvent> mainViewEvents = Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent);
+        Observable<MainViewEvent> mainViewEvents = Observable.merge(Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent), initViewEvent);
 
         ObservableTransformer<ClickEvent, Action> clickEventTransformer = clickEvent -> clickEvent.concatMap(
           event -> {
@@ -133,12 +126,20 @@ public class ClockPresenter implements Initializable {
             return Observable.just(new TickAction(-1, ColumnType.SECONDS, TimerType.TICK));
         });
 
+        ObservableTransformer<InitViewEvent, InitViewAction> initViewEventTransformer = initView -> initView.concatMap(event -> {
+            return Observable.just(new InitViewAction());
+        });
+
         ObservableTransformer<MainViewEvent, Action> actionTransformer = mainViewEvent -> mainViewEvent.publish(sharedObservable -> {
-            return Observable.merge(
+            return Observable.merge(Observable.merge(
               sharedObservable.ofType(ClickEvent.class).compose(clickEventTransformer),
               sharedObservable.ofType(ScrollEvent.class).compose(scrollEventTransformer),
               sharedObservable.ofType(TickEvent.class).compose(tickEventTransformer)
-            );
+            ), sharedObservable.ofType(InitViewEvent.class).compose(initViewEventTransformer));
+        });
+
+        ObservableTransformer<InitViewAction, InitViewResult> initViewActionTransformer = initViewAction -> initViewAction.concatMap(action -> {
+            return Observable.just(new InitViewResult());
         });
 
         ObservableTransformer<ClickAction, ClickResult> clickActionTransformer = clickAction -> clickAction.concatMap(action -> {
@@ -157,7 +158,8 @@ public class ClockPresenter implements Initializable {
         Observable<Result> results = actions.publish(action -> {
             return Observable.merge(
                     action.ofType(ClickAction.class).compose(clickActionTransformer),
-                    action.ofType(TickAction.class).compose(tickActionTransformer)
+                    action.ofType(TickAction.class).compose(tickActionTransformer),
+                    action.ofType(InitViewAction.class).compose(initViewActionTransformer)
             );
         });
 
@@ -186,6 +188,11 @@ public class ClockPresenter implements Initializable {
             if (intermediateState.getClass().equals(TickResult.class)) {
                 TickResult tickResult = (TickResult) intermediateState;
                 return CurrentViewState.tick(new CurrentViewData(null, null, tickResult));
+            }
+
+            if (intermediateState.getClass().equals(InitViewResult.class)) {
+                InitViewResult initViewResult = (InitViewResult) intermediateState;
+                return CurrentViewState.init(new CurrentViewData(null, null, null));
             }
 
             return CurrentViewState.idle();

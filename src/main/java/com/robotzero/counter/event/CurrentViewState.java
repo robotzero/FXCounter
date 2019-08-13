@@ -55,6 +55,10 @@ public class CurrentViewState {
         return new CurrentViewState(false, false, false, false, false, false, false, false, errorMessage, null);
     }
 
+    public static CurrentViewState init(CurrentViewData currentViewData) {
+        return new CurrentViewState(false, false, false, false, false, false, false, false, "", currentViewData);
+    }
+
     public static CurrentViewState idle() {
         return new CurrentViewState(false, false, false, false, false, false, false, false, "", null);
     }
