@@ -57,8 +57,4 @@ public class StageController {
             sceneConfiguration.getWidthObject().bind(rootNode.getScene().widthProperty());
         });
     }
-
-    public Stage getPrimaryStage() {
-        return this.primaryStage;
-    }
 }

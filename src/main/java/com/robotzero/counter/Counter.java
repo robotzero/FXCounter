@@ -11,12 +11,17 @@ import com.robotzero.di.TimerConfiguration;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventTarget;
+import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.swing.event.HyperlinkEvent;
 import java.util.Map;
 
 public class Counter extends Application {
@@ -36,11 +41,14 @@ public class Counter extends Application {
         stageController.setStage(primaryStage);
         stageController.setView();
         stageController.afterPropertiesSet();
-        primaryStage.setTitle("Count Me Bubbles!");
-        primaryStage.setX(2000);
-        primaryStage.setY(100);
 
         Platform.runLater(() -> {
+            primaryStage.setTitle("Count Me Bubbles!");
+            primaryStage.setX(2000);
+            primaryStage.setY(100);
+            ClockView clockView = injector.getBean(ClockView.class);
+            GridPane gridPane = (GridPane) clockView.getView();
+            WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
             primaryStage.show();
         });
     }

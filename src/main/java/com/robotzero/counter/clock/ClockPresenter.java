@@ -12,6 +12,7 @@ import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -86,7 +87,8 @@ public class ClockPresenter implements Initializable {
                     return new ScrollEvent(((Node) event.getSource()).getId(), event.getDeltaY());
                 });
 
-        Observable<InitViewEvent> initViewEvent = JavaFxObservable.eventsOf(stageController.getPrimaryStage(), WindowEvent.WINDOW_SHOWN)
+        Observable<InitViewEvent> initViewEvent = JavaFxObservable.eventsOf(gridPane, EventType.ROOT)
+                .filter(c -> c.getEventType().getName().toLowerCase().equals("stageshow"))
                 .take(1)
                 .map(event -> new InitViewEvent());
 
