@@ -12,9 +12,10 @@ public class CurrentViewState {
     private final boolean reset;
     private final boolean tick;
     private final boolean scroll;
+    private final boolean init;
     private final CurrentViewData data;
 
-    public CurrentViewState(boolean failure, boolean click, boolean start, boolean stop, boolean pause, boolean reset, boolean tick, boolean scroll, String errorMessage, CurrentViewData data) {
+    public CurrentViewState(boolean failure, boolean click, boolean start, boolean stop, boolean pause, boolean reset, boolean tick, boolean scroll, boolean init, String errorMessage, CurrentViewData data) {
         this.click = click;
         this.start = start;
         this.stop = stop;
@@ -22,45 +23,46 @@ public class CurrentViewState {
         this.reset = reset;
         this.tick = tick;
         this.scroll = scroll;
+        this.init = init;
         this.failure = failure;
         this.errorMessage = errorMessage;
         this.data = data;
     }
 
     public static CurrentViewState start(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, true, false, false, false, false, false, "", currentViewData);
+        return new CurrentViewState(false, true, true, false, false, false, false, false, false, "", currentViewData);
     }
 
     public static CurrentViewState stop(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, true, false, false, false, false, "", currentViewData);
+        return new CurrentViewState(false, true, false, true, false, false, false, false, false, "", currentViewData);
     }
 
     public static CurrentViewState pause(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, false, true, false, false, false, "", currentViewData);
+        return new CurrentViewState(false, true, false, false, true, false, false, false, false, "", currentViewData);
     }
 
     public static CurrentViewState tick(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, false, false, false, true, false, "", currentViewData);
+        return new CurrentViewState(false, false, false, false, false, false, true, false, false, "", currentViewData);
     }
 
     public static CurrentViewState reset(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, false, false, true, false, false, "", currentViewData);
+        return new CurrentViewState(false, true, false, false, false, true, false, false, false, "", currentViewData);
     }
 
     public static CurrentViewState scroll(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, false, false, false, false, true, "", currentViewData);
+        return new CurrentViewState(false, false, false, false, false, false, false, true, false, "", currentViewData);
     }
 
     public static CurrentViewState failure(String errorMessage) {
-        return new CurrentViewState(false, false, false, false, false, false, false, false, errorMessage, null);
+        return new CurrentViewState(false, false, false, false, false, false, false, false, false, errorMessage, null);
     }
 
     public static CurrentViewState init(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, false, false, false, false, false, "", currentViewData);
+        return new CurrentViewState(false, false, false, false, false, false, false, false, true, "", currentViewData);
     }
 
     public static CurrentViewState idle() {
-        return new CurrentViewState(false, false, false, false, false, false, false, false, "", null);
+        return new CurrentViewState(false, false, false, false, false, false, false, false, false, "", null);
     }
 
     public CurrentViewData getData() {
@@ -101,6 +103,10 @@ public class CurrentViewState {
 
     public boolean isClick() {
         return click;
+    }
+
+    public boolean isInit() {
+        return init;
     }
 
     @Override

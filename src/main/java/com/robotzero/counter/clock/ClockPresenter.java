@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.WindowEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -64,30 +65,9 @@ public class ClockPresenter implements Initializable {
 
     private BooleanProperty timerMute = new SimpleBooleanProperty(true);
 
-    public void setTimerColumns(Map<ColumnType, Column> timerColumns) {
-        this.timerColumns = timerColumns;
-        this.cellStateService.initialize(this.populator.cellState(gridPane));
-        Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
-        IntStream.rangeClosed(0, 3).forEach(index -> {
-            this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
-            this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
-            this.timerColumns.get(ColumnType.HOURS).setLabels(index, initialValues.get(ColumnType.HOURS).get(index));
-        });
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         timerMute.bind(startButton.armedProperty());
-//        this.timerColumns = this.populator.timerColumns(this.gridPane);
-//        this.cellStateService.initialize(this.populator.cellState(gridPane));
-        //@TODO initialize by sending the event.
-//        IntStream.rangeClosed(0, 3).forEach(index -> {
-//            this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initialValues.get(ColumnType.SECONDS).get(index));
-//            this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initialValues.get(ColumnType.MINUTES).get(index));
-//            this.timerColumns.get(ColumnType.HOURS).setLabels(index, initialValues.get(ColumnType.HOURS).get(index));
-//        });
-
-//        optionClicks.subscribe(click -> stageController.setView());
 
         Observable<ClickEvent> startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
@@ -106,7 +86,9 @@ public class ClockPresenter implements Initializable {
                     return new ScrollEvent(((Node) event.getSource()).getId(), event.getDeltaY());
                 });
 
-        Observable<InitViewEvent> initViewEvent = Observable.just(new InitViewEvent());
+        Observable<InitViewEvent> initViewEvent = JavaFxObservable.eventsOf(stageController.getPrimaryStage(), WindowEvent.WINDOW_SHOWN)
+                .take(1)
+                .map(event -> new InitViewEvent());
 
         Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
 
@@ -139,7 +121,8 @@ public class ClockPresenter implements Initializable {
         });
 
         ObservableTransformer<InitViewAction, InitViewResult> initViewActionTransformer = initViewAction -> initViewAction.concatMap(action -> {
-            return Observable.just(new InitViewResult());
+            Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
+            return Observable.just(new InitViewResult(initialValues));
         });
 
         ObservableTransformer<ClickAction, ClickResult> clickActionTransformer = clickAction -> clickAction.concatMap(action -> {
@@ -168,31 +151,31 @@ public class ClockPresenter implements Initializable {
                 ClickResult clickResult = (ClickResult) intermediateState;
                 if (clickResult.getActionType().equals(ActionType.LEFT)) {
                     if (clickResult.getButtonState().equals(ButtonState.START)) {
-                        return CurrentViewState.pause(new CurrentViewData(clickResult, null, null));
+                        return CurrentViewState.pause(new CurrentViewData(clickResult, null, null, null));
                     }
 
                     if (clickResult.getButtonState().equals(ButtonState.PAUSE)) {
-                        return CurrentViewState.start(new CurrentViewData(clickResult, null, null));
+                        return CurrentViewState.start(new CurrentViewData(clickResult, null, null, null));
                     }
 
                     if (clickResult.getButtonState().equals(ButtonState.STOP)) {
-                        return CurrentViewState.stop(new CurrentViewData(clickResult, null, null));
+                        return CurrentViewState.stop(new CurrentViewData(clickResult, null, null, null));
                     }
                 }
 
                 if (clickResult.getActionType().equals(ActionType.RIGHT)) {
-                    return CurrentViewState.reset(new CurrentViewData(clickResult, null, null));
+                    return CurrentViewState.reset(new CurrentViewData(clickResult, null, null, null));
                 }
             }
 
             if (intermediateState.getClass().equals(TickResult.class)) {
                 TickResult tickResult = (TickResult) intermediateState;
-                return CurrentViewState.tick(new CurrentViewData(null, null, tickResult));
+                return CurrentViewState.tick(new CurrentViewData(null, null, tickResult, null));
             }
 
             if (intermediateState.getClass().equals(InitViewResult.class)) {
                 InitViewResult initViewResult = (InitViewResult) intermediateState;
-                return CurrentViewState.init(new CurrentViewData(null, null, null));
+                return CurrentViewState.init(new CurrentViewData(null, null, null, initViewResult));
             }
 
             return CurrentViewState.idle();
@@ -243,6 +226,18 @@ public class ClockPresenter implements Initializable {
                          column.play(cellState1, tickResult.getDuration());
                      });
                  });
+            });
+
+            Optional.of(currentViewState).filter(CurrentViewState::isInit).ifPresent(state -> {
+                InitViewResult initResult = currentViewState.getData().getInitViewResult();
+                this.timerColumns = populator.timerColumns(gridPane);
+                this.cellStateService.initialize(this.populator.cellState(gridPane));
+                IntStream.rangeClosed(0, 3).forEach(index -> {
+                    this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initResult.getInitialValues().get(ColumnType.SECONDS).get(index));
+                    this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initResult.getInitialValues().get(ColumnType.MINUTES).get(index));
+                    this.timerColumns.get(ColumnType.HOURS).setLabels(index, initResult.getInitialValues().get(ColumnType.HOURS).get(index));
+                });
+
             });
         }, error -> {
             System.out.println(error.getMessage());

@@ -8,8 +8,10 @@ import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.StageController;
 import com.robotzero.di.TimerConfiguration;
+import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
@@ -37,15 +39,9 @@ public class Counter extends Application {
         primaryStage.setTitle("Count Me Bubbles!");
         primaryStage.setX(2000);
         primaryStage.setY(100);
+
         Platform.runLater(() -> {
-            Populator populator = injector.getBean(Populator.class);
-            ClockView clockView = injector.getBean(ClockView.class);
-            clockView.getViewAsync(gridPane -> {
-                ClockPresenter clockPresenter= (ClockPresenter) clockView.getPresenter();
-                Map<ColumnType, Column> timerColumns = populator.timerColumns((GridPane) gridPane);
-                clockPresenter.setTimerColumns(timerColumns);
-                primaryStage.show();
-            });
+            primaryStage.show();
         });
     }
 
