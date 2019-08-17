@@ -7,7 +7,6 @@ import com.robotzero.counter.clock.ClockView;
 import com.robotzero.counter.clock.options.OptionsPresenter;
 import com.robotzero.counter.clock.options.OptionsView;
 import com.robotzero.counter.domain.CellStateRepository;
-import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.*;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
@@ -22,8 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import javax.sql.DataSource;
-import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,13 +90,7 @@ public class TimerConfiguration {
 
     @Bean
     public ClockRepository clockRepository() {
-        Map<ColumnType, LocalTime> inMemoryClockStateStorage = new HashMap<>();
-        inMemoryClockStateStorage.put(ColumnType.MAIN, LocalTime.of(0, 0, 0));
-        inMemoryClockStateStorage.put(ColumnType.SECONDS, LocalTime.of(0, 0, 0));
-        inMemoryClockStateStorage.put(ColumnType.MINUTES, LocalTime.of(0, 0, 0));
-        inMemoryClockStateStorage.put(ColumnType.HOURS, LocalTime.of(0, 0, 0));
-
-        return new InMemoryClockRepository(inMemoryClockStateStorage);
+        return new InMemoryClockRepository();
     }
 
     @Bean

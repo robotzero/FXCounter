@@ -20,12 +20,13 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.WindowEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -123,8 +124,12 @@ public class ClockPresenter implements Initializable {
         });
 
         ObservableTransformer<InitViewAction, InitViewResult> initViewActionTransformer = initViewAction -> initViewAction.concatMap(action -> {
-            Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initialize(DirectionType.DOWN);
-            return Observable.just(new InitViewResult(initialValues));
+            return Observable.fromFuture(CompletableFuture.runAsync(() -> {
+                this.clockService.initializeTime();
+            }, new SimpleAsyncTaskExecutor()).thenApplyAsync(ignored -> {
+                Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initializeLabels(DirectionType.DOWN);
+                return new InitViewResult(initialValues);
+            }, new SimpleAsyncTaskExecutor()));
         });
 
         ObservableTransformer<ClickAction, ClickResult> clickActionTransformer = clickAction -> clickAction.concatMap(action -> {
@@ -204,30 +209,14 @@ public class ClockPresenter implements Initializable {
             Optional.of(currentViewState).filter(CurrentViewState::isTick).ifPresent(state -> {
                 TickResult tickResult = currentViewState.getData().getTickResult();
                 List<CellState> cellStates = tickResult.getLabels().getCellStates();
-                cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.SECONDS).findFirst().ifPresent(cs -> {
-                    int vboxId =  cs.getId();
-                    Column column = this.timerColumns.get(ColumnType.SECONDS);
-                    column.setLabel(vboxId, tickResult.getLabels().getSecond());
-                    this.cellStateService.getAll(ColumnType.SECONDS).forEach(cellState1 -> {
+                cellStates.forEach(cellState -> {
+                    int vboxId = cellState.getId();
+                    Column column = this.timerColumns.get(cellState.getColumnType());
+                    column.setLabel(vboxId, tickResult.getLabels().getLabelForColumn(cellState.getColumnType()));
+                    this.cellStateService.getAll(cellState.getColumnType()).forEach(cellState1 -> {
                         column.play(cellState1, tickResult.getDuration());
                     });
                 });
-                 cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.MINUTES).findFirst().ifPresent(cs -> {
-                     int vboxId =  cs.getId();
-                     Column column = this.timerColumns.get(ColumnType.MINUTES);
-                     column.setLabel(vboxId, tickResult.getLabels().getMinute());
-                     this.cellStateService.getAll(ColumnType.MINUTES).forEach(cellState1 -> {
-                         column.play(cellState1, tickResult.getDuration());
-                     });
-                 });
-                 cellStates.stream().filter(cellS -> cellS.getColumnType() == ColumnType.HOURS).findFirst().ifPresent(cs -> {
-                     int vboxId =  cs.getId();
-                     Column column = this.timerColumns.get(ColumnType.HOURS);
-                     column.setLabel(vboxId, tickResult.getLabels().getHour());
-                     this.cellStateService.getAll(ColumnType.HOURS).forEach(cellState1 -> {
-                         column.play(cellState1, tickResult.getDuration());
-                     });
-                 });
             });
 
             Optional.of(currentViewState).filter(CurrentViewState::isInit).ifPresent(state -> {
@@ -235,9 +224,7 @@ public class ClockPresenter implements Initializable {
                 this.timerColumns = populator.timerColumns(gridPane);
                 this.cellStateService.initialize(this.populator.cellState(gridPane));
                 IntStream.rangeClosed(0, 3).forEach(index -> {
-                    this.timerColumns.get(ColumnType.SECONDS).setLabels(index, initResult.getInitialValues().get(ColumnType.SECONDS).get(index));
-                    this.timerColumns.get(ColumnType.MINUTES).setLabels(index, initResult.getInitialValues().get(ColumnType.MINUTES).get(index));
-                    this.timerColumns.get(ColumnType.HOURS).setLabels(index, initResult.getInitialValues().get(ColumnType.HOURS).get(index));
+                    this.timerColumns.forEach((columnType, column) -> column.setLabels(index, initResult.getInitialValues().get(columnType).get(index)));
                 });
 
             });

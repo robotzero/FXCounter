@@ -4,22 +4,23 @@ import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.clock.ClockRepository;
 
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryClockRepository implements ClockRepository {
 
     private final Map<ColumnType, LocalTime> clockState;
 
-    public InMemoryClockRepository(Map<ColumnType, LocalTime> clockState) {
-        this.clockState = clockState;
+    {
+        clockState = new HashMap<>();
     }
 
     @Override
     public void initialize(LocalTime mainClock) {
-        clockState.replace(ColumnType.MAIN, mainClock);
-        clockState.replace(ColumnType.SECONDS, clockState.get(ColumnType.SECONDS).withSecond(clockState.get(ColumnType.MAIN).getSecond()));
-        clockState.replace(ColumnType.MINUTES, clockState.get(ColumnType.MINUTES).withMinute(clockState.get(ColumnType.MAIN).getMinute()));
-        clockState.replace(ColumnType.HOURS, clockState.get(ColumnType.HOURS).withHour(clockState.get(ColumnType.MAIN).getHour()));
+        clockState.put(ColumnType.MAIN, mainClock);
+        clockState.put(ColumnType.SECONDS, LocalTime.of(0, 0, clockState.get(ColumnType.MAIN).getSecond()));
+        clockState.put(ColumnType.MINUTES, LocalTime.of(0, clockState.get(ColumnType.MAIN).getMinute(), 0));
+        clockState.put(ColumnType.HOURS, LocalTime.of(clockState.get(ColumnType.MAIN).getHour(), 0, 0));
     }
 
     @Override

@@ -22,7 +22,11 @@ public class ClockService {
         return clock.tick(action);
     }
 
-    public Map<ColumnType, ArrayList<Integer>> initialize(DirectionType fromDirection) {
-        return clock.initialize(fromDirection);
+    public Map<ColumnType, ArrayList<Integer>> initializeLabels(DirectionType fromDirection) {
+        return clock.initializeLabels(fromDirection);
+    }
+
+    public void initializeTime() {
+        this.clock.initializeTime();
     }
 }

@@ -10,5 +10,6 @@ import java.util.Map;
 
 public interface Clock {
     Observable<CurrentClockState> tick(TickAction tickAction);
-    Map<ColumnType, ArrayList<Integer>> initialize(DirectionType fromDirection);
+    Map<ColumnType, ArrayList<Integer>> initializeLabels(DirectionType fromDirection);
+    void initializeTime();
 }

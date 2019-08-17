@@ -6,14 +6,12 @@ import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
 import io.reactivex.Observable;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -72,8 +70,7 @@ public class LocalTimeClock implements Clock {
         this.changeableStates = changeableStates;
     }
 
-    @PostConstruct
-    public void initialize() {
+    public void initializeTime() {
         this.clockRepository.initialize(Optional.ofNullable(timerRepository.selectLatest()).orElseGet(() -> {
             com.robotzero.counter.entity.Clock savedTimer = new com.robotzero.counter.entity.Clock();
             savedTimer.setSavedTimer(LocalTime.of(22, 1, 10));
@@ -115,16 +112,17 @@ public class LocalTimeClock implements Clock {
         List<CellState> cellStatesSoFar = blah(action, minutes);
 
         return Observable.just(new CurrentClockState(
-                this.clockRepository.get(ColumnType.SECONDS).getSecond(),
-                this.clockRepository.get(ColumnType.MINUTES).getMinute(),
-                this.clockRepository.get(ColumnType.HOURS).getHour(),
+                Map.of(
+                        ColumnType.SECONDS, this.clockRepository.get(ColumnType.SECONDS).getSecond(),
+                        ColumnType.MINUTES, this.clockRepository.get(ColumnType.MINUTES).getMinute(),
+                        ColumnType.HOURS, this.clockRepository.get(ColumnType.HOURS).getHour()),
                 cellStatesSoFar,
                 this.clockRepository.get(ColumnType.MAIN)
         ));
     }
 
     @Override
-    public Map<ColumnType, ArrayList<Integer>> initialize(DirectionType fromDirection) {
+    public Map<ColumnType, ArrayList<Integer>> initializeLabels(DirectionType fromDirection) {
         LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
         return IntStream.rangeClosed(0, 3).mapToObj(index -> {
             int second = this.tick.apply(ColumnType.SECONDS, index - 1).apply(mainClock).getSecond();
