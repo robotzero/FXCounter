@@ -226,7 +226,7 @@ public class ClockPresenter implements Initializable {
                 this.timerColumns = populator.timerColumns(gridPane);
                 this.cellStateService.initialize(this.populator.cellState(gridPane));
                 IntStream.rangeClosed(0, 3).forEach(index -> {
-                    this.timerColumns.forEach((columnType, column) -> column.setLabels(index, initResult.getInitialValues().get(columnType).get(index)));
+                    this.timerColumns.entrySet().parallelStream().forEach(entry -> entry.getValue().setLabels(index, initResult.getInitialValues().get(entry.getKey()).get(index)));
                 });
 
             });

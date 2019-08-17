@@ -9,6 +9,7 @@ import io.reactivex.Observable;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -79,17 +80,17 @@ public class LocalTimeClock implements Clock {
     }
 
     public List<CellState> blah(TickAction action, Set<ColumnType> tickRequestForColumns) {
-        return tickRequestForColumns.stream().map(columnType -> {
-            ArrayDeque<CellState> updatedCellState = cellStateRepository.getAll(columnType).stream().map(cellState -> {
+        return tickRequestForColumns.parallelStream().map(columnType -> {
+            Deque<CellState> updatedCellState = cellStateRepository.getAll(columnType).stream().map(cellState -> {
                 Location newLocation = locationService.calculate(action.getDelta(), cellState.getCurrentLocation().getToY());
                 Direction directionSeconds = directionService.calculateDirection(columnType, cellState.getCurrentDirection(), action.getDelta());
                 return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection());
-            }).collect(Collectors.toCollection(ArrayDeque::new));
+            }).collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
             cellStateRepository.save(columnType, updatedCellState);
             CellState top = this.cellStateRepository.get(columnType, (repo) -> repo.peekFirst());
             CellState bottom = this.cellStateRepository.get(columnType, (repo) -> repo.peekLast());
             CellState changeableCellState = this.changeableStates.stream().map(state -> {
-                return state.moveCellStates(top).or(() -> state.moveCellStates(bottom));
+                return state.moveCellStates(top, bottom);
             }).filter(Optional::isPresent).map(changeableCellFunc -> changeableCellFunc.get().apply(this.cellStateRepository.getAll(columnType))).findFirst().orElseThrow(() -> new RuntimeException("NAH"));
             clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType,  changeableCellState.getCurrentDirection());
             return changeableCellState;
@@ -99,6 +100,7 @@ public class LocalTimeClock implements Clock {
 
     public Observable<CurrentClockState> tick(TickAction action) {
 
+        //@TODO replace with nice monad?
         Set<ColumnType> minutes = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
                 .stream().map(ignore -> ColumnType.MINUTES).collect(Collectors.toSet());

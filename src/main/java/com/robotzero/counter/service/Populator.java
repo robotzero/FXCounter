@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,7 @@ public class Populator {
                     Integer test = (int) i1.getCurrentLocation().getFromY();
                     Integer test2 = (int) i2.getCurrentLocation().getFromY();
                     return test.compareTo(test2);
-                }).collect(Collectors.groupingBy(CellState::getColumnType, Collectors.toCollection(ArrayDeque::new))
+                }).collect(Collectors.groupingBy(CellState::getColumnType, Collectors.toCollection(ConcurrentLinkedDeque::new))
         );
     }
 }
