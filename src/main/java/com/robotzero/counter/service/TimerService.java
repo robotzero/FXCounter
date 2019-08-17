@@ -4,8 +4,6 @@ import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.action.ClickAction;
 import io.reactivex.Observable;
 
-import javax.annotation.PostConstruct;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,19 +11,10 @@ public class TimerService {
     private AtomicLong elapsedTime = new AtomicLong();
     private AtomicBoolean resumed = new AtomicBoolean();
     private AtomicBoolean stopped = new AtomicBoolean();
-    private Observable<Long> timer;
 
-    public void startTimer() {
+    private void startTimer() {
         resumed.set(true);
         stopped.set(false);
-    }
-
-    @PostConstruct
-    public void initTimer() {
-        this.timer = Observable.interval(1, TimeUnit.SECONDS)
-//                .takeWhile(tick -> !stopped.get())
-                .filter(tick -> resumed.get())
-                .map(tick -> elapsedTime.addAndGet(1000));
     }
 
     public Observable<ClickAction> operateTimer(ClickAction clickAction) {
@@ -50,10 +39,6 @@ public class TimerService {
         });
     }
 
-    public Observable<Long> getTimer() {
-        return timer;
-    }
-
     public void pauseTimer() {
         resumed.set(false);
     }
@@ -68,5 +53,13 @@ public class TimerService {
 
     public void addToTimer(int seconds) {
         elapsedTime.addAndGet(seconds * 1000);
+    }
+
+    public AtomicBoolean resumed() {
+        return this.resumed;
+    }
+
+    public AtomicLong elapsedTime() {
+        return this.elapsedTime;
     }
 }

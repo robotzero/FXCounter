@@ -93,7 +93,9 @@ public class ClockPresenter implements Initializable {
                 .take(1)
                 .map(event -> new InitViewEvent());
 
-        Observable<TickEvent> tickEvent = timerService.getTimer().map(elapsedTime -> new TickEvent(elapsedTime));
+        Observable<TickEvent> tickEvent = Observable.interval(1, TimeUnit.SECONDS)
+                .filter(tick -> timerService.resumed().get())
+                .map(tick -> timerService.elapsedTime().addAndGet(1000)).map(elapsedTime -> new TickEvent(elapsedTime));
 
         Observable<MainViewEvent> mainViewEvents = Observable.merge(Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent), initViewEvent);
 
