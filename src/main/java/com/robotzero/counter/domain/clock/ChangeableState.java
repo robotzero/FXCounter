@@ -75,7 +75,7 @@ public enum ChangeableState {
 
     public abstract Function<CellState, Function<Deque<CellState>, CellState>> getChangeable();
 
-    public Optional<Function<Deque<CellState>, CellState>> moveCellStates(CellState ...cellState) {
+    public Optional<Function<Deque<CellState>, CellState>> getMoveCellStatesFunction(CellState ...cellState) {
         return List.of(cellState).stream().filter(cellState1 -> this.supports(cellState1.getCurrentLocation().getFromY(), cellState1.getPreviousDirection()))
                 .map(cellState1 -> this.getChangeable().apply(cellState1)).findAny();
     }

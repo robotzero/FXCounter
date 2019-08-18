@@ -50,6 +50,21 @@ public class LocalTimeClock implements Clock {
         return localTime -> localTime;
     };
 
+    private Function<Optional<ColumnType>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>>> columnTypeToTickCurried = (columnType -> {
+       Set<ColumnType> columnTypes = new HashSet<>();
+       return (columnType1 -> {
+           columnType1.ifPresent(c -> {
+               columnTypes.add(c);
+           });
+           return  (columnType2 -> {
+               columnType2.ifPresent(c -> {
+                   columnTypes.add(c);
+               });
+               return columnTypes;
+           });
+       });
+    });
+
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
     private final long HR = ChronoUnit.HOURS.getDuration().toHours();
 
@@ -90,8 +105,8 @@ public class LocalTimeClock implements Clock {
             CellState top = this.cellStateRepository.get(columnType, (repo) -> repo.peekFirst());
             CellState bottom = this.cellStateRepository.get(columnType, (repo) -> repo.peekLast());
             CellState changeableCellState = this.changeableStates.stream().map(state -> {
-                return state.moveCellStates(top, bottom);
-            }).filter(Optional::isPresent).map(changeableCellFunc -> changeableCellFunc.get().apply(this.cellStateRepository.getAll(columnType))).findFirst().orElseThrow(() -> new RuntimeException("NAH"));
+                return state.getMoveCellStatesFunction(top, bottom);
+            }).filter(Optional::isPresent).findFirst().flatMap(optional -> optional).map(changeableCellFunc -> changeableCellFunc.apply(this.cellStateRepository.getAll(columnType))).orElseThrow(() -> new RuntimeException("NAH"));
             clockmodes.get(action.getTimerType()).applyNewClockState(tick, columnType,  changeableCellState.getCurrentDirection());
             return changeableCellState;
         }).collect(Collectors.toList());
@@ -99,19 +114,19 @@ public class LocalTimeClock implements Clock {
     }
 
     public Observable<CurrentClockState> tick(TickAction action) {
+        //@TODO add action.getColumnType first.
 
-        //@TODO replace with nice monad?
-        Set<ColumnType> minutes = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
+        Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>> curriedPass1 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
-                .stream().map(ignore -> ColumnType.MINUTES).collect(Collectors.toSet());
+                .stream().map(ignored -> ColumnType.MINUTES).map(columnType -> columnTypeToTickCurried.apply(Optional.of(columnType))).findAny().orElseGet(() -> columnTypeToTickCurried.apply(Optional.empty()));
 
-        Set<ColumnType> hours = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute(), action.getTimerType()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
+        Function<Optional<ColumnType>, Set<ColumnType>> curriedPass2 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute(), action.getTimerType()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
-                .stream().map(ignore -> ColumnType.HOURS).collect(Collectors.toSet());
+                .stream().map(ignored -> ColumnType.HOURS).map(columnType -> curriedPass1.apply(Optional.of(columnType))).findAny().orElseGet(() -> curriedPass1.apply(Optional.empty()));
 
-        minutes.add(action.getColumnType());
-        minutes.addAll(hours);
-        List<CellState> cellStatesSoFar = blah(action, minutes);
+        Set<ColumnType> columnTypesToTick = curriedPass2.apply(Optional.of(action.getColumnType()));
+
+        List<CellState> cellStatesSoFar = blah(action, columnTypesToTick);
 
         return Observable.just(new CurrentClockState(
                 Map.of(
