@@ -5,6 +5,7 @@ import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationService;
 import io.reactivex.Observable;
+import io.vavr.Function3;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -28,10 +29,6 @@ public class LocalTimeClock implements Clock {
     private final List<ChangeableState> changeableStates;
     private int count;
 
-    private Comparator<Integer> clockSort = (num1, num2) -> {
-        return num1.equals(num2) ? 0 : num1 == 0 ? -1 : num1 > num2 ? -1 : 1;
-    };
-
     private BiPredicate<Integer, TimerType> shouldTick = (clockState, timerType) -> clockState == 0 && timerType == TimerType.TICK;
 
     private BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick = (columnType, direction) -> {
@@ -50,8 +47,36 @@ public class LocalTimeClock implements Clock {
         return localTime -> localTime;
     };
 
+//    private Function<Optional<ColumnType>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>>> blah = (columnType1 -> {
+//        return (columnType2 -> {
+//            return (columnType3 -> {
+//                return fn.apply(columnType1, columnType2, columnType3);
+//            })
+//        })
+//    })
+
+    private Function3<Integer, Integer, Integer, Set<ColumnType>> curry = (a, b, c) -> {
+        return Set.of(ColumnType.HOURS);
+    };
+
+//    function curry(fn) {
+//        return (x) => {
+//            return (y) => {
+//                return (z) => {
+//                    return fn(x, y, z);
+//                };
+//            };
+//        };
+//    }
+//
+//const sum3 = curry((x, y, z) => {
+//        return x + y + z;
+//    });
+//
+//    sum3(1)(2)(3) // 6  <--  It works!
     private Function<Optional<ColumnType>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>>> columnTypeToTickCurried = (columnType -> {
        Set<ColumnType> columnTypes = new HashSet<>();
+       columnType.ifPresent(c -> columnTypes.add(c));
        return (columnType1 -> {
            columnType1.ifPresent(c -> {
                columnTypes.add(c);
@@ -60,7 +85,7 @@ public class LocalTimeClock implements Clock {
                columnType2.ifPresent(c -> {
                    columnTypes.add(c);
                });
-               return columnTypes;
+               return new ArrayList<>(columnTypes).stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
            });
        });
     });
@@ -114,8 +139,6 @@ public class LocalTimeClock implements Clock {
     }
 
     public Observable<CurrentClockState> tick(TickAction action) {
-        //@TODO add action.getColumnType first.
-
         Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>> curriedPass1 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
                 .stream().map(ignored -> ColumnType.MINUTES).map(columnType -> columnTypeToTickCurried.apply(Optional.of(columnType))).findAny().orElseGet(() -> columnTypeToTickCurried.apply(Optional.empty()));
@@ -147,7 +170,9 @@ public class LocalTimeClock implements Clock {
             int hour = this.tick.apply(ColumnType.HOURS, index - 1).apply(mainClock).getHour();
             return Map.of(ColumnType.SECONDS, second, ColumnType.MINUTES, minute, ColumnType.HOURS, hour);
         }).collect(Collector.of(
-                () -> Map.of(ColumnType.SECONDS, new ArrayList<Integer>(), ColumnType.MINUTES, new ArrayList<Integer>(), ColumnType.HOURS, new ArrayList<Integer>()),
+                () -> {
+                    return Map.of(ColumnType.SECONDS, new ArrayList<Integer>(), ColumnType.MINUTES, new ArrayList<Integer>(), ColumnType.HOURS, new ArrayList<Integer>());
+                },
                 (mapResultContainer, mapOfValues) -> {
                     mapResultContainer.get(ColumnType.SECONDS).add(mapOfValues.get(ColumnType.SECONDS));
                     mapResultContainer.get(ColumnType.MINUTES).add(mapOfValues.get(ColumnType.MINUTES));
@@ -158,9 +183,9 @@ public class LocalTimeClock implements Clock {
                     return result1;
                 },
                 (result) -> {
-                    result.get(ColumnType.SECONDS).sort(clockSort);
-                    result.get(ColumnType.MINUTES).sort(clockSort);
-                    result.get(ColumnType.HOURS).sort(clockSort);
+                    result.get(ColumnType.SECONDS).sort(Collections.reverseOrder());
+                    result.get(ColumnType.MINUTES).sort(Collections.reverseOrder());
+                    result.get(ColumnType.HOURS).sort(Collections.reverseOrder());
                     return result;
                 })
         );
