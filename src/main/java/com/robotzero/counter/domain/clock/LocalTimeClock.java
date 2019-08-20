@@ -47,48 +47,16 @@ public class LocalTimeClock implements Clock {
         return localTime -> localTime;
     };
 
-//    private Function<Optional<ColumnType>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>>> blah = (columnType1 -> {
-//        return (columnType2 -> {
-//            return (columnType3 -> {
-//                return fn.apply(columnType1, columnType2, columnType3);
-//            })
-//        })
-//    })
-
-    private Function3<Integer, Integer, Integer, Set<ColumnType>> curry = (a, b, c) -> {
-        return Set.of(ColumnType.HOURS);
+    private Function3<Optional<ColumnType>, Optional<ColumnType>, Optional<ColumnType>, Collection<ColumnType>> columTypesToCollection = (ct1, ct2, ct3) -> {
+        Set<ColumnType> columnTypes = new HashSet<>();
+        ct1.ifPresent(columnTypes::add);
+        ct2.ifPresent(columnTypes::add);
+        ct3.ifPresent(columnTypes::add);
+        return columnTypes;
     };
 
-//    function curry(fn) {
-//        return (x) => {
-//            return (y) => {
-//                return (z) => {
-//                    return fn(x, y, z);
-//                };
-//            };
-//        };
-//    }
-//
-//const sum3 = curry((x, y, z) => {
-//        return x + y + z;
-//    });
-//
-//    sum3(1)(2)(3) // 6  <--  It works!
-    private Function<Optional<ColumnType>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>>> columnTypeToTickCurried = (columnType -> {
-       Set<ColumnType> columnTypes = new HashSet<>();
-       columnType.ifPresent(c -> columnTypes.add(c));
-       return (columnType1 -> {
-           columnType1.ifPresent(c -> {
-               columnTypes.add(c);
-           });
-           return  (columnType2 -> {
-               columnType2.ifPresent(c -> {
-                   columnTypes.add(c);
-               });
-               return new ArrayList<>(columnTypes).stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
-           });
-       });
-    });
+    Function<Function3<Optional<ColumnType>, Optional<ColumnType>, Optional<ColumnType>, Collection<ColumnType>>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Function<Optional<ColumnType>, Collection<ColumnType>>>>> columnTypeCurry = (fn) ->
+            (ct1) -> (ct2) -> (ct3) -> fn.apply(ct1, ct2, ct3);
 
     private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
     private final long HR = ChronoUnit.HOURS.getDuration().toHours();
@@ -139,15 +107,15 @@ public class LocalTimeClock implements Clock {
     }
 
     public Observable<CurrentClockState> tick(TickAction action) {
-        Function<Optional<ColumnType>, Function<Optional<ColumnType>, Set<ColumnType>>> curriedPass1 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
+        Function<Optional<ColumnType>, Function<Optional<ColumnType>, Collection<ColumnType>>> curriedPass1 =  Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
-                .stream().map(ignored -> ColumnType.MINUTES).map(columnType -> columnTypeToTickCurried.apply(Optional.of(columnType))).findAny().orElseGet(() -> columnTypeToTickCurried.apply(Optional.empty()));
+                .stream().map(ignored -> ColumnType.MINUTES).map(columnType -> columnTypeCurry.apply(columTypesToCollection).apply(Optional.of(columnType))).findAny().orElseGet(() -> columnTypeCurry.apply(columTypesToCollection).apply(Optional.empty()));
 
-        Function<Optional<ColumnType>, Set<ColumnType>> curriedPass2 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute(), action.getTimerType()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
+        Function<Optional<ColumnType>, Collection<ColumnType>> curriedPass2 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute(), action.getTimerType()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
                 .filter(bool -> bool)
                 .stream().map(ignored -> ColumnType.HOURS).map(columnType -> curriedPass1.apply(Optional.of(columnType))).findAny().orElseGet(() -> curriedPass1.apply(Optional.empty()));
 
-        Set<ColumnType> columnTypesToTick = curriedPass2.apply(Optional.of(action.getColumnType()));
+        Set<ColumnType> columnTypesToTick = (Set<ColumnType>) curriedPass2.apply(Optional.of(action.getColumnType()));
 
         List<CellState> cellStatesSoFar = blah(action, columnTypesToTick);
 
