@@ -3,6 +3,7 @@ package com.robotzero.counter.domain.clock;
 import com.robotzero.counter.domain.*;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
+import com.robotzero.counter.service.LocationMemoizerKey;
 import com.robotzero.counter.service.LocationService;
 import io.reactivex.Observable;
 import io.vavr.Function3;
@@ -90,7 +91,7 @@ public class LocalTimeClock implements Clock {
     public List<CellState> blah(TickAction action, Set<ColumnType> tickRequestForColumns) {
         return tickRequestForColumns.parallelStream().map(columnType -> {
             Deque<CellState> updatedCellState = cellStateRepository.getAll(columnType).stream().map(cellState -> {
-                Location newLocation = locationService.calculate(action.getDelta(), cellState.getCurrentLocation().getToY());
+                Location newLocation = locationService.calculate(new LocationMemoizerKey(action.getDelta(), cellState.getCurrentLocation().getToY(), columnType));
                 Direction directionSeconds = directionService.calculateDirection(columnType, cellState.getCurrentDirection(), action.getDelta());
                 return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection());
             }).collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
@@ -151,9 +152,7 @@ public class LocalTimeClock implements Clock {
                     return result1;
                 },
                 (result) -> {
-                    result.get(ColumnType.SECONDS).sort(Collections.reverseOrder());
-                    result.get(ColumnType.MINUTES).sort(Collections.reverseOrder());
-                    result.get(ColumnType.HOURS).sort(Collections.reverseOrder());
+                    result.forEach((key, value) -> value.sort(Collections.reverseOrder()));
                     return result;
                 })
         );
