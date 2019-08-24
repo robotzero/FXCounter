@@ -1,22 +1,26 @@
 package com.robotzero.counter.event.action;
 
-import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.TimerType;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 
 public class TickAction implements Action {
 
-    private double delta;
-    private final ColumnType columnType;
+    private final double delta;
     private final TimerType timerType;
+    private final ChronoField chronoField;
+    private final ChronoUnit chronoUnit;
 
-    public TickAction(double delta, ColumnType columnType, TimerType timerType) {
+    public TickAction(
+            final double delta,
+            final ChronoUnit chronoUnit,
+            final ChronoField chronoField,
+            final TimerType timerType
+    ) {
         this.delta = delta;
-        this.columnType = columnType;
+        this.chronoUnit = chronoUnit;
+        this.chronoField = chronoField;
         this.timerType = timerType;
-    }
-
-    public ColumnType getColumnType() {
-        return columnType;
     }
 
     public TimerType getTimerType() {
@@ -25,5 +29,13 @@ public class TickAction implements Action {
 
     public double getDelta() {
         return delta;
+    }
+
+    public ChronoField getChronoField() {
+        return chronoField;
+    }
+
+    public ChronoUnit getChronoUnit() {
+        return chronoUnit;
     }
 }

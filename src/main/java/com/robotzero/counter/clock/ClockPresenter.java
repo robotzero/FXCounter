@@ -25,6 +25,8 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,6 +80,7 @@ public class ClockPresenter implements Initializable {
         Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
                 .map(ignored -> new ClickEvent(ButtonType.RIGHT, ButtonState.valueOf(resetButton.getText().toUpperCase())));
+
         Observable<ScrollEvent> scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
@@ -106,11 +109,11 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ScrollEvent, Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.concatMap(
                 event -> {
-                    return Observable.just(new TickAction(event.getDelta(), event.getColumnType(), TimerType.SCROLL));
+                    return Observable.just(new TickAction(event.getDelta(), event.getChronoUnit(), event.getChronoField(), TimerType.SCROLL));
                 });
 
         ObservableTransformer<TickEvent, TickAction> tickEventTransformer = tickEv -> tickEv.flatMap(event -> {
-            return Observable.just(new TickAction(-1, ColumnType.SECONDS, TimerType.TICK));
+            return Observable.just(new TickAction(-1, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE, TimerType.TICK));
         });
 
         ObservableTransformer<InitViewEvent, InitViewAction> initViewEventTransformer = initView -> initView.concatMap(event -> {
@@ -141,7 +144,7 @@ public class ClockPresenter implements Initializable {
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
                 return clockService.tick(action).flatMap(currentClockState -> {
-                    return Observable.just(new TickResult(currentClockState, action.getColumnType(), action.getTimerType()));
+                    return Observable.just(new TickResult(currentClockState, action.getChronoUnit(), action.getChronoField(), action.getTimerType()));
                 });
             });
         };
