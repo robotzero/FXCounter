@@ -2,8 +2,10 @@ package com.robotzero.counter.domain.clock;
 
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.DirectionType;
+import com.robotzero.counter.domain.Tick;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -15,10 +17,10 @@ public class TickMode implements ClockMode {
         this.clockRepository = clockRepository;
     }
 
-    public void applyNewClockState(BiFunction<ColumnType, Integer, Function<LocalTime, LocalTime>> tick, ColumnType columnType, DirectionType direction) {
-        if (columnType == ColumnType.SECONDS) {
-            clockRepository.save(ColumnType.MAIN, tick.apply(ColumnType.MAIN, direction.getDelta() / Math.abs(direction.getDelta())).apply(clockRepository.get(ColumnType.MAIN)));
+    public void applyNewClockState(BiFunction<Integer, ChronoUnit, Function<LocalTime, LocalTime>> tick, Tick tickData, DirectionType direction) {
+        if (tickData.getColumnType() == ColumnType.SECONDS) {
+            clockRepository.save(ColumnType.MAIN, tick.apply(direction.getDelta() / Math.abs(direction.getDelta()), ChronoUnit.SECONDS).apply(clockRepository.get(ColumnType.MAIN)));
         }
-        clockRepository.save(columnType, tick.apply(columnType, direction.getDelta()).apply(clockRepository.get(columnType)));
+        clockRepository.save(tickData.getColumnType(), tick.apply(direction.getDelta(), tickData.getChronoUnit()).apply(clockRepository.get(tickData.getColumnType())));
     }
 }

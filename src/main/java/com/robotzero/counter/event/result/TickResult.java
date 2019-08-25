@@ -11,14 +11,10 @@ import java.time.temporal.ChronoUnit;
 public class TickResult implements Result {
     private final CurrentClockState currentClockState;
     private final TimerType timerType;
-    private final ChronoUnit chronoUnit;
-    private final ChronoField chronoField;
 
-    public TickResult(final CurrentClockState currentClockState, final ChronoUnit chronoUnit, final ChronoField chronoField, final TimerType timerType) {
+    public TickResult(final CurrentClockState currentClockState, final TimerType timerType) {
         this.currentClockState = currentClockState;
         this.timerType = timerType;
-        this.chronoUnit = chronoUnit;
-        this.chronoField = chronoField;
     }
 
     public CurrentClockState getLabels() {
@@ -45,16 +41,7 @@ public class TickResult implements Result {
     public String toString() {
         return "TickResult{" +
                 ", currentClockState=" + currentClockState.toString() +
-                ", columnUnit=" + chronoUnit +
                 ", timerType=" + timerType +
                 '}';
-    }
-
-    public ChronoUnit getChronoUnit() {
-        return chronoUnit;
-    }
-
-    public ChronoField getChronoField() {
-        return chronoField;
     }
 }

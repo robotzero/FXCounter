@@ -109,11 +109,11 @@ public class ClockPresenter implements Initializable {
 
         ObservableTransformer<ScrollEvent, Action> scrollEventTransformer = scrollMouseEvent -> scrollMouseEvent.concatMap(
                 event -> {
-                    return Observable.just(new TickAction(event.getDelta(), event.getChronoUnit(), event.getChronoField(), TimerType.SCROLL));
+                    return Observable.just(new TickAction(event.getDelta(), Set.of(new Tick(event.getColumnType(), event.getChronoUnit(), event.getChronoField())), TimerType.SCROLL));
                 });
 
         ObservableTransformer<TickEvent, TickAction> tickEventTransformer = tickEv -> tickEv.flatMap(event -> {
-            return Observable.just(new TickAction(-1, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE, TimerType.TICK));
+            return Observable.just(new TickAction(-1, Set.of(new Tick(ColumnType.SECONDS, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE)), TimerType.TICK));
         });
 
         ObservableTransformer<InitViewEvent, InitViewAction> initViewEventTransformer = initView -> initView.concatMap(event -> {
@@ -144,7 +144,7 @@ public class ClockPresenter implements Initializable {
         ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
             return tickAction.flatMap(action -> {
                 return clockService.tick(action).flatMap(currentClockState -> {
-                    return Observable.just(new TickResult(currentClockState, action.getChronoUnit(), action.getChronoField(), action.getTimerType()));
+                    return Observable.just(new TickResult(currentClockState, action.getTimerType()));
                 });
             });
         };
