@@ -1,5 +1,6 @@
 package com.robotzero.counter.event.action;
 
+import com.google.common.collect.ImmutableSet;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Tick;
 import com.robotzero.counter.domain.TimerType;
@@ -32,13 +33,15 @@ public class TickAction implements Action {
         return delta;
     }
 
-    public Set<Tick> getTickData(){
+    public Set<Tick> getTickData() {
         return this.tickData;
     }
 
     public TickAction with(ColumnType columnType, ChronoField chronoField, ChronoUnit chronoUnit) {
-        Set<Tick> tickData = Set.copyOf(this.tickData);
-        tickData.add(new Tick(columnType, chronoUnit, chronoField));
-        return new TickAction(delta,tickData, timerType);
+        return new TickAction(
+                delta,
+                new ImmutableSet.Builder<Tick>().addAll(this.tickData).add(new Tick(columnType, chronoUnit, chronoField)).build(),
+                timerType
+        );
     }
 }

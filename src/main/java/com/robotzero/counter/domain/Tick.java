@@ -2,6 +2,7 @@ package com.robotzero.counter.domain;
 
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 public class Tick {
     private final ColumnType columnType;
@@ -24,5 +25,9 @@ public class Tick {
 
     public ChronoField getChronoField() {
         return chronoField;
+    }
+
+    public Optional<Boolean> shouldAdjustMainClock() {
+        return Optional.of(this.columnType == ColumnType.SECONDS);
     }
 }

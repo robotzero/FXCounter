@@ -30,7 +30,7 @@ public final class ScrollEvent implements MainViewEvent {
     }
 
     public ChronoUnit getChronoUnit() {
-        return ChronoUnit.valueOf(parentNodeId.substring(0,1).toUpperCase() + parentNodeId.substring(1).toLowerCase());
+        return ChronoUnit.valueOf(parentNodeId.toUpperCase());
     }
 
     public ChronoField getChronoField() {
