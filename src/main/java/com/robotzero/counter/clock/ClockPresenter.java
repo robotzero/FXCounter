@@ -12,6 +12,7 @@ import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -132,7 +133,7 @@ public class ClockPresenter implements Initializable {
             return Observable.fromFuture(CompletableFuture.runAsync(() -> {
                 this.clockService.initializeTime();
             }, new SimpleAsyncTaskExecutor()).thenApplyAsync(ignored -> {
-                Map<ColumnType, ArrayList<Integer>> initialValues = this.clockService.initializeLabels(DirectionType.DOWN);
+                Map<ColumnType, List<Integer>> initialValues = this.clockService.initializeLabels();
                 return new InitViewResult(initialValues);
             }, new SimpleAsyncTaskExecutor()));
         });
@@ -237,5 +238,6 @@ public class ClockPresenter implements Initializable {
             System.out.println(error.getMessage());
             throw new IOException("CRASHING THE APP...");
         });
+        JavaFxObservable.eventsOf(gridPane.getScene(), Event.ANY).subscribe(c -> System.out.println("DD "));
     }
 }

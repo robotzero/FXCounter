@@ -1,12 +1,8 @@
 package com.robotzero.counter.event.result;
 
-import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.CurrentClockState;
 import javafx.util.Duration;
-
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 
 public class TickResult implements Result {
     private final CurrentClockState currentClockState;

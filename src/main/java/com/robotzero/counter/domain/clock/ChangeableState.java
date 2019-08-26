@@ -81,6 +81,6 @@ public enum ChangeableState {
     }
 
     private boolean supports(double cellLocation, DirectionType cellDirectionType) {
-        return this.getFromLocation() == cellLocation && this.getSupportedDirections().contains(cellDirectionType);
+        return this.fromLocation == cellLocation && this.getSupportedDirections().contains(cellDirectionType);
     }
 }

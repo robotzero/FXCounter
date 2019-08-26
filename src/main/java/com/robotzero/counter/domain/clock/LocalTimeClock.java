@@ -12,12 +12,11 @@ import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.*;
 
 public class LocalTimeClock implements Clock {
 
@@ -77,12 +76,12 @@ public class LocalTimeClock implements Clock {
                 Direction directionSeconds = directionService.calculateDirection(tick.getColumnType(), cellState.getCurrentDirection(), action.getDelta());
                 return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection());
             }).collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
-            cellStateRepository.save(tick.getColumnType(), updatedCellState);
-            CellState top = this.cellStateRepository.get(tick.getColumnType(), (repo) -> repo.peekFirst());
-            CellState bottom = this.cellStateRepository.get(tick.getColumnType(), (repo) -> repo.peekLast());
+            CellState top = updatedCellState.peekFirst();
+            CellState bottom = updatedCellState.peekLast();
             CellState changeableCellState = this.changeableStates.stream().map(state -> {
                 return state.getMoveCellStatesFunction(top, bottom);
-            }).filter(Optional::isPresent).findFirst().flatMap(optional -> optional).map(changeableCellFunc -> changeableCellFunc.apply(this.cellStateRepository.getAll(tick.getColumnType()))).orElseThrow(() -> new RuntimeException("NAH"));
+            }).filter(Optional::isPresent).findFirst().flatMap(optional -> optional).map(changeableCellFunc -> changeableCellFunc.apply(updatedCellState)).orElseThrow(() -> new RuntimeException("NAH"));
+            cellStateRepository.save(tick.getColumnType(), updatedCellState);
             clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, changeableCellState.getCurrentDirection());
             return changeableCellState;
         }).collect(Collectors.toList());
@@ -92,14 +91,14 @@ public class LocalTimeClock implements Clock {
         TickAction enrichedTickAction = List.of(action, action)
                 .stream()
                 .filter(ignored -> action.getTimerType() == TimerType.TICK)
-                .reduce((current, next) -> {
+                .reduce((currentTickAction, nextTickAction) -> {
                     if (shouldTickSpecificField.apply(ChronoField.SECOND_OF_MINUTE).queryFrom(this.clockRepository.get(ColumnType.MAIN))) {
-                        return current.with(ColumnType.MINUTES, ChronoField.MINUTE_OF_HOUR, ChronoUnit.MINUTES);
+                        return currentTickAction.with(ColumnType.MINUTES, ChronoField.MINUTE_OF_HOUR, ChronoUnit.MINUTES);
                     }
                     if (shouldTickSpecificField.apply(ChronoField.SECOND_OF_MINUTE).queryFrom(this.clockRepository.get(ColumnType.MAIN)) && shouldTickSpecificField.apply(ChronoField.MINUTE_OF_HOUR).queryFrom(this.clockRepository.get(ColumnType.MAIN))) {
-                        return current.with(ColumnType.HOURS, ChronoField.HOUR_OF_DAY, ChronoUnit.HOURS);
+                        return currentTickAction.with(ColumnType.HOURS, ChronoField.HOUR_OF_DAY, ChronoUnit.HOURS);
                     }
-                    return current;
+                    return currentTickAction;
                 }).orElse(action);
 
         List<CellState> cellStatesSoFar = blah(enrichedTickAction);
@@ -114,30 +113,16 @@ public class LocalTimeClock implements Clock {
     }
 
     @Override
-    public Map<ColumnType, ArrayList<Integer>> initializeLabels(DirectionType fromDirection) {
+    public Map<ColumnType, List<Integer>> initializeLabels() {
         LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
-        return IntStream.rangeClosed(0, 3).mapToObj(index -> {
-            int second = this.tick.apply(index - 1, ChronoUnit.SECONDS).apply(mainClock).getSecond();
-            int minute = this.tick.apply(index - 1, ChronoUnit.MINUTES).apply(mainClock).getMinute();
-            int hour = this.tick.apply(index - 1, ChronoUnit.HOURS).apply(mainClock).getHour();
+        return IntStream.of(-1, 0, 1, 2).mapToObj(index -> {
+            int second = this.tick.apply(index, ChronoUnit.SECONDS).apply(mainClock).getSecond();
+            int minute = this.tick.apply(index, ChronoUnit.MINUTES).apply(mainClock).getMinute();
+            int hour = this.tick.apply(index, ChronoUnit.HOURS).apply(mainClock).getHour();
             return Map.of(ColumnType.SECONDS, second, ColumnType.MINUTES, minute, ColumnType.HOURS, hour);
-        }).collect(Collector.of(
-                () -> {
-                    return Map.of(ColumnType.SECONDS, new ArrayList<Integer>(), ColumnType.MINUTES, new ArrayList<Integer>(), ColumnType.HOURS, new ArrayList<Integer>());
-                },
-                (mapResultContainer, mapOfValues) -> {
-                    mapResultContainer.get(ColumnType.SECONDS).add(mapOfValues.get(ColumnType.SECONDS));
-                    mapResultContainer.get(ColumnType.MINUTES).add(mapOfValues.get(ColumnType.MINUTES));
-                    mapResultContainer.get(ColumnType.HOURS).add(mapOfValues.get(ColumnType.HOURS));
-                },
-                (result1, result2) -> {
-                    result1.putAll(result2);
-                    return result1;
-                },
-                (result) -> {
-                    result.forEach((key, value) -> value.sort(Collections.reverseOrder()));
-                    return result;
-                })
-        );
+        }).flatMap(c -> c.entrySet().stream()).collect(groupingBy(map -> map.getKey(), mapping(map -> map.getValue(), collectingAndThen(toList(), (listOfIntegers) -> {
+            listOfIntegers.sort(Collections.reverseOrder());
+            return listOfIntegers;
+        }))));
     }
 }

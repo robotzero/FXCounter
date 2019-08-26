@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain.clock;
 
-import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.DirectionType;
 import com.robotzero.counter.domain.Tick;
 
