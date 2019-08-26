@@ -27,7 +27,6 @@ public class LocalTimeClock implements Clock {
     private final LocationService locationService;
     private final Map<TimerType, ClockMode> clockmodes;
     private final List<ChangeableState> changeableStates;
-    private int count;
 
     Function<ChronoField, TemporalQuery<Boolean>> shouldTickSpecificField = (chronoField -> {
         return temporal -> {
@@ -39,9 +38,6 @@ public class LocalTimeClock implements Clock {
     private BiFunction<Integer, ChronoUnit, Function<LocalTime, LocalTime>> tick = (direction, chronoUnit) -> {
         return localTime -> localTime.plus(direction, chronoUnit);
     };
-
-    private final long MIN = ChronoUnit.MINUTES.getDuration().toMinutes();
-    private final long HR = ChronoUnit.HOURS.getDuration().toHours();
 
     public LocalTimeClock(
             ClockRepository clockRepository,

@@ -238,6 +238,5 @@ public class ClockPresenter implements Initializable {
             System.out.println(error.getMessage());
             throw new IOException("CRASHING THE APP...");
         });
-        JavaFxObservable.eventsOf(gridPane.getScene(), Event.ANY).subscribe(c -> System.out.println("DD "));
     }
 }

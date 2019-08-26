@@ -12,4 +12,8 @@ public enum DirectionType {
     public int getDelta() {
         return delta;
     }
+
+    public int getNormalizedDelta() {
+        return this.delta / Math.abs(this.delta);
+    }
 }
