@@ -8,13 +8,13 @@ import com.robotzero.counter.service.LocationService;
 import io.reactivex.Observable;
 
 import java.time.LocalTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
+import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,7 +30,12 @@ public class LocalTimeClock implements Clock {
     private final List<ChangeableState> changeableStates;
     private int count;
 
-    private BiPredicate<Integer, TimerType> shouldTick = (clockState, timerType) -> clockState == 0 && timerType == TimerType.TICK;
+    Function<ChronoField, TemporalQuery<Boolean>> shouldTickSpecificField = (chronoField -> {
+        return temporal -> {
+            LocalTime queried = LocalTime.from(temporal);
+            return queried.get(chronoField) == 0;
+        };
+    });
 
     private BiFunction<Integer, ChronoUnit, Function<LocalTime, LocalTime>> tick = (direction, chronoUnit) -> {
         return localTime -> localTime.plus(direction, chronoUnit);
@@ -84,23 +89,27 @@ public class LocalTimeClock implements Clock {
     }
 
     public Observable<CurrentClockState> tick(TickAction action) {
-        final TickAction tickAction1 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
-                .filter(bool -> bool)
-                .stream().map(ignored -> action.with(ColumnType.MINUTES, ChronoField.MINUTE_OF_HOUR, ChronoUnit.MINUTES)).findAny().orElseGet(() -> action);
+        TickAction enrichedTickAction = List.of(action, action)
+                .stream()
+                .filter(ignored -> action.getTimerType() == TimerType.TICK)
+                .reduce((current, next) -> {
+                    if (shouldTickSpecificField.apply(ChronoField.SECOND_OF_MINUTE).queryFrom(this.clockRepository.get(ColumnType.MAIN))) {
+                        return current.with(ColumnType.MINUTES, ChronoField.MINUTE_OF_HOUR, ChronoUnit.MINUTES);
+                    }
+                    if (shouldTickSpecificField.apply(ChronoField.SECOND_OF_MINUTE).queryFrom(this.clockRepository.get(ColumnType.MAIN)) && shouldTickSpecificField.apply(ChronoField.MINUTE_OF_HOUR).queryFrom(this.clockRepository.get(ColumnType.MAIN))) {
+                        return current.with(ColumnType.HOURS, ChronoField.HOUR_OF_DAY, ChronoUnit.HOURS);
+                    }
+                    return current;
+                }).orElse(action);
 
-        final TickAction tickAction2 = Optional.of(shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getMinute(), action.getTimerType()) && shouldTick.test(this.clockRepository.get(ColumnType.MAIN).getSecond(), action.getTimerType()))
-                .filter(bool -> bool)
-                .stream().map(ignored -> action.with(ColumnType.HOURS, ChronoField.HOUR_OF_DAY, ChronoUnit.HOURS)).findAny().orElseGet(() -> tickAction1);
-
-        List<CellState> cellStatesSoFar = blah(tickAction2);
+        List<CellState> cellStatesSoFar = blah(enrichedTickAction);
 
         return Observable.just(new CurrentClockState(
                 Map.of(
                         ColumnType.SECONDS, this.clockRepository.get(ColumnType.SECONDS).getSecond(),
                         ColumnType.MINUTES, this.clockRepository.get(ColumnType.MINUTES).getMinute(),
                         ColumnType.HOURS, this.clockRepository.get(ColumnType.HOURS).getHour()),
-                cellStatesSoFar,
-                this.clockRepository.get(ColumnType.MAIN)
+                cellStatesSoFar
         ));
     }
 
