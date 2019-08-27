@@ -1,5 +1,7 @@
 package com.robotzero.counter.domain;
 
+import java.util.Optional;
+
 public class CellState {
 
     private final Location currentLocation;
@@ -8,6 +10,7 @@ public class CellState {
     private final DirectionType previousDirection;
     private final ColumnType columnType;
     private final int id;
+    private int timerValue;
     private final CellStatePosition cellStatePosition;
 
     public CellState(
@@ -20,6 +23,7 @@ public class CellState {
             CellStatePosition cellStatePosition
     ) {
         this.id = id;
+        this.timerValue = 0;
         this.previousLocation = previousLocation;
         this.currentLocation = currentLocation;
         this.columnType = columnType;
@@ -52,6 +56,11 @@ public class CellState {
         return new CellState(this.id, location, this.currentLocation,  currentDirection, previousDirection, this.columnType, cellStatePosition);
     }
 
+    public CellState withTimerValue(final int timerValue){
+        this.timerValue = timerValue;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "CellState{" +
@@ -66,6 +75,10 @@ public class CellState {
 
     public CellStatePosition getCellStatePosition() {
         return cellStatePosition;
+    }
+
+    public int getTimerValue() {
+        return Optional.of(this.timerValue).filter(timerValue -> timerValue != 0).orElseThrow(() -> new RuntimeException());
     }
 
     public class Id {

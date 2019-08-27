@@ -65,19 +65,19 @@ public class LocalTimeClock implements Clock {
         }).getSavedTimer());
     }
 
-    public List<CellState> blah(TickAction action) {
+    private List<CellState> produceCellsForTextChange(TickAction action) {
         return action.getTickData().parallelStream().map(tick -> {
-            Deque<CellState> updatedCellState = cellStateRepository.getAll(tick.getColumnType()).stream().map(cellState -> {
+            List<CellState> updatedCellState = cellStateRepository.getAll(tick.getColumnType()).stream().map(cellState -> {
                 Location newLocation = locationService.calculate(new LocationMemoizerKey(action.getDelta(), cellState.getCurrentLocation().getToY(), tick.getColumnType()));
                 Direction directionSeconds = directionService.calculateDirection(tick.getColumnType(), cellState.getCurrentDirection(), action.getDelta());
                 CellStatePosition isChangeable = this.changeableStates.stream().filter(state -> {
                     return state.supports(newLocation.getFromY(), cellState.getCurrentDirection());
                 }).map(state -> CellStatePosition.CHANGEABLE).findAny().orElseGet(() -> CellStatePosition.NONCHANGABLE);
                 return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection(), isChangeable);
-            }).collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
-            CellState changeableCellState = updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
+            }).collect(toList());
             cellStateRepository.save(tick.getColumnType(), updatedCellState);
-            clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, changeableCellState.getCurrentDirection());
+            clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, updatedCellState.get(0).getCurrentDirection());
+            CellState changeableCellState = updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> cellState).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
             return changeableCellState;
         }).collect(Collectors.toList());
     }
@@ -96,7 +96,7 @@ public class LocalTimeClock implements Clock {
                     return currentTickAction;
                 }).orElse(action);
 
-        List<CellState> cellStatesSoFar = blah(enrichedTickAction);
+        List<CellState> cellStatesSoFar = produceCellsForTextChange(enrichedTickAction);
 
         return Observable.just(new CurrentClockState(
                 Map.of(

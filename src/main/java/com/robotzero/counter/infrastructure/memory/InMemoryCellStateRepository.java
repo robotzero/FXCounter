@@ -2,24 +2,18 @@ package com.robotzero.counter.infrastructure.memory;
 
 import com.robotzero.counter.domain.*;
 import java.util.*;
-import java.util.function.Function;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
-    private Map<ColumnType, Deque<CellState>> currentCellsState;
+    private Map<ColumnType, List<CellState>> currentCellsState;
 
     @Override
-    public void initialize(Map<ColumnType, Deque<CellState>> currentCellsState) {
+    public void initialize(Map<ColumnType, List<CellState>> currentCellsState) {
         this.currentCellsState = currentCellsState;
     }
 
     @Override
-    public void save(ColumnType columnType, Deque<CellState> newCellState) {
+    public void save(ColumnType columnType, List<CellState> newCellState) {
         this.currentCellsState.put(columnType, newCellState);
-    }
-
-    @Override
-    public CellState get(ColumnType columnType, Function<Deque<CellState>, CellState> retriever) {
-        return retriever.apply(this.currentCellsState.get(columnType));
     }
 
     @Override
@@ -28,7 +22,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
     }
 
     @Override
-    public Deque<CellState> getAll(ColumnType columnType) {
+    public List<CellState> getAll(ColumnType columnType) {
         return this.currentCellsState.get(columnType);
     }
 
