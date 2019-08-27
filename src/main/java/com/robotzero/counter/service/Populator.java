@@ -54,7 +54,8 @@ public class Populator {
                             new Location(vBox.getTranslateY(), vBox.getTranslateY()),
                             DirectionType.VOID,
                             DirectionType.VOID,
-                            ColumnType.valueOf(node.getParent().getId().toUpperCase())
+                            ColumnType.valueOf(node.getParent().getId().toUpperCase()),
+                            CellStatePosition.NONCHANGABLE
                     );
                 }).sorted((i1, i2) -> {
                     Integer test = (int) i1.getCurrentLocation().getFromY();

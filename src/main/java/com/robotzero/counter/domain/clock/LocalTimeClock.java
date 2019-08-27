@@ -70,13 +70,12 @@ public class LocalTimeClock implements Clock {
             Deque<CellState> updatedCellState = cellStateRepository.getAll(tick.getColumnType()).stream().map(cellState -> {
                 Location newLocation = locationService.calculate(new LocationMemoizerKey(action.getDelta(), cellState.getCurrentLocation().getToY(), tick.getColumnType()));
                 Direction directionSeconds = directionService.calculateDirection(tick.getColumnType(), cellState.getCurrentDirection(), action.getDelta());
-                return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection());
+                CellStatePosition isChangeable = this.changeableStates.stream().filter(state -> {
+                    return state.supports(newLocation.getFromY(), cellState.getCurrentDirection());
+                }).map(state -> CellStatePosition.CHANGEABLE).findAny().orElseGet(() -> CellStatePosition.NONCHANGABLE);
+                return cellState.createNew(newLocation, directionSeconds.getDirectionType(), cellState.getCurrentDirection(), isChangeable);
             }).collect(Collectors.toCollection(ConcurrentLinkedDeque::new));
-            CellState top = updatedCellState.peekFirst();
-            CellState bottom = updatedCellState.peekLast();
-            CellState changeableCellState = this.changeableStates.stream().map(state -> {
-                return state.getMoveCellStatesFunction(top, bottom);
-            }).filter(Optional::isPresent).findFirst().flatMap(optional -> optional).map(changeableCellFunc -> changeableCellFunc.apply(updatedCellState)).orElseThrow(() -> new RuntimeException("NAH"));
+            CellState changeableCellState = updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
             cellStateRepository.save(tick.getColumnType(), updatedCellState);
             clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, changeableCellState.getCurrentDirection());
             return changeableCellState;

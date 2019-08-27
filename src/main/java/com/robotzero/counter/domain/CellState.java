@@ -8,14 +8,24 @@ public class CellState {
     private final DirectionType previousDirection;
     private final ColumnType columnType;
     private final int id;
+    private final CellStatePosition cellStatePosition;
 
-    public CellState(int id, Location currentLocation, Location previousLocation, DirectionType currentDirection, DirectionType previousDirection, ColumnType columnType) {
+    public CellState(
+            final int id,
+            Location currentLocation,
+            Location previousLocation,
+            DirectionType currentDirection,
+            DirectionType previousDirection,
+            ColumnType columnType,
+            CellStatePosition cellStatePosition
+    ) {
         this.id = id;
         this.previousLocation = previousLocation;
         this.currentLocation = currentLocation;
         this.columnType = columnType;
         this.previousDirection = previousDirection;
         this.currentDirection = currentDirection;
+        this.cellStatePosition = cellStatePosition;
     }
 
     public Location getCurrentLocation() {
@@ -38,8 +48,8 @@ public class CellState {
         return previousDirection;
     }
 
-    public CellState createNew(Location location, DirectionType currentDirection, DirectionType previousDirection) {
-        return new CellState(this.id, location, this.currentLocation,  currentDirection, previousDirection, this.columnType);
+    public CellState createNew(Location location, DirectionType currentDirection, DirectionType previousDirection, CellStatePosition cellStatePosition) {
+        return new CellState(this.id, location, this.currentLocation,  currentDirection, previousDirection, this.columnType, cellStatePosition);
     }
 
     @Override
@@ -54,6 +64,10 @@ public class CellState {
                 '}';
     }
 
+    public CellStatePosition getCellStatePosition() {
+        return cellStatePosition;
+    }
+
     public class Id {
         private final int id;
         public Id() {
@@ -61,3 +75,4 @@ public class CellState {
         }
     }
 }
+
