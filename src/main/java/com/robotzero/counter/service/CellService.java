@@ -10,19 +10,19 @@ import java.util.Map;
 public class CellService {
     private final CellStateRepository cellStateRepository;
 
-    public CellService(CellStateRepository cellStateRepository) {
+    public CellService(final CellStateRepository cellStateRepository) {
         this.cellStateRepository = cellStateRepository;
     }
 
-    public void initialize(Map<ColumnType, List<CellState>> currentCellsState) {
+    public void initialize(final Map<ColumnType, List<CellState>> currentCellsState) {
         this.cellStateRepository.initialize(currentCellsState);
     }
 
-    public CellState get(int id) {
+    public CellState get(final int id) {
         return this.cellStateRepository.get(id);
     }
 
-    public List<CellState> getAll(ColumnType columnType) {
+    public List<CellState> getAll(final ColumnType columnType) {
         return this.cellStateRepository.getAll(columnType);
     }
 }

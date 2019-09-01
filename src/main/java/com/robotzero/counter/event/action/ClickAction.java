@@ -6,7 +6,7 @@ public class ClickAction implements Action {
     private final ActionType actionType;
     private final ButtonState buttonState;
 
-    public ClickAction(ActionType actionType, ButtonState buttonState) {
+    public ClickAction(final ActionType actionType, final ButtonState buttonState) {
         this.actionType = actionType;
         this.buttonState = buttonState;
     }
@@ -20,13 +20,15 @@ public class ClickAction implements Action {
     }
 
     public ButtonState getNewButtonState() {
-        if (buttonState.equals(ButtonState.START)) {
+        if (buttonState == ButtonState.START) {
             return ButtonState.PAUSE;
-        } else if (buttonState.equals(ButtonState.PAUSE)) {
+        }
+
+        if (buttonState == ButtonState.PAUSE) {
             return ButtonState.START;
         }
 
-        if (buttonState.equals(ButtonState.RESET)) {
+        if (buttonState == ButtonState.RESET) {
             return ButtonState.RESET;
         }
 

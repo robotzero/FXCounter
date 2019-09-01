@@ -36,13 +36,13 @@ public class TimerConfiguration {
     public FXMLView optionsView() { return new OptionsView(); }
 
     @Bean
-    public StageController stageController(SceneConfiguration sceneConfiguration, FXMLView clockView, FXMLView optionsView) {
+    public StageController stageController(final SceneConfiguration sceneConfiguration, final FXMLView clockView, final FXMLView optionsView) {
         return new StageController(sceneConfiguration, clockView, optionsView);
     }
 
     @Bean
-    public ClockPresenter clockPresenter() {
-        return new ClockPresenter();
+    public ClockPresenter clockPresenter(final Populator populator, final TimerService timerService, final CellService cellService, final ClockService clockService, final ResetService resetService) {
+        return new ClockPresenter(populator, timerService, cellService, clockService, resetService);
     }
 
     @Bean
@@ -69,12 +69,12 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+    public JdbcTemplate jdbcTemplate(final DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
     @Bean
-    public TimerRepository timerRepository(JdbcTemplate jdbcTemplate) {
+    public TimerRepository timerRepository(final JdbcTemplate jdbcTemplate) {
         return new TimerDatabaseRepository(jdbcTemplate);
     }
 
@@ -84,7 +84,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Clock clock(ClockRepository clockRepository, TimerRepository timerRepository, CellStateRepository inMemoryCellStateRepository, LocationService locationService, Map<TimerType, ClockMode> clockModes, DirectionService directionService, List<ChangeableState> changeableStates) {
+    public Clock clock(final ClockRepository clockRepository, final TimerRepository timerRepository, final CellStateRepository inMemoryCellStateRepository, final LocationService locationService, final Map<TimerType, ClockMode> clockModes, final DirectionService directionService, final List<ChangeableState> changeableStates) {
         return new LocalTimeClock(clockRepository, timerRepository, inMemoryCellStateRepository, locationService, clockModes, directionService, changeableStates);
     }
 
@@ -94,7 +94,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public Map<TimerType, ClockMode> clockModes(ClockRepository clockRepository, ScrollResetMode scrollResetMode) {
+    public Map<TimerType, ClockMode> clockModes(final ClockRepository clockRepository, final ScrollResetMode scrollResetMode) {
         return Map.of(TimerType.TICK, new TickMode(clockRepository), TimerType.SCROLL, scrollResetMode, TimerType.RESET, scrollResetMode);
     }
 
@@ -104,7 +104,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public ScrollResetMode scrollResetMode(ClockRepository clockRepository) {
+    public ScrollResetMode scrollResetMode(final ClockRepository clockRepository) {
         return new ScrollResetMode(clockRepository);
     }
 
@@ -119,7 +119,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public ClockService clockService(Clock clock) {
+    public ClockService clockService(final Clock clock) {
         return new ClockService(clock);
     }
 
@@ -134,7 +134,7 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public CellService cellService(CellStateRepository cellStateRepository) {
+    public CellService cellService(final CellStateRepository cellStateRepository) {
         return new CellService(cellStateRepository);
     }
 

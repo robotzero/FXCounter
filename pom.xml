@@ -37,13 +37,13 @@
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-core</artifactId>
-            <version>4.0.8-alpha</version>
+            <version>4.0.16-alpha</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit</artifactId>
-            <version>4.0.8-alpha</version>
+            <version>4.0.15-alpha</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -170,31 +170,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>package-jar</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>exec</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<executable>${env.JAVA_HOME}/bin/javafxpackager</executable>-->
-                            <!--<arguments>-->
-                                <!--<argument>-createjar</argument>-->
-                                <!--<argument>-nocss2bin</argument>-->
-                                <!--<argument>-appclass</argument>-->
-                                <!--<argument>com.robotzero.counter</argument>-->
-                                <!--<argument>-srcdir</argument>-->
-                                <!--<argument>${project.build.directory}/classes</argument>-->
-                                <!--<argument>-outdir</argument>-->
-                                <!--<argument>.</argument>-->
-                                <!--<argument>-outfile</argument>-->
-                                <!--<argument>${project.artifactId}-app</argument>-->
-                                <!--<argument>-v</argument>-->
-                            <!--</arguments>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
                 <executions>
                     <execution>
                         <goals>
@@ -235,31 +210,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <!--<executable>/usr/lib/jvm/java-11-jdk/bin/javac</executable>-->
-                    <!--<fork>true</fork>-->
                     <release>12</release>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-toolchains-plugin</artifactId>-->
-<!--                <version>1.1</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>toolchain</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <toolchains>-->
-<!--                        <jdk>-->
-<!--                            <version>1.11</version>-->
-<!--                            <vendor>openjdk</vendor>-->
-<!--                        </jdk>-->
-<!--                    </toolchains>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
         <resources>
             <resource>
@@ -272,9 +225,6 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <!--<includes>-->
-                    <!--<include>**/*.xml</include>-->
-                <!--</includes>-->
             </resource>
         </resources>
     </build>

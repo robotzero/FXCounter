@@ -3,6 +3,8 @@ Counter App
 
 Little counter app written in JavaFX inspired by old HTC phone clock android app.
 
+NO LONGER UPDATED.
+
 **Libraries**
 
 - [afterburner.fx](https://github.com/AdamBien/afterburner.fx)
@@ -11,4 +13,8 @@ Little counter app written in JavaFX inspired by old HTC phone clock android app
 - [ControlsFX](https://bitbucket.org/controlsfx/controlsfx)
 - [TextFX](https://github.com/TestFX/TestFX)
 - [tempus-fugit](https://github.com/tobyweston/tempus-fugit)
+
+**Run**
+
+mvn compile exec:java
 

@@ -5,7 +5,7 @@ public enum DirectionType {
 
     private final int delta;
 
-    DirectionType(int delta) {
+    DirectionType(final int delta) {
         this.delta = delta;
     }
 

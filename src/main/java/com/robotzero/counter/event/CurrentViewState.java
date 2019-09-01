@@ -3,66 +3,50 @@ package com.robotzero.counter.event;
 import com.robotzero.counter.event.result.CurrentViewData;
 
 public class CurrentViewState {
-    private final boolean failure;
+    private final ViewState viewState;
     private final String errorMessage;
-    private final boolean click;
-    private final boolean start;
-    private final boolean stop;
-    private final boolean pause;
-    private final boolean reset;
-    private final boolean tick;
-    private final boolean scroll;
-    private final boolean init;
     private final CurrentViewData data;
 
-    public CurrentViewState(boolean failure, boolean click, boolean start, boolean stop, boolean pause, boolean reset, boolean tick, boolean scroll, boolean init, String errorMessage, CurrentViewData data) {
-        this.click = click;
-        this.start = start;
-        this.stop = stop;
-        this.pause = pause;
-        this.reset = reset;
-        this.tick = tick;
-        this.scroll = scroll;
-        this.init = init;
-        this.failure = failure;
+    private CurrentViewState(final ViewState viewState, final String errorMessage, final CurrentViewData data) {
+        this.viewState = viewState;
         this.errorMessage = errorMessage;
         this.data = data;
     }
 
-    public static CurrentViewState start(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, true, false, false, false, false, false, false, "", currentViewData);
+    public static CurrentViewState start(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.START, "", currentViewData);
     }
 
-    public static CurrentViewState stop(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, true, false, false, false, false, false, "", currentViewData);
+    public static CurrentViewState stop(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.STOP, "", currentViewData);
     }
 
-    public static CurrentViewState pause(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, false, true, false, false, false, false, "", currentViewData);
+    public static CurrentViewState pause(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.PAUSE, "", currentViewData);
     }
 
-    public static CurrentViewState tick(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, false, false, false, true, false, false, "", currentViewData);
+    public static CurrentViewState tick(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.TICK, "", currentViewData);
     }
 
-    public static CurrentViewState reset(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, true, false, false, false, true, false, false, false, "", currentViewData);
+    public static CurrentViewState reset(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.RESET, "", currentViewData);
     }
 
-    public static CurrentViewState scroll(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, false, false, false, false, true, false, "", currentViewData);
+    public static CurrentViewState scroll(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.SCROLL, "", currentViewData);
     }
 
-    public static CurrentViewState failure(String errorMessage) {
-        return new CurrentViewState(false, false, false, false, false, false, false, false, false, errorMessage, null);
+    public static CurrentViewState failure(final String errorMessage) {
+        return new CurrentViewState(ViewState.FAILURE, errorMessage, null);
     }
 
-    public static CurrentViewState init(CurrentViewData currentViewData) {
-        return new CurrentViewState(false, false, false, false, false, false, false, false, true, "", currentViewData);
+    public static CurrentViewState init(final CurrentViewData currentViewData) {
+        return new CurrentViewState(ViewState.INIT, "", currentViewData);
     }
 
     public static CurrentViewState idle() {
-        return new CurrentViewState(false, false, false, false, false, false, false, false, false, "", null);
+        return new CurrentViewState(ViewState.IDLE, "", null);
     }
 
     public CurrentViewData getData() {
@@ -70,7 +54,7 @@ public class CurrentViewState {
     }
 
     public boolean isFailure() {
-        return failure;
+        return this.viewState == ViewState.FAILURE;
     }
 
     public String getErrorMessage() {
@@ -78,49 +62,47 @@ public class CurrentViewState {
     }
 
     public boolean isStart() {
-        return start;
+        return viewState == ViewState.START;
     }
 
     public boolean isStop() {
-        return stop;
+        return viewState == ViewState.STOP;
     }
 
     public boolean isPause() {
-        return pause;
+        return viewState == ViewState.PAUSE;
     }
 
     public boolean isReset() {
-        return reset;
+        return viewState == ViewState.RESET;
     }
 
     public boolean isTick() {
-        return tick;
+        return viewState == ViewState.TICK;
     }
 
     public boolean isScroll() {
-        return scroll;
+        return viewState == ViewState.SCROLL;
     }
 
     public boolean isClick() {
-        return click;
+        return viewState == ViewState.PAUSE || viewState == ViewState.START || viewState == ViewState.STOP || viewState == ViewState.RESET;
     }
 
     public boolean isInit() {
-        return init;
+        return viewState == ViewState.INIT;
     }
 
     @Override
     public String toString() {
         return "CurrentViewState{" +
-                "failure=" + failure +
+                "state=" + viewState +
                 ", errorMessage='" + errorMessage + '\'' +
-                ", click=" + click +
-                ", start=" + start +
-                ", stop=" + stop +
-                ", pause=" + pause +
-                ", reset=" + reset +
-                ", scroll=" + scroll +
                 ", data=" + data +
                 '}';
     }
+}
+
+enum ViewState {
+    FAILURE, START, STOP, PAUSE, RESET, TICK, SCROLL, INIT, IDLE
 }

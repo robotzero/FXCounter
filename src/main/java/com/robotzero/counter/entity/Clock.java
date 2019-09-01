@@ -13,7 +13,7 @@ public class Clock {
         return savedTimer;
     }
 
-    public void setSavedTimer(LocalTime savedTimer) {
+    public void setSavedTimer(final LocalTime savedTimer) {
         this.savedTimer = savedTimer;
     }
 
@@ -21,7 +21,7 @@ public class Clock {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -29,7 +29,7 @@ public class Clock {
         return created;
     }
 
-    public void setCreated(Instant created) {
+    public void setCreated(final Instant created) {
         this.created = created;
     }
 }

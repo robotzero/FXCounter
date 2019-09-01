@@ -268,8 +268,8 @@ public class ScrollTest extends CounterAppIT {
         repository.create("start", sequence.clockStartState);
 
         Button reset = assertContext().getNodeFinder().lookup("#reset").query();
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
+        StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
 
         // Grab the bottom list of rectangles and labels
         List<Node> secondsRectangles = nodeFinder.getRectangles(seconds).get();
@@ -306,7 +306,7 @@ public class ScrollTest extends CounterAppIT {
             return false;
         });
 
-        verifyThat("#paneMinutes", (StackPane s) -> {
+        verifyThat("#minutes", (StackPane s) -> {
             Optional<Node> exTopRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
             Optional<Node> exBottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
             if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
@@ -333,7 +333,7 @@ public class ScrollTest extends CounterAppIT {
 
         Button reset = assertContext().getNodeFinder().lookup("#reset").query();
         Button start = assertContext().getNodeFinder().lookup("#start").query();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
+        StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
 
         // Grab the bottom list of rectangles and labels
         List<Node> minutesRectangles = nodeFinder.getRectangles(minutes).get();
@@ -359,7 +359,7 @@ public class ScrollTest extends CounterAppIT {
             }
         });
 
-        verifyThat("#paneMinutes", (StackPane s) -> {
+        verifyThat("#minutes", (StackPane s) -> {
             Optional<Node> exTopRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(topIdMinutes)).findAny();
             Optional<Node> exBottomRectangle = minutesRectangles.stream().filter(rt -> rt.getId().equals(bottomIdMinutes)).findAny();
             if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {

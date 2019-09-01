@@ -5,7 +5,7 @@ public class Location {
     private final double fromY;
     private final double toY;
 
-    public Location(double fromY, double toY) {
+    public Location(final double fromY, final double toY) {
         this.fromY = fromY;
         this.toY = toY;
     }

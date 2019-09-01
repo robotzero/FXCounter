@@ -23,7 +23,7 @@ public class CellState {
             CellStatePosition cellStatePosition
     ) {
         this.id = id;
-        this.timerValue = 0;
+        this.timerValue = -1;
         this.previousLocation = previousLocation;
         this.currentLocation = currentLocation;
         this.columnType = columnType;
@@ -78,7 +78,7 @@ public class CellState {
     }
 
     public int getTimerValue() {
-        return Optional.of(this.timerValue).filter(timerValue -> timerValue != 0).orElseThrow(() -> new RuntimeException());
+        return Optional.of(this.timerValue).filter(timerValue -> timerValue != -1).orElseThrow(() -> new RuntimeException());
     }
 
     public class Id {

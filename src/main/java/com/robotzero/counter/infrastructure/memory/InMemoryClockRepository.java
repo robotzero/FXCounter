@@ -16,7 +16,7 @@ public class InMemoryClockRepository implements ClockRepository {
     }
 
     @Override
-    public void initialize(LocalTime mainClock) {
+    public void initialize(final LocalTime mainClock) {
         clockState.put(ColumnType.MAIN, mainClock);
         clockState.put(ColumnType.SECONDS, LocalTime.of(0, 0, clockState.get(ColumnType.MAIN).getSecond()));
         clockState.put(ColumnType.MINUTES, LocalTime.of(0, clockState.get(ColumnType.MAIN).getMinute(), 0));
@@ -24,12 +24,12 @@ public class InMemoryClockRepository implements ClockRepository {
     }
 
     @Override
-    public void save(ColumnType columnType, LocalTime clock) {
+    public void save(final ColumnType columnType, final LocalTime clock) {
         clockState.replace(columnType, clock);
     }
 
     @Override
-    public LocalTime get(ColumnType columnType) {
+    public LocalTime get(final ColumnType columnType) {
         return clockState.get(columnType);
     }
 }
