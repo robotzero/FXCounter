@@ -20,9 +20,6 @@ public class OptionsPresenter implements Initializable {
     @FXML
     GridPane rootNode;
 
-    @Autowired
-    StageController stageController;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         TranslateTransition a = new TranslateTransition();

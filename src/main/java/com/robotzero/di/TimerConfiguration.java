@@ -33,11 +33,8 @@ public class TimerConfiguration {
     }
 
     @Bean
-    public FXMLView optionsView() { return new OptionsView(); }
-
-    @Bean
-    public StageController stageController(final SceneConfiguration sceneConfiguration, final FXMLView clockView, final FXMLView optionsView) {
-        return new StageController(sceneConfiguration, clockView, optionsView);
+    public StageController stageController(final SceneConfiguration sceneConfiguration, final FXMLView clockView) {
+        return new StageController(sceneConfiguration, clockView);
     }
 
     @Bean

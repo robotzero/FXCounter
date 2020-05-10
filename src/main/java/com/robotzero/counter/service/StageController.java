@@ -19,7 +19,7 @@ public class StageController {
     public StageController(SceneConfiguration sceneConfiguration, FXMLView ...views) {
         this.sceneConfiguration = sceneConfiguration;
         this.mainView = views[0];
-        this.optionsView = views[1];
+        this.optionsView = views[0];
     }
 
     public void setView() {

@@ -1,15 +1,37 @@
 package com.robotzero.counter.clock;
 
-import com.robotzero.counter.domain.*;
-import com.robotzero.counter.event.*;
-import com.robotzero.counter.event.action.*;
-import com.robotzero.counter.event.result.*;
-import com.robotzero.counter.service.*;
-import io.reactivex.Observable;
+import com.robotzero.counter.domain.CellState;
+import com.robotzero.counter.domain.Column;
+import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.Tick;
+import com.robotzero.counter.domain.TimerType;
+import com.robotzero.counter.event.ButtonState;
+import com.robotzero.counter.event.ButtonType;
+import com.robotzero.counter.event.ClickEvent;
+import com.robotzero.counter.event.CurrentViewState;
+import com.robotzero.counter.event.InitViewEvent;
+import com.robotzero.counter.event.MainViewEvent;
+import com.robotzero.counter.event.ScrollEvent;
+import com.robotzero.counter.event.TickEvent;
+import com.robotzero.counter.event.action.Action;
+import com.robotzero.counter.event.action.ActionType;
+import com.robotzero.counter.event.action.ClickAction;
+import com.robotzero.counter.event.action.InitViewAction;
+import com.robotzero.counter.event.action.TickAction;
+import com.robotzero.counter.event.result.ClickResult;
+import com.robotzero.counter.event.result.CurrentViewData;
+import com.robotzero.counter.event.result.InitViewResult;
+import com.robotzero.counter.event.result.Result;
+import com.robotzero.counter.event.result.TickResult;
+import com.robotzero.counter.service.CellService;
+import com.robotzero.counter.service.ClockService;
+import com.robotzero.counter.service.Populator;
+import com.robotzero.counter.service.ResetService;
+import com.robotzero.counter.service.TimerService;
 import io.reactivex.ObservableTransformer;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
-import io.reactivex.schedulers.Schedulers;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventType;
@@ -26,7 +48,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -68,7 +95,7 @@ public class ClockPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         timerMute.bind(startButton.armedProperty());
 
-        Observable<ClickEvent> startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
+        final var startClickEvent = JavaFxObservable.eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
                 .map(ignored -> new ClickEvent(ButtonType.LEFT, ButtonState.valueOf(startButton.getText().toUpperCase())));
 
