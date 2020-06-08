@@ -1,6 +1,5 @@
 package com.robotzero.counter.domain;
 
-import io.reactivex.Observable;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.layout.VBox;

@@ -2,7 +2,7 @@ package com.robotzero.counter.service;
 
 import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.action.ClickAction;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;

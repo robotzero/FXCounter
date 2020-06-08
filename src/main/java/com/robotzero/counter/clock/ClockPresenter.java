@@ -28,7 +28,8 @@ import com.robotzero.counter.service.ClockService;
 import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.ResetService;
 import com.robotzero.counter.service.TimerService;
-import io.reactivex.ObservableTransformer;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableTransformer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
@@ -50,7 +51,6 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -99,11 +99,11 @@ public class ClockPresenter implements Initializable {
                 .observeOn(Schedulers.computation())
                 .map(ignored -> new ClickEvent(ButtonType.LEFT, ButtonState.valueOf(startButton.getText().toUpperCase())));
 
-        Observable<ClickEvent> resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
+        final var resetClickEvent = JavaFxObservable.eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
                 .observeOn(Schedulers.computation())
                 .map(ignored -> new ClickEvent(ButtonType.RIGHT, ButtonState.valueOf(resetButton.getText().toUpperCase())));
 
-        Observable<ScrollEvent> scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
+        final var scrollEvent = JavaFxObservable.eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
                 .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
                 .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
                 .observeOn(Schedulers.computation())
@@ -113,12 +113,12 @@ public class ClockPresenter implements Initializable {
                     return new ScrollEvent(((Node) event.getSource()).getId(), event.getDeltaY());
                 });
 
-        Observable<InitViewEvent> initViewEvent = JavaFxObservable.eventsOf(gridPane, EventType.ROOT)
+        final var initViewEvent = JavaFxObservable.eventsOf(gridPane, EventType.ROOT)
                 .filter(c -> c.getEventType().getName().toLowerCase().equals("stageshow"))
                 .take(1)
                 .map(event -> new InitViewEvent());
 
-        Observable<TickEvent> tickEvent = Observable.interval(1, TimeUnit.SECONDS)
+        final var tickEvent = Observable.interval(1, TimeUnit.SECONDS)
                 .filter(tick -> timerService.resumed().get())
                 .map(tick -> timerService.elapsedTime().addAndGet(1000)).map(elapsedTime -> new TickEvent(elapsedTime));
 

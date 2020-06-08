@@ -6,7 +6,6 @@ uploadSnapshot.sh
 /release.properties
 /nbproject/
 
-
 # Created by https://www.gitignore.io/api/linux,macos,windows,maven,eclipse,intellij+iml,netbeans
 
 ### Linux ###
@@ -206,3 +205,4 @@ igniter-app.jar
 TODO.txt
 clocks.db
 clocks_test.db
+lib/

@@ -1,21 +1,21 @@
 package com.robotzero.counter.service;
 
-import com.robotzero.counter.domain.*;
-import com.robotzero.counter.domain.clock.CurrentClockState;
+import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.Tick;
+import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.ButtonType;
 import com.robotzero.counter.event.action.Action;
 import com.robotzero.counter.event.action.ActionType;
 import com.robotzero.counter.event.action.ClickAction;
 import com.robotzero.counter.event.action.TickAction;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;

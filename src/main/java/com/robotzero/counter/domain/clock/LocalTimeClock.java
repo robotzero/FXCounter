@@ -5,11 +5,14 @@ import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationMemoizerKey;
 import com.robotzero.counter.service.LocationService;
-import io.reactivex.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.time.LocalTime;
 import java.time.temporal.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
