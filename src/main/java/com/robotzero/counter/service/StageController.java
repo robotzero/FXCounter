@@ -27,9 +27,9 @@ public class StageController {
             this.clockScene = new Scene(this.mainView.getView());
         }
 
-        if (this.optionsScene == null) {
-            this.optionsScene = new Scene(this.optionsView.getView());
-        }
+//        if (this.optionsScene == null) {
+//            this.optionsScene = new Scene(this.optionsView.getView());
+//        }
 
         if (this.currentView != null && this.currentView.equals(mainView)) {
             this.currentView = this.optionsView;
