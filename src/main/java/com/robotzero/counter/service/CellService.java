@@ -18,9 +18,9 @@ public class CellService {
         this.cellStateRepository.initialize(currentCellsState);
     }
 
-    public CellState get(final int id) {
-        return this.cellStateRepository.get(id);
-    }
+//    public CellState get(final int id) {
+//        return this.cellStateRepository.get(id);
+//    }
 
     public List<CellState> getAll(final ColumnType columnType) {
         return this.cellStateRepository.getAll(columnType);

@@ -3,6 +3,7 @@ package com.robotzero.counter.service;
 import com.robotzero.counter.domain.*;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -10,33 +11,51 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
 
 public class Populator {
+    private final Function<Class, Predicate<Node>> nodeClassPredicateFactory = (clazz) -> {
+      return (node) -> node.getClass().equals(clazz);
+    };
+    private final Function<ColumnType, Predicate<Node>> nodeTypePredicateFactory = (columnType -> {
+      return (node) -> node.getId().equals(columnType.name().toLowerCase());
+    });
+
     public Map<ColumnType, Column> timerColumns(GridPane gridPane) {
+
         return gridPane.getChildrenUnmodifiable().filtered(
-                node -> node.getClass().equals(StackPane.class) &&
-                        (node.getId().equals("seconds") || node.getId().equals("minutes") || node.getId().equals("hours"))
+            nodeClassPredicateFactory.apply(StackPane.class)
+                .and(
+                    nodeTypePredicateFactory.apply(ColumnType.SECONDS)
+                        .or(nodeTypePredicateFactory.apply(ColumnType.MINUTES))
+                        .or(nodeTypePredicateFactory.apply(ColumnType.HOURS))
+                )
         ).stream()
                 .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
-                .filter(node -> node.getClass().equals(VBox.class))
+                .filter(nodeClassPredicateFactory.apply(VBox.class))
                 .map(node -> {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    return new Cell(vbox, ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
+                    return new Cell(Integer.parseInt(vbox.getId()), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
                 }).collect(Collectors.groupingBy(Cell::getColumnType, collectingAndThen(Collectors.toList(), Column::new)));
     }
 
     public Map<ColumnType, List<CellState>> cellState(GridPane gridPane) {
         return gridPane.getChildrenUnmodifiable().filtered(
-                node -> node.getClass().equals(StackPane.class) &&
-                        (node.getId().equals("seconds") || node.getId().equals("minutes") || node.getId().equals("hours"))
+            nodeClassPredicateFactory.apply(StackPane.class)
+                .and(
+                    nodeTypePredicateFactory.apply(ColumnType.SECONDS)
+                        .or(nodeTypePredicateFactory.apply(ColumnType.MINUTES))
+                        .or(nodeTypePredicateFactory.apply(ColumnType.HOURS))
+            )
         ).stream()
                 .flatMap(stackPane -> ((StackPane) stackPane).getChildren().stream())
-                .filter(node -> node.getClass().equals(VBox.class))
+                .filter(nodeClassPredicateFactory.apply(VBox.class))
                 .map(node -> {
                     VBox vBox = (VBox) node;
                     return new CellState(
