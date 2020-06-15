@@ -41,7 +41,23 @@ public class Populator {
                     TranslateTransition translateTransition = new TranslateTransition();
                     VBox vbox = (VBox) node;
                     translateTransition.setNode(vbox);
-                    return new Cell(Integer.parseInt(vbox.getId()), ((Text) vbox.getChildren().get(0)), translateTransition, new SimpleIntegerProperty(90), ColumnType.valueOf(node.getParent().getId().toUpperCase()));
+                    CellState cellState = new CellState(
+                      Integer.parseInt(vbox.getId()),
+                      new Location(vbox.getTranslateY(), vbox.getTranslateY()),
+                      new Location(vbox.getTranslateY(), vbox.getTranslateY()),
+                      DirectionType.VOID,
+                      DirectionType.VOID,
+                      ColumnType.valueOf(node.getParent().getId().toUpperCase()),
+                      CellStatePosition.NONCHANGABLE
+                  );
+                    return new Cell(
+                        Integer.parseInt(vbox.getId()),
+                        ((Text) vbox.getChildren().get(0)),
+                        translateTransition,
+                        new SimpleIntegerProperty(90),
+                        ColumnType.valueOf(node.getParent().getId().toUpperCase()),
+                        cellState
+                    );
                 }).collect(Collectors.groupingBy(Cell::getColumnType, collectingAndThen(Collectors.toList(), Column::new)));
     }
 

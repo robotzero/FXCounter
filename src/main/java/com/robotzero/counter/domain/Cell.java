@@ -12,19 +12,22 @@ public class Cell {
     private TranslateTransition translateTransition;
     private IntegerProperty currentSize;
     private ColumnType columnType;
+    private CellState cellState;
 
     public Cell(
             Integer rectangleId,
             Text label,
             TranslateTransition translateTransition,
             IntegerProperty currentSize,
-            ColumnType columnType
+            ColumnType columnType,
+            CellState cellState
     ) {
         this.rectangleId = rectangleId;
         this.label = label;
         this.translateTransition = translateTransition;
         this.currentSize = currentSize;
         this.columnType = columnType;
+        this.cellState = cellState;
     }
 
     public void animate(CellState cellState, Duration duration) {

@@ -5,9 +5,9 @@ import java.util.Map;
 
 public interface CellStateRepository {
 
-    void initialize(Map<ColumnType, List<CellState>> currentCellsState);
+    void initialize(Map<ColumnType, List<CellState>> currentCellsState, Map<ColumnType, Column> timerColumns);
 
-    CellState get(int id);
+//    CellState get(int id);
 
     List<CellState> getAll(ColumnType columnType);
 
