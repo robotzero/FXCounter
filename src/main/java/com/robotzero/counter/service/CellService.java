@@ -23,7 +23,7 @@ public class CellService {
 //        return this.cellStateRepository.get(id);
 //    }
 
-    public List<CellState> getAll(final ColumnType columnType) {
-        return this.cellStateRepository.getAll(columnType);
+    public Column getColumn(final ColumnType columnType) {
+        return this.cellStateRepository.getColumn(columnType);
     }
 }

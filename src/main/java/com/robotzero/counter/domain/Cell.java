@@ -30,7 +30,7 @@ public class Cell {
         this.cellState = cellState;
     }
 
-    public void animate(CellState cellState, Duration duration) {
+    public void animate(Duration duration) {
         if (cellState.getId() == rectangleId) {
             translateTransition.setDuration(duration);
             translateTransition.setFromY(cellState.getCurrentLocation().getFromY());
@@ -53,11 +53,19 @@ public class Cell {
         return rectangleId;
     }
 
+    public CellState getCellState() {
+        return cellState;
+    }
+
     @Override
     public String toString() {
         return "Cell{" +
                 "rectangleId=" + rectangleId +
                 ", label=" + label +
                 '}';
+    }
+
+    public void setCellState(CellState newCellState) {
+        this.cellState = newCellState;
     }
 }

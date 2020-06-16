@@ -25,7 +25,9 @@ public class InMemoryClockRepository implements ClockRepository {
 
     @Override
     public void save(final ColumnType columnType, final LocalTime clock) {
-        clockState.replace(columnType, clock);
+        clockState.computeIfPresent(columnType, (colType, current) -> {
+            return clock;
+        });
     }
 
     @Override

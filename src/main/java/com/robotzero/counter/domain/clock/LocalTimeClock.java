@@ -69,19 +69,24 @@ public class LocalTimeClock implements Clock {
 
     private List<CellState> produceCellsForTextChange(final TickAction action) {
         return action.getTickData().parallelStream().map(tick -> {
-            List<CellState> updatedCellState = cellStateRepository.getAll(tick.getColumnType()).stream().map(cellState -> {
-                Location newLocation = locationService.calculate(new LocationMemoizerKey(action.getDelta(), cellState.getCurrentLocation().getToY(), tick.getColumnType()));
-                Direction newDirection = directionService.calculateDirection(tick.getColumnType(), cellState.getCurrentDirection(), action.getDelta());
+            cellStateRepository.getColumn(tick.getColumnType()).getCells().forEach(cell -> {
+                Location newLocation = locationService.calculate(new LocationMemoizerKey(action.getDelta(), cell.getCellState().getCurrentLocation().getToY(), tick.getColumnType()));
+                Direction newDirection = directionService.calculateDirection(tick.getColumnType(), cell.getCellState().getCurrentDirection(), action.getDelta());
                 CellStatePosition isChangeable = this.changeableStates.stream().filter(state -> {
-                    return state.supports(newLocation.getFromY(), cellState.getCurrentDirection());
+                    return state.supports(newLocation.getFromY(), cell.getCellState().getCurrentDirection());
                 }).map(state -> CellStatePosition.CHANGEABLE).findAny().orElseGet(() -> CellStatePosition.NONCHANGABLE);
-                return cellState.createNew(newLocation, newDirection.getDirectionType(), cellState.getCurrentDirection(), isChangeable);
-            }).collect(toList());
-            cellStateRepository.save(tick.getColumnType(), updatedCellState);
-            clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, updatedCellState.get(0).getCurrentDirection());
-            return updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> {
+                final var newCellState =  cell.getCellState().createNew(newLocation, newDirection.getDirectionType(), cell.getCellState().getCurrentDirection(), isChangeable);
+                cell.setCellState(newCellState);
+            });
+
+//            cellStateRepository.save(tick.getColumnType(), updatedCellState);
+            clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, cellStateRepository.getColumn(tick.getColumnType()).getCells().get(0).getCellState().getCurrentDirection());
+            return cellStateRepository.getColumn(tick.getColumnType()).getCells().stream().filter(cells -> cells.getCellState().getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cell -> cell.getCellState()).map(cellState -> {
                 return cellState.withTimerValue(this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField()));
             }).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
+//            return updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> {
+//                return cellState.withTimerValue(this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField()));
+//            }).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
         }).collect(Collectors.toList());
     }
 

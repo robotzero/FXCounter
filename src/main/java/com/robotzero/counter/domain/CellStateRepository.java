@@ -9,9 +9,9 @@ public interface CellStateRepository {
 
 //    CellState get(int id);
 
-    List<CellState> getAll(ColumnType columnType);
+    Column getColumn(ColumnType columnType);
 
-    void save(ColumnType columnType, List<CellState> updatedCellState);
+//    void save(ColumnType columnType, List<CellState> updatedCellState);
 
 //    CellState get(ColumnType columnType, Function<Deque<CellState>, CellState> retriever);
 }

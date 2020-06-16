@@ -6,25 +6,33 @@ import java.util.List;
 
 public class Column {
 
-    private List<Cell> columnList;
+    private final List<Cell> cells;
 
-    public Column(List<Cell> columnList) {
-        this.columnList = columnList;
+    public Column(List<Cell> cells) {
+        this.cells = cells;
     }
 
-    public void play(CellState cellState, Duration duration) {
-        this.columnList.parallelStream().forEach(cell -> cell.animate(cellState, duration));
+    public void play(Duration duration) {
+        this.cells.parallelStream().forEach(cell -> cell.animate(duration));
     }
 
     public void setLabels(int index, Integer value) {
-        this.columnList.get(index).setLabel(value);
+        this.cells.get(index).setLabel(value);
     }
 
     public void setLabel(int id, Integer value) {
-        this.columnList.stream().filter(cell -> {
+        this.cells.stream().filter(cell -> {
             return cell.getId() == id;
         }).findFirst().ifPresent(cell -> {
             cell.setLabel(value);
         });
+    }
+
+    public void setNewCellState() {
+
+    }
+
+    public List<Cell> getCells() {
+        return this.cells;
     }
 }

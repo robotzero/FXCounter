@@ -240,9 +240,9 @@ public class ClockPresenter implements Initializable {
                     int vboxId = cellState.getId();
                     Column column = this.timerColumns.get(cellState.getColumnType());
                     column.setLabel(vboxId, cellState.getTimerValue());
-                    this.cellStateService.getAll(cellState.getColumnType()).forEach(cellState1 -> {
-                        column.play(cellState1, tickResult.getDuration());
-                    });
+                    this.cellStateService.getColumn(cellState.getColumnType()).play(tickResult.getDuration());
+//                        column.play(tickResult.getDuration());
+//                    });
                 });
             });
 

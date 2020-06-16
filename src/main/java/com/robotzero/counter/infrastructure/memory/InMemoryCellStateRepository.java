@@ -2,6 +2,7 @@ package com.robotzero.counter.infrastructure.memory;
 
 import com.robotzero.counter.domain.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
     private Map<ColumnType, List<CellState>> currentCellsState;
@@ -13,10 +14,10 @@ public class InMemoryCellStateRepository implements CellStateRepository {
         this.timerColumns = timerColumns;
     }
 
-    @Override
-    public void save(ColumnType columnType, List<CellState> newCellState) {
-        this.currentCellsState.put(columnType, newCellState);
-    }
+//    @Override
+//    public void save(ColumnType columnType, List<CellState> newCellState) {
+//        this.currentCellsState.put(columnType, newCellState);
+//    }
 
 //    @Override
 //    public CellState get(int id) {
@@ -24,8 +25,9 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 //    }
 
     @Override
-    public List<CellState> getAll(ColumnType columnType) {
-        return this.currentCellsState.get(columnType);
+    public Column getColumn(ColumnType columnType) {
+//        return this.timerColumns.get(columnType).getCells().stream().map(cell -> cell.getCellState()).collect(Collectors.toList());
+        return this.timerColumns.get(columnType);
     }
 
     @Override
