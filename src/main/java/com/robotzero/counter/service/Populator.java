@@ -58,7 +58,7 @@ public class Populator {
                         ColumnType.valueOf(node.getParent().getId().toUpperCase()),
                         cellState
                     );
-                }).collect(Collectors.groupingBy(Cell::getColumnType, collectingAndThen(Collectors.toList(), Column::new)));
+                }).collect(Collectors.groupingBy(Cell::getColumnType, collectingAndThen(Collectors.toMap((key) -> key.getId(), (value) -> value), Column::new)));
     }
 
     public Map<ColumnType, List<CellState>> cellState(GridPane gridPane) {

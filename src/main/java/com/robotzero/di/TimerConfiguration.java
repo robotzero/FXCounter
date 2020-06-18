@@ -1,11 +1,6 @@
 package com.robotzero.di;
 
-import com.airhacks.afterburner.views.FXMLView;
-import com.robotzero.configuration.SceneConfiguration;
-import com.robotzero.counter.clock.ClockPresenter;
-import com.robotzero.counter.clock.ClockView;
-import com.robotzero.counter.clock.options.OptionsPresenter;
-import com.robotzero.counter.clock.options.OptionsView;
+import com.robotzero.counter.clock.ClockController;
 import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.domain.clock.*;
@@ -28,28 +23,8 @@ import java.util.Map;
 public class TimerConfiguration {
 
     @Bean
-    public FXMLView clockView() {
-        return new ClockView();
-    }
-
-    @Bean
-    public StageController stageController(final SceneConfiguration sceneConfiguration, final FXMLView clockView) {
-        return new StageController(sceneConfiguration, clockView);
-    }
-
-    @Bean
-    public ClockPresenter clockPresenter(final Populator populator, final TimerService timerService, final CellService cellService, final ClockService clockService, final ResetService resetService) {
-        return new ClockPresenter(populator, timerService, cellService, clockService, resetService);
-    }
-
-    @Bean
-    public OptionsPresenter optionPresenter() {
-        return new OptionsPresenter();
-    }
-
-    @Bean
-    public SceneConfiguration sceneConfiguration() {
-        return new SceneConfiguration();
+    public ClockController clockPresenter(final Populator populator, final TimerService timerService, final CellService cellService, final ClockService clockService, final ResetService resetService) {
+        return new ClockController(populator, timerService, cellService, clockService, resetService);
     }
 
     @Bean

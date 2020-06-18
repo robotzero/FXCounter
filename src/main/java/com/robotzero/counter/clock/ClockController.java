@@ -43,6 +43,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import java.io.IOException;
@@ -58,7 +59,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-public class ClockPresenter implements Initializable {
+@FxmlView("clock.fxml")
+public class ClockController implements Initializable {
 
     @FXML
     GridPane gridPane;
@@ -79,7 +81,7 @@ public class ClockPresenter implements Initializable {
 
     private final ResetService resetService;
 
-    public ClockPresenter(final Populator populator, final TimerService timerService, final CellService cellStateService, final ClockService clockService, final ResetService resetService) {
+    public ClockController(final Populator populator, final TimerService timerService, final CellService cellStateService, final ClockService clockService, final ResetService resetService) {
         this.populator = populator;
         this.timerService = timerService;
         this.cellStateService = cellStateService;

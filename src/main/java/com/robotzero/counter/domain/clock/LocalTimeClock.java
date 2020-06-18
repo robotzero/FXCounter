@@ -69,19 +69,19 @@ public class LocalTimeClock implements Clock {
 
     private List<CellState> produceCellsForTextChange(final TickAction action) {
         return action.getTickData().parallelStream().map(tick -> {
-            cellStateRepository.getColumn(tick.getColumnType()).getCells().forEach(cell -> {
+            cellStateRepository.getColumn(tick.getColumnType()).getCells().forEach((key, cell) -> {
                 Location newLocation = locationService.calculate(new LocationMemoizerKey(action.getDelta(), cell.getCellState().getCurrentLocation().getToY(), tick.getColumnType()));
                 Direction newDirection = directionService.calculateDirection(tick.getColumnType(), cell.getCellState().getCurrentDirection(), action.getDelta());
                 CellStatePosition isChangeable = this.changeableStates.stream().filter(state -> {
                     return state.supports(newLocation.getFromY(), cell.getCellState().getCurrentDirection());
                 }).map(state -> CellStatePosition.CHANGEABLE).findAny().orElseGet(() -> CellStatePosition.NONCHANGABLE);
-                final var newCellState =  cell.getCellState().createNew(newLocation, newDirection.getDirectionType(), cell.getCellState().getCurrentDirection(), isChangeable);
+                final var newCellState = cell.getCellState().createNew(newLocation, newDirection.getDirectionType(), cell.getCellState().getCurrentDirection(), isChangeable);
                 cell.setCellState(newCellState);
             });
 
 //            cellStateRepository.save(tick.getColumnType(), updatedCellState);
             clockmodes.get(action.getTimerType()).applyNewClockState(this.tick, tick, cellStateRepository.getColumn(tick.getColumnType()).getCells().get(0).getCellState().getCurrentDirection());
-            return cellStateRepository.getColumn(tick.getColumnType()).getCells().stream().filter(cells -> cells.getCellState().getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cell -> cell.getCellState()).map(cellState -> {
+            return cellStateRepository.getColumn(tick.getColumnType()).getCells().entrySet().stream().filter(cells -> cells.getValue().getCellState().getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cell -> cell.getValue().getCellState()).map(cellState -> {
                 return cellState.withTimerValue(this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField()));
             }).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
 //            return updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> {

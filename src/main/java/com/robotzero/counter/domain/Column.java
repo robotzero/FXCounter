@@ -2,18 +2,18 @@ package com.robotzero.counter.domain;
 
 import javafx.util.Duration;
 
-import java.util.List;
+import java.util.Map;
 
 public class Column {
 
-    private final List<Cell> cells;
+    private final Map<Integer, Cell> cells;
 
-    public Column(List<Cell> cells) {
+    public Column(Map<Integer, Cell> cells) {
         this.cells = cells;
     }
 
     public void play(Duration duration) {
-        this.cells.parallelStream().forEach(cell -> cell.animate(duration));
+        this.cells.forEach((key, value) -> value.animate(duration));
     }
 
     public void setLabels(int index, Integer value) {
@@ -21,18 +21,20 @@ public class Column {
     }
 
     public void setLabel(int id, Integer value) {
-        this.cells.stream().filter(cell -> {
-            return cell.getId() == id;
-        }).findFirst().ifPresent(cell -> {
-            cell.setLabel(value);
-        });
+        Cell cell = this.cells.get(id);
+        cell.setLabel(value);
+//        this.cells.entrySet().stream().filter(cell -> {
+//            return cell.getValue().getId() == id;
+//        }).findFirst().ifPresent(cell -> {
+//            cell.getValue().setLabel(value);
+//        });
     }
 
     public void setNewCellState() {
 
     }
 
-    public List<Cell> getCells() {
+    public Map<Integer, Cell> getCells() {
         return this.cells;
     }
 }
