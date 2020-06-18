@@ -7,7 +7,6 @@ NO LONGER UPDATED.
 
 **Libraries**
 
-- [afterburner.fx](https://github.com/AdamBien/afterburner.fx)
 - [Spring (IoC)](http://docs.spring.io/)
 - [ReactFX](https://github.com/TomasMikula/ReactFX)
 - [ControlsFX](https://bitbucket.org/controlsfx/controlsfx)
@@ -16,5 +15,5 @@ NO LONGER UPDATED.
 
 **Run**
 
-mvn compile exec:java
+mvn spring-boot:start
 
