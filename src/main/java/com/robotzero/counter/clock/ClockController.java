@@ -1,7 +1,7 @@
 package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.CellState;
-import com.robotzero.counter.domain.Column;
+import com.robotzero.counter.domain.ColumnStateFactory;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Tick;
 import com.robotzero.counter.domain.TimerType;
@@ -25,9 +25,10 @@ import com.robotzero.counter.event.result.Result;
 import com.robotzero.counter.event.result.TickResult;
 import com.robotzero.counter.service.CellService;
 import com.robotzero.counter.service.ClockService;
-import com.robotzero.counter.service.Populator;
 import com.robotzero.counter.service.ResetService;
 import com.robotzero.counter.service.TimerService;
+import com.robotzero.counter.view.CellsFactory;
+import com.robotzero.counter.view.Column;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableTransformer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -44,7 +45,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventType;
@@ -69,8 +69,6 @@ public class ClockController implements Initializable {
   @FXML
   StackPane seconds, minutes, hours;
 
-  private final Populator populator;
-
   private final TimerService timerService;
 
   private final CellService cellStateService;
@@ -79,21 +77,19 @@ public class ClockController implements Initializable {
 
   private final ResetService resetService;
 
+  private Map<ColumnType, Column> viewCells;
+
   public ClockController(
-    final Populator populator,
     final TimerService timerService,
     final CellService cellStateService,
     final ClockService clockService,
     final ResetService resetService
   ) {
-    this.populator = populator;
     this.timerService = timerService;
     this.cellStateService = cellStateService;
     this.clockService = clockService;
     this.resetService = resetService;
   }
-
-  private Map<ColumnType, Column> timerColumns;
 
   private BooleanProperty timerMute = new SimpleBooleanProperty(true);
 
@@ -208,7 +204,7 @@ public class ClockController implements Initializable {
               )
               .thenApplyAsync(
                 ignored -> {
-                  Map<ColumnType, List<Integer>> initialValues = this.clockService.initializeLabels();
+                  Map<ColumnType, Set<Integer>> initialValues = this.clockService.initializeLabels();
                   return new InitViewResult(initialValues);
                 },
                 new SimpleAsyncTaskExecutor()
@@ -347,9 +343,9 @@ public class ClockController implements Initializable {
                 cellStates.forEach(
                   cellState -> {
                     int vboxId = cellState.getId();
-                    Column column = this.timerColumns.get(cellState.getColumnType());
-                    column.setLabel(vboxId, cellState.getTimerValue());
-                    this.cellStateService.getColumn(cellState.getColumnType()).play(tickResult.getDuration());
+                    //                    Column column = this.timerColumns.get(cellState.getColumnType());
+                    //                    column.setLabel(vboxId, cellState.getTimerValue());
+                    //                    this.cellStateService.getColumn(cellState.getColumnType()).play(tickResult.getDuration());
                     //                        column.play(tickResult.getDuration());
                     //                    });
                   }
@@ -363,19 +359,22 @@ public class ClockController implements Initializable {
             .ifPresent(
               state -> {
                 InitViewResult initResult = (InitViewResult) currentViewState.getData().getResult();
-                this.timerColumns = populator.timerColumns(gridPane);
-                this.cellStateService.initialize(this.populator.cellState(gridPane), this.timerColumns);
-                IntStream
-                  .rangeClosed(0, 3)
+                CellsFactory.build();
+                this.viewCells = CellsFactory.build();
+                this.cellStateService.initialize(ColumnStateFactory.build());
+                initResult
+                  .getInitialValues()
                   .forEach(
-                    index -> {
-                      this.timerColumns.entrySet()
-                        .parallelStream()
+                    (columnType, timeValuesForEachCell) -> {
+                      final var iterator = timeValuesForEachCell.iterator();
+                      this.viewCells.get(columnType)
+                        .getCells()
                         .forEach(
-                          entry ->
-                            entry
-                              .getValue()
-                              .setLabels(index, initResult.getInitialValues().get(entry.getKey()).get(index))
+                          (cellId_ignored, cell) -> {
+                            if (iterator.hasNext()) {
+                              cell.setLabel(iterator.next());
+                            }
+                          }
                         );
                     }
                   );

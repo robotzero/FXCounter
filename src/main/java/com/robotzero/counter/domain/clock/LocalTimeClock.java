@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -75,82 +77,82 @@ public class LocalTimeClock implements Clock {
       );
   }
 
-  private List<CellState> produceCellsForTextChange(final TickAction action) {
-    return action
-      .getTickData()
-      .parallelStream()
-      .map(
-        tick -> {
-          cellStateRepository
-            .getColumn(tick.getColumnType())
-            .getCells()
-            .forEach(
-              (key, cell) -> {
-                Location newLocation = locationService.calculate(
-                  new LocationMemoizerKey(
-                    action.getDelta(),
-                    cell.getCellState().getCurrentLocation().getToY(),
-                    tick.getColumnType()
-                  )
-                );
-                Direction newDirection = directionService.calculateDirection(
-                  tick.getColumnType(),
-                  cell.getCellState().getCurrentDirection(),
-                  action.getDelta()
-                );
-                CellStatePosition isChangeable =
-                  this.changeableStates.stream()
-                    .filter(
-                      state -> {
-                        return state.supports(newLocation.getFromY(), cell.getCellState().getCurrentDirection());
-                      }
-                    )
-                    .map(state -> CellStatePosition.CHANGEABLE)
-                    .findAny()
-                    .orElseGet(() -> CellStatePosition.NONCHANGABLE);
-                final var newCellState = cell
-                  .getCellState()
-                  .createNew(
-                    newLocation,
-                    newDirection.getDirectionType(),
-                    cell.getCellState().getCurrentDirection(),
-                    isChangeable
-                  );
-                cell.setCellState(newCellState);
-              }
-            );
-
-          //            cellStateRepository.save(tick.getColumnType(), updatedCellState);
-          clockmodes
-            .get(action.getTimerType())
-            .applyNewClockState(
-              this.tick,
-              tick,
-              cellStateRepository.getColumn(tick.getColumnType()).getCells().get(0).getCellState().getCurrentDirection()
-            );
-          return cellStateRepository
-            .getColumn(tick.getColumnType())
-            .getCells()
-            .entrySet()
-            .stream()
-            .filter(cells -> cells.getValue().getCellState().getCellStatePosition() == CellStatePosition.CHANGEABLE)
-            .map(cell -> cell.getValue().getCellState())
-            .map(
-              cellState -> {
-                return cellState.withTimerValue(
-                  this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField())
-                );
-              }
-            )
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Nah"));
-          //            return updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> {
-          //                return cellState.withTimerValue(this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField()));
-          //            }).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
-        }
-      )
-      .collect(Collectors.toList());
-  }
+  //  private List<CellState> produceCellsForTextChange(final TickAction action) {
+  //    return action
+  //      .getTickData()
+  //      .parallelStream()
+  //      .map(
+  //        tick -> {
+  //          cellStateRepository
+  //            .getColumn(tick.getColumnType())
+  //            .getCells()
+  //            .forEach(
+  //              (key, cell) -> {
+  //                Location newLocation = locationService.calculate(
+  //                  new LocationMemoizerKey(
+  //                    action.getDelta(),
+  //                    cell.getCellState().getCurrentLocation().getToY(),
+  //                    tick.getColumnType()
+  //                  )
+  //                );
+  //                Direction newDirection = directionService.calculateDirection(
+  //                  tick.getColumnType(),
+  //                  cell.getCellState().getCurrentDirection(),
+  //                  action.getDelta()
+  //                );
+  //                CellStatePosition isChangeable =
+  //                  this.changeableStates.stream()
+  //                    .filter(
+  //                      state -> {
+  //                        return state.supports(newLocation.getFromY(), cell.getCellState().getCurrentDirection());
+  //                      }
+  //                    )
+  //                    .map(state -> CellStatePosition.CHANGEABLE)
+  //                    .findAny()
+  //                    .orElseGet(() -> CellStatePosition.NONCHANGABLE);
+  //                final var newCellState = cell
+  //                  .getCellState()
+  //                  .createNew(
+  //                    newLocation,
+  //                    newDirection.getDirectionType(),
+  //                    cell.getCellState().getCurrentDirection(),
+  //                    isChangeable
+  //                  );
+  //                cell.setCellState(newCellState);
+  //              }
+  //            );
+  //
+  //          //            cellStateRepository.save(tick.getColumnType(), updatedCellState);
+  //          clockmodes
+  //            .get(action.getTimerType())
+  //            .applyNewClockState(
+  //              this.tick,
+  //              tick,
+  //              cellStateRepository.getColumn(tick.getColumnType()).getCells().get(0).getCellState().getCurrentDirection()
+  //            );
+  //          return cellStateRepository
+  //            .getColumn(tick.getColumnType())
+  //            .getCells()
+  //            .entrySet()
+  //            .stream()
+  //            .filter(cells -> cells.getValue().getCellState().getCellStatePosition() == CellStatePosition.CHANGEABLE)
+  //            .map(cell -> cell.getValue().getCellState())
+  //            .map(
+  //              cellState -> {
+  //                return cellState.withTimerValue(
+  //                  this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField())
+  //                );
+  //              }
+  //            )
+  //            .findFirst()
+  //            .orElseThrow(() -> new RuntimeException("Nah"));
+  //          //            return updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> {
+  //          //                return cellState.withTimerValue(this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField()));
+  //          //            }).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
+  //        }
+  //      )
+  //      .collect(Collectors.toList());
+  //  }
 
   public Observable<CurrentClockState> tick(final TickAction action) {
     TickAction enrichedTickAction = List
@@ -181,16 +183,16 @@ public class LocalTimeClock implements Clock {
       )
       .orElse(action);
 
-    List<CellState> cellStatesSoFar = produceCellsForTextChange(enrichedTickAction);
-
+    //    List<CellState> cellStatesSoFar = produceCellsForTextChange(enrichedTickAction);
+    List<CellState> cellStatesSoFar = List.of();
     return Observable.just(new CurrentClockState(cellStatesSoFar));
   }
 
   @Override
-  public Map<ColumnType, List<Integer>> initializeLabels() {
+  public Map<ColumnType, Set<Integer>> initializeLabels() {
     LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
     return IntStream
-      .of(-1, 0, 1, 2)
+      .rangeClosed(-1, 2)
       .mapToObj(
         index -> {
           int second = this.tick.apply(index, ChronoUnit.SECONDS).apply(mainClock).getSecond();
@@ -209,7 +211,7 @@ public class LocalTimeClock implements Clock {
               toList(),
               listOfIntegers -> {
                 listOfIntegers.sort(Collections.reverseOrder());
-                return listOfIntegers;
+                return new TreeSet<Integer>(listOfIntegers);
               }
             )
           )

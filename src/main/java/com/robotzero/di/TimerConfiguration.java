@@ -3,11 +3,23 @@ package com.robotzero.di;
 import com.robotzero.counter.clock.ClockController;
 import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.TimerType;
-import com.robotzero.counter.domain.clock.*;
+import com.robotzero.counter.domain.clock.ChangeableState;
+import com.robotzero.counter.domain.clock.Clock;
+import com.robotzero.counter.domain.clock.ClockMode;
+import com.robotzero.counter.domain.clock.ClockRepository;
+import com.robotzero.counter.domain.clock.LocalTimeClock;
+import com.robotzero.counter.domain.clock.ScrollResetMode;
+import com.robotzero.counter.domain.clock.TickMode;
+import com.robotzero.counter.domain.clock.TimerRepository;
 import com.robotzero.counter.infrastructure.database.TimerDatabaseRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryCellStateRepository;
 import com.robotzero.counter.infrastructure.memory.InMemoryClockRepository;
-import com.robotzero.counter.service.*;
+import com.robotzero.counter.service.CellService;
+import com.robotzero.counter.service.ClockService;
+import com.robotzero.counter.service.DirectionService;
+import com.robotzero.counter.service.LocationService;
+import com.robotzero.counter.service.ResetService;
+import com.robotzero.counter.service.TimerService;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.property.BooleanProperty;
@@ -23,18 +35,12 @@ public class TimerConfiguration {
 
   @Bean
   public ClockController clockPresenter(
-    final Populator populator,
     final TimerService timerService,
     final CellService cellService,
     final ClockService clockService,
     final ResetService resetService
   ) {
-    return new ClockController(populator, timerService, cellService, clockService, resetService);
-  }
-
-  @Bean
-  public Populator populator() {
-    return new Populator();
+    return new ClockController(timerService, cellService, clockService, resetService);
   }
 
   @Bean

@@ -7,7 +7,6 @@ public class CellState {
   private final Location previousLocation;
   private final DirectionType currentDirection;
   private final DirectionType previousDirection;
-  private final ColumnType columnType;
   private final int id;
   private int timerValue;
   private final CellStatePosition cellStatePosition;
@@ -18,14 +17,12 @@ public class CellState {
     Location previousLocation,
     DirectionType currentDirection,
     DirectionType previousDirection,
-    ColumnType columnType,
     CellStatePosition cellStatePosition
   ) {
     this.id = id;
     this.timerValue = -1;
     this.previousLocation = previousLocation;
     this.currentLocation = currentLocation;
-    this.columnType = columnType;
     this.previousDirection = previousDirection;
     this.currentDirection = currentDirection;
     this.cellStatePosition = cellStatePosition;
@@ -33,10 +30,6 @@ public class CellState {
 
   public Location getCurrentLocation() {
     return currentLocation;
-  }
-
-  public ColumnType getColumnType() {
-    return columnType;
   }
 
   public int getId() {
@@ -63,7 +56,6 @@ public class CellState {
       this.currentLocation,
       currentDirection,
       previousDirection,
-      this.columnType,
       cellStatePosition
     );
   }
@@ -85,8 +77,6 @@ public class CellState {
       previousDirection +
       "currentDirection=" +
       currentDirection +
-      ", columnType=" +
-      columnType +
       ", id=" +
       id +
       '}'

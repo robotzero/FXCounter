@@ -1,5 +1,6 @@
-package com.robotzero.counter.domain;
+package com.robotzero.counter.view;
 
+import com.robotzero.counter.domain.CellState;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.text.Text;
@@ -10,26 +11,15 @@ public class Cell {
   private Text label;
   private TranslateTransition translateTransition;
   private IntegerProperty currentSize;
-  private ColumnType columnType;
-  private CellState cellState;
 
-  public Cell(
-    Integer rectangleId,
-    Text label,
-    TranslateTransition translateTransition,
-    IntegerProperty currentSize,
-    ColumnType columnType,
-    CellState cellState
-  ) {
+  public Cell(Integer rectangleId, Text label, TranslateTransition translateTransition, IntegerProperty currentSize) {
     this.rectangleId = rectangleId;
     this.label = label;
     this.translateTransition = translateTransition;
     this.currentSize = currentSize;
-    this.columnType = columnType;
-    this.cellState = cellState;
   }
 
-  public void animate(Duration duration) {
+  public void animate(Duration duration, CellState cellState) {
     if (cellState.getId() == rectangleId) {
       translateTransition.setDuration(duration);
       translateTransition.setFromY(cellState.getCurrentLocation().getFromY());
@@ -44,24 +34,12 @@ public class Cell {
     }
   }
 
-  public ColumnType getColumnType() {
-    return columnType;
-  }
-
   public int getId() {
     return rectangleId;
-  }
-
-  public CellState getCellState() {
-    return cellState;
   }
 
   @Override
   public String toString() {
     return "Cell{" + "rectangleId=" + rectangleId + ", label=" + label + '}';
-  }
-
-  public void setCellState(CellState newCellState) {
-    this.cellState = newCellState;
   }
 }

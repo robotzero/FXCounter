@@ -1,11 +1,16 @@
 package com.robotzero.counter;
 
 import com.robotzero.counter.clock.ClockController;
+import com.robotzero.counter.helper.ViewNodeHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,24 +42,12 @@ public class ClockFx extends Application {
         stage.setWidth(400);
         stage.setHeight(600);
         stage.setScene(scene);
+        GridPane gridPane = (GridPane) root;
+        ViewNodeHelper.setGridPane(gridPane);
+        WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
         stage.show();
       }
     );
-    //        Injector.setInstanceSupplier(injector::getBean);
-    //        Injector.setConfigurationSource(null);
-    //        StageController stageController = injector.getBean(StageController.class);
-    //        stageController.setStage(stage);
-    //        stageController.setView();
-    //        stageController.afterPropertiesSet();
-    //        Platform.runLater(() -> {
-    //            stage.setTitle("Count Me Bubbles!");
-    //            stage.setX(2000);
-    //            stage.setY(100);
-    ////            ClockView clockView = injector.getBean(ClockView.class);
-    ////            GridPane gridPane = (GridPane) clockView.getView();
-    ////            WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
-    //            stage.show();
-    //        });
   }
 
   @Override
