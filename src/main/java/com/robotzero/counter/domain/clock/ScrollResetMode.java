@@ -22,9 +22,7 @@ public class ScrollResetMode implements ClockMode {
     DirectionType direction
   ) {
     LocalTime currentMain = this.clockRepository.get(ColumnType.MAIN);
-    LocalTime afterTickMain = tick
-      .apply(direction.getNormalizedDelta(), tickData.getChronoUnit())
-      .apply(currentMain);
+    LocalTime afterTickMain = tick.apply(direction.getNormalizedDelta(), tickData.getChronoUnit()).apply(currentMain);
     this.clockRepository.save(
         tickData.getColumnType(),
         tick
@@ -33,12 +31,7 @@ public class ScrollResetMode implements ClockMode {
       );
     this.clockRepository.save(
         ColumnType.MAIN,
-        LocalTime
-          .from(currentMain)
-          .with(
-            tickData.getChronoField(),
-            afterTickMain.get(tickData.getChronoField())
-          )
+        LocalTime.from(currentMain).with(tickData.getChronoField(), afterTickMain.get(tickData.getChronoField()))
       );
   }
 }

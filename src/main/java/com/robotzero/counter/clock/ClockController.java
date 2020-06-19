@@ -104,45 +104,23 @@ public class ClockController implements Initializable {
     final var startClickEvent = JavaFxObservable
       .eventsOf(startButton, MouseEvent.MOUSE_CLICKED)
       .observeOn(Schedulers.computation())
-      .map(
-        ignored ->
-          new ClickEvent(
-            ButtonType.LEFT,
-            ButtonState.valueOf(startButton.getText().toUpperCase())
-          )
-      );
+      .map(ignored -> new ClickEvent(ButtonType.LEFT, ButtonState.valueOf(startButton.getText().toUpperCase())));
 
     final var resetClickEvent = JavaFxObservable
       .eventsOf(resetButton, MouseEvent.MOUSE_CLICKED)
       .observeOn(Schedulers.computation())
-      .map(
-        ignored ->
-          new ClickEvent(
-            ButtonType.RIGHT,
-            ButtonState.valueOf(resetButton.getText().toUpperCase())
-          )
-      );
+      .map(ignored -> new ClickEvent(ButtonType.RIGHT, ButtonState.valueOf(resetButton.getText().toUpperCase())));
 
     final var scrollEvent = JavaFxObservable
       .eventsOf(seconds, javafx.scene.input.ScrollEvent.SCROLL)
-      .mergeWith(
-        JavaFxObservable.eventsOf(
-          minutes,
-          javafx.scene.input.ScrollEvent.SCROLL
-        )
-      )
-      .mergeWith(
-        JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL)
-      )
+      .mergeWith(JavaFxObservable.eventsOf(minutes, javafx.scene.input.ScrollEvent.SCROLL))
+      .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
       .observeOn(Schedulers.computation())
       .filter(event -> event.getDeltaY() != 0L)
       .throttleFirst(200, TimeUnit.MILLISECONDS)
       .map(
         event -> {
-          return new ScrollEvent(
-            ((Node) event.getSource()).getId(),
-            event.getDeltaY()
-          );
+          return new ScrollEvent(((Node) event.getSource()).getId(), event.getDeltaY());
         }
       );
 
@@ -159,22 +137,14 @@ public class ClockController implements Initializable {
       .map(elapsedTime -> new TickEvent(elapsedTime));
 
     Observable<MainViewEvent> mainViewEvents = Observable.merge(
-      Observable.merge(
-        startClickEvent,
-        resetClickEvent,
-        scrollEvent,
-        tickEvent
-      ),
+      Observable.merge(startClickEvent, resetClickEvent, scrollEvent, tickEvent),
       initViewEvent
     );
 
     ObservableTransformer<ClickEvent, Action> clickEventTransformer = clickEvent ->
       clickEvent.concatMap(
         event -> {
-          return resetService.getActions(
-            event.getButtonType(),
-            event.getButtonState()
-          );
+          return resetService.getActions(event.getButtonType(), event.getButtonState());
         }
       );
 
@@ -184,13 +154,7 @@ public class ClockController implements Initializable {
           return Observable.just(
             new TickAction(
               event.getDelta(),
-              Set.of(
-                new Tick(
-                  event.getColumnType(),
-                  event.getChronoUnit(),
-                  event.getChronoField()
-                )
-              ),
+              Set.of(new Tick(event.getColumnType(), event.getChronoUnit(), event.getChronoField())),
               TimerType.SCROLL
             )
           );
@@ -203,13 +167,7 @@ public class ClockController implements Initializable {
           return Observable.just(
             new TickAction(
               -1,
-              Set.of(
-                new Tick(
-                  ColumnType.SECONDS,
-                  ChronoUnit.SECONDS,
-                  ChronoField.SECOND_OF_MINUTE
-                )
-              ),
+              Set.of(new Tick(ColumnType.SECONDS, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE)),
               TimerType.TICK
             )
           );
@@ -228,19 +186,11 @@ public class ClockController implements Initializable {
         sharedObservable -> {
           return Observable.merge(
             Observable.merge(
-              sharedObservable
-                .ofType(ClickEvent.class)
-                .compose(clickEventTransformer),
-              sharedObservable
-                .ofType(ScrollEvent.class)
-                .compose(scrollEventTransformer),
-              sharedObservable
-                .ofType(TickEvent.class)
-                .compose(tickEventTransformer)
+              sharedObservable.ofType(ClickEvent.class).compose(clickEventTransformer),
+              sharedObservable.ofType(ScrollEvent.class).compose(scrollEventTransformer),
+              sharedObservable.ofType(TickEvent.class).compose(tickEventTransformer)
             ),
-            sharedObservable
-              .ofType(InitViewEvent.class)
-              .compose(initViewEventTransformer)
+            sharedObservable.ofType(InitViewEvent.class).compose(initViewEventTransformer)
           );
         }
       );
@@ -258,8 +208,7 @@ public class ClockController implements Initializable {
               )
               .thenApplyAsync(
                 ignored -> {
-                  Map<ColumnType, List<Integer>> initialValues =
-                    this.clockService.initializeLabels();
+                  Map<ColumnType, List<Integer>> initialValues = this.clockService.initializeLabels();
                   return new InitViewResult(initialValues);
                 },
                 new SimpleAsyncTaskExecutor()
@@ -275,13 +224,7 @@ public class ClockController implements Initializable {
             return timerService.operateTimer(action);
           }
         )
-        .map(
-          response ->
-            new ClickResult(
-              response.getActionType(),
-              response.getNewButtonState()
-            )
-        );
+        .map(response -> new ClickResult(response.getActionType(), response.getNewButtonState()));
 
     ObservableTransformer<TickAction, TickResult> tickActionTransformer = tickAction -> {
       return tickAction.flatMap(
@@ -290,9 +233,7 @@ public class ClockController implements Initializable {
             .tick(action)
             .flatMap(
               currentClockState -> {
-                return Observable.just(
-                  new TickResult(currentClockState, action.getTimerType())
-                );
+                return Observable.just(new TickResult(currentClockState, action.getTimerType()));
               }
             );
         }
@@ -359,10 +300,7 @@ public class ClockController implements Initializable {
               state -> {
                 startButton
                   .textProperty()
-                  .setValue(
-                    ((ClickResult) state.getData().getResult()).getButtonState()
-                      .getDescription()
-                  );
+                  .setValue(((ClickResult) state.getData().getResult()).getButtonState().getDescription());
                 Optional
                   .of(state)
                   .filter(CurrentViewState::isStart)
@@ -404,20 +342,14 @@ public class ClockController implements Initializable {
             .filter(CurrentViewState::isTick)
             .ifPresent(
               state -> {
-                TickResult tickResult = (TickResult) currentViewState
-                  .getData()
-                  .getResult();
-                List<CellState> cellStates = tickResult
-                  .getLabels()
-                  .getCellStates();
+                TickResult tickResult = (TickResult) currentViewState.getData().getResult();
+                List<CellState> cellStates = tickResult.getLabels().getCellStates();
                 cellStates.forEach(
                   cellState -> {
                     int vboxId = cellState.getId();
-                    Column column =
-                      this.timerColumns.get(cellState.getColumnType());
+                    Column column = this.timerColumns.get(cellState.getColumnType());
                     column.setLabel(vboxId, cellState.getTimerValue());
-                    this.cellStateService.getColumn(cellState.getColumnType())
-                      .play(tickResult.getDuration());
+                    this.cellStateService.getColumn(cellState.getColumnType()).play(tickResult.getDuration());
                     //                        column.play(tickResult.getDuration());
                     //                    });
                   }
@@ -430,14 +362,9 @@ public class ClockController implements Initializable {
             .filter(CurrentViewState::isInit)
             .ifPresent(
               state -> {
-                InitViewResult initResult = (InitViewResult) currentViewState
-                  .getData()
-                  .getResult();
+                InitViewResult initResult = (InitViewResult) currentViewState.getData().getResult();
                 this.timerColumns = populator.timerColumns(gridPane);
-                this.cellStateService.initialize(
-                    this.populator.cellState(gridPane),
-                    this.timerColumns
-                  );
+                this.cellStateService.initialize(this.populator.cellState(gridPane), this.timerColumns);
                 IntStream
                   .rangeClosed(0, 3)
                   .forEach(
@@ -448,13 +375,7 @@ public class ClockController implements Initializable {
                           entry ->
                             entry
                               .getValue()
-                              .setLabels(
-                                index,
-                                initResult
-                                  .getInitialValues()
-                                  .get(entry.getKey())
-                                  .get(index)
-                              )
+                              .setLabels(index, initResult.getInitialValues().get(entry.getKey()).get(index))
                         );
                     }
                   );

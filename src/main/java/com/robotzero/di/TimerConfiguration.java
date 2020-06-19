@@ -29,13 +29,7 @@ public class TimerConfiguration {
     final ClockService clockService,
     final ResetService resetService
   ) {
-    return new ClockController(
-      populator,
-      timerService,
-      cellService,
-      clockService,
-      resetService
-    );
+    return new ClockController(populator, timerService, cellService, clockService, resetService);
   }
 
   @Bean
@@ -118,9 +112,7 @@ public class TimerConfiguration {
   }
 
   @Bean
-  public ScrollResetMode scrollResetMode(
-    final ClockRepository clockRepository
-  ) {
+  public ScrollResetMode scrollResetMode(final ClockRepository clockRepository) {
     return new ScrollResetMode(clockRepository);
   }
 
@@ -150,9 +142,7 @@ public class TimerConfiguration {
   }
 
   @Bean
-  public CellService cellService(
-    final CellStateRepository cellStateRepository
-  ) {
+  public CellService cellService(final CellStateRepository cellStateRepository) {
     return new CellService(cellStateRepository);
   }
 

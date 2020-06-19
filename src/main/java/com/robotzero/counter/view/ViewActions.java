@@ -19,8 +19,6 @@ public class ViewActions {
       ((Text) node).setText(label);
     }
 
-    throw new UnsupportedOperationException(
-      "Unable to change text on " + Node.class
-    );
+    throw new UnsupportedOperationException("Unable to change text on " + Node.class);
   }
 }

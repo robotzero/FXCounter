@@ -9,11 +9,7 @@ public class Tick {
   private final ChronoUnit chronoUnit;
   private final ChronoField chronoField;
 
-  public Tick(
-    final ColumnType columnType,
-    final ChronoUnit chronoUnit,
-    final ChronoField chronoField
-  ) {
+  public Tick(final ColumnType columnType, final ChronoUnit chronoUnit, final ChronoField chronoField) {
     this.columnType = columnType;
     this.chronoUnit = chronoUnit;
     this.chronoField = chronoField;

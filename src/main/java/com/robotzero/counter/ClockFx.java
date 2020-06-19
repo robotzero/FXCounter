@@ -21,8 +21,7 @@ public class ClockFx extends Application {
   public void init() {
     String[] args = getParameters().getRaw().toArray(new String[0]);
 
-    this.applicationContext =
-      new SpringApplicationBuilder().sources(ClockApp.class).run(args);
+    this.applicationContext = new SpringApplicationBuilder().sources(ClockApp.class).run(args);
   }
 
   @Override

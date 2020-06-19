@@ -13,11 +13,7 @@ public class TickAction implements Action {
   private final TimerType timerType;
   private final Set<Tick> tickData;
 
-  public TickAction(
-    final double delta,
-    final Set<Tick> tickData,
-    final TimerType timerType
-  ) {
+  public TickAction(final double delta, final Set<Tick> tickData, final TimerType timerType) {
     this.delta = delta;
     this.tickData = tickData;
     this.timerType = timerType;
@@ -35,17 +31,10 @@ public class TickAction implements Action {
     return this.tickData;
   }
 
-  public TickAction with(
-    ColumnType columnType,
-    ChronoField chronoField,
-    ChronoUnit chronoUnit
-  ) {
+  public TickAction with(ColumnType columnType, ChronoField chronoField, ChronoUnit chronoUnit) {
     return new TickAction(
       delta,
-      new ImmutableSet.Builder<Tick>()
-        .addAll(this.tickData)
-        .add(new Tick(columnType, chronoUnit, chronoField))
-        .build(),
+      new ImmutableSet.Builder<Tick>().addAll(this.tickData).add(new Tick(columnType, chronoUnit, chronoField)).build(),
       timerType
     );
   }

@@ -27,10 +27,7 @@ public class ResetService {
   private final long hoursMiddle = 12;
   private final long hoursBottom = 1;
 
-  public Observable<? extends Action> getActions(
-    ButtonType buttonType,
-    ButtonState buttonState
-  ) {
+  public Observable<? extends Action> getActions(ButtonType buttonType, ButtonState buttonState) {
     if (buttonType.equals(ButtonType.RIGHT)) {
       List<Long> tickNumber = howManyTicks();
       int seconds = Math.toIntExact(tickNumber.get(0) * -1);
@@ -41,25 +38,14 @@ public class ResetService {
       return Observable
         .create(
           emitter -> {
-            emitter.onNext(
-              new ClickAction(
-                ActionType.valueOf(buttonType.name()),
-                buttonState
-              )
-            );
+            emitter.onNext(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
             IntStream
               .range(0, Math.abs(seconds))
               .mapToObj(
                 index -> {
                   return new TickAction(
                     seconds,
-                    Set.of(
-                      new Tick(
-                        ColumnType.SECONDS,
-                        ChronoUnit.SECONDS,
-                        ChronoField.SECOND_OF_MINUTE
-                      )
-                    ),
+                    Set.of(new Tick(ColumnType.SECONDS, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE)),
                     TimerType.RESET
                   );
                 }
@@ -71,13 +57,7 @@ public class ResetService {
                 index -> {
                   return new TickAction(
                     minutes,
-                    Set.of(
-                      new Tick(
-                        ColumnType.MINUTES,
-                        ChronoUnit.MINUTES,
-                        ChronoField.SECOND_OF_MINUTE
-                      )
-                    ),
+                    Set.of(new Tick(ColumnType.MINUTES, ChronoUnit.MINUTES, ChronoField.SECOND_OF_MINUTE)),
                     TimerType.RESET
                   );
                 }
@@ -89,13 +69,7 @@ public class ResetService {
                 index -> {
                   return new TickAction(
                     hours,
-                    Set.of(
-                      new Tick(
-                        ColumnType.HOURS,
-                        ChronoUnit.HOURS,
-                        ChronoField.HOUR_OF_DAY
-                      )
-                    ),
+                    Set.of(new Tick(ColumnType.HOURS, ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY)),
                     TimerType.RESET
                   );
                 }
@@ -103,14 +77,9 @@ public class ResetService {
               .forEach(emitter::onNext);
           }
         )
-        .zipWith(
-          Observable.interval(60, TimeUnit.MILLISECONDS),
-          (observable, interval) -> (Action) observable
-        );
+        .zipWith(Observable.interval(60, TimeUnit.MILLISECONDS), (observable, interval) -> (Action) observable);
     }
-    return Observable.just(
-      new ClickAction(ActionType.valueOf(buttonType.name()), buttonState)
-    );
+    return Observable.just(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
   }
 
   private List<Long> howManyTicks() {

@@ -9,10 +9,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
   private Map<ColumnType, Column> timerColumns;
 
   @Override
-  public void initialize(
-    Map<ColumnType, List<CellState>> currentCellsState,
-    Map<ColumnType, Column> timerColumns
-  ) {
+  public void initialize(Map<ColumnType, List<CellState>> currentCellsState, Map<ColumnType, Column> timerColumns) {
     this.currentCellsState = currentCellsState;
     this.timerColumns = timerColumns;
   }
@@ -35,11 +32,6 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
   @Override
   public String toString() {
-    return (
-      "InMemoryCellStateRepository{" +
-      "currentCellsState=" +
-      currentCellsState +
-      '}'
-    );
+    return ("InMemoryCellStateRepository{" + "currentCellsState=" + currentCellsState + '}');
   }
 }

@@ -8,11 +8,7 @@ public class LocationMemoizerKey {
   private final double translateY;
   private final ColumnType columnType;
 
-  public LocationMemoizerKey(
-    final double delta,
-    final double translateY,
-    final ColumnType columnType
-  ) {
+  public LocationMemoizerKey(final double delta, final double translateY, final ColumnType columnType) {
     this.delta = delta;
     this.translateY = translateY;
     this.columnType = columnType;

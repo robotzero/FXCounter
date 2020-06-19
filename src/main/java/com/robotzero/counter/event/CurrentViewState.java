@@ -7,11 +7,7 @@ public class CurrentViewState {
   private final String errorMessage;
   private final CurrentViewData data;
 
-  private CurrentViewState(
-    final ViewState viewState,
-    final String errorMessage,
-    final CurrentViewData data
-  ) {
+  private CurrentViewState(final ViewState viewState, final String errorMessage, final CurrentViewData data) {
     this.viewState = viewState;
     this.errorMessage = errorMessage;
     this.data = data;
@@ -105,15 +101,7 @@ public class CurrentViewState {
   @Override
   public String toString() {
     return (
-      "CurrentViewState{" +
-      "state=" +
-      viewState +
-      ", errorMessage='" +
-      errorMessage +
-      '\'' +
-      ", data=" +
-      data +
-      '}'
+      "CurrentViewState{" + "state=" + viewState + ", errorMessage='" + errorMessage + '\'' + ", data=" + data + '}'
     );
   }
 }

@@ -4,10 +4,7 @@ public class Direction {
   private final ColumnType columnType;
   private final DirectionType directionType;
 
-  public Direction(
-    final ColumnType columnType,
-    final DirectionType directionType
-  ) {
+  public Direction(final ColumnType columnType, final DirectionType directionType) {
     this.columnType = columnType;
     this.directionType = directionType;
   }

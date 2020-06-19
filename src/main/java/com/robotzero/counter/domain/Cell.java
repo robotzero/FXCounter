@@ -39,11 +39,7 @@ public class Cell {
   }
 
   public void setLabel(int newLabel) {
-    if (
-      !this.label.textProperty()
-        .getValue()
-        .equals(String.format("%02d", newLabel))
-    ) {
+    if (!this.label.textProperty().getValue().equals(String.format("%02d", newLabel))) {
       this.label.textProperty().setValue(String.format("%02d", newLabel));
     }
   }

@@ -8,10 +8,7 @@ public class ScrollResult implements Result {
   private Observable<DirectionType> direction;
   private ColumnType columnType;
 
-  public ScrollResult(
-    Observable<DirectionType> direction,
-    ColumnType columnType
-  ) {
+  public ScrollResult(Observable<DirectionType> direction, ColumnType columnType) {
     this.direction = direction;
     this.columnType = columnType;
   }

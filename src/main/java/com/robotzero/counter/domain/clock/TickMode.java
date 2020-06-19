@@ -27,17 +27,13 @@ public class TickMode implements ClockMode {
         ignored -> {
           clockRepository.save(
             ColumnType.MAIN,
-            tick
-              .apply(direction.getNormalizedDelta(), ChronoUnit.SECONDS)
-              .apply(clockRepository.get(ColumnType.MAIN))
+            tick.apply(direction.getNormalizedDelta(), ChronoUnit.SECONDS).apply(clockRepository.get(ColumnType.MAIN))
           );
         }
       );
     clockRepository.save(
       tickData.getColumnType(),
-      tick
-        .apply(direction.getDelta(), tickData.getChronoUnit())
-        .apply(clockRepository.get(tickData.getColumnType()))
+      tick.apply(direction.getDelta(), tickData.getChronoUnit()).apply(clockRepository.get(tickData.getColumnType()))
     );
   }
 }

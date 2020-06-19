@@ -8,10 +8,7 @@ public class TickResult implements Result {
   private final CurrentClockState currentClockState;
   private final TimerType timerType;
 
-  public TickResult(
-    final CurrentClockState currentClockState,
-    final TimerType timerType
-  ) {
+  public TickResult(final CurrentClockState currentClockState, final TimerType timerType) {
     this.currentClockState = currentClockState;
     this.timerType = timerType;
   }
@@ -38,13 +35,6 @@ public class TickResult implements Result {
 
   @Override
   public String toString() {
-    return (
-      "TickResult{" +
-      ", currentClockState=" +
-      currentClockState.toString() +
-      ", timerType=" +
-      timerType +
-      '}'
-    );
+    return ("TickResult{" + ", currentClockState=" + currentClockState.toString() + ", timerType=" + timerType + '}');
   }
 }

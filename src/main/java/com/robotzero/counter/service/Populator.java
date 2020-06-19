@@ -70,10 +70,7 @@ public class Populator {
       .collect(
         Collectors.groupingBy(
           Cell::getColumnType,
-          collectingAndThen(
-            Collectors.toMap(key -> key.getId(), value -> value),
-            Column::new
-          )
+          collectingAndThen(Collectors.toMap(key -> key.getId(), value -> value), Column::new)
         )
       );
   }
@@ -115,8 +112,6 @@ public class Populator {
           return test.compareTo(test2);
         }
       )
-      .collect(
-        Collectors.groupingBy(CellState::getColumnType, Collectors.toList())
-      );
+      .collect(Collectors.groupingBy(CellState::getColumnType, Collectors.toList()));
   }
 }

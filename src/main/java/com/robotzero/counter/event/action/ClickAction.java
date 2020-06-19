@@ -6,10 +6,7 @@ public class ClickAction implements Action {
   private final ActionType actionType;
   private final ButtonState buttonState;
 
-  public ClickAction(
-    final ActionType actionType,
-    final ButtonState buttonState
-  ) {
+  public ClickAction(final ActionType actionType, final ButtonState buttonState) {
     this.actionType = actionType;
     this.buttonState = buttonState;
   }

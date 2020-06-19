@@ -6,11 +6,7 @@ import com.robotzero.counter.domain.DirectionType;
 
 public class DirectionService {
 
-  public Direction calculateDirection(
-    ColumnType columnType,
-    DirectionType currentDirection,
-    double delta
-  ) {
+  public Direction calculateDirection(ColumnType columnType, DirectionType currentDirection, double delta) {
     Direction newdirection = null;
     //        System.out.println(currentDirection);
     //        System.out.println(delta);
@@ -20,10 +16,7 @@ public class DirectionService {
         return newdirection;
       }
 
-      if (
-        currentDirection == DirectionType.UP ||
-        currentDirection == DirectionType.STARTUP
-      ) {
+      if (currentDirection == DirectionType.UP || currentDirection == DirectionType.STARTUP) {
         newdirection = new Direction(columnType, DirectionType.UP);
       }
 
@@ -48,10 +41,7 @@ public class DirectionService {
         return newdirection;
       }
 
-      if (
-        currentDirection == DirectionType.DOWN ||
-        currentDirection == DirectionType.STARTDOWN
-      ) {
+      if (currentDirection == DirectionType.DOWN || currentDirection == DirectionType.STARTDOWN) {
         newdirection = new Direction(columnType, DirectionType.DOWN);
       }
 
