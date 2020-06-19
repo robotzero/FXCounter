@@ -1,4 +1,3 @@
 package com.robotzero.counter.event;
 
-public class InitViewEvent implements MainViewEvent {
-}
+public class InitViewEvent implements MainViewEvent {}

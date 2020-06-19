@@ -4,19 +4,19 @@ import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.action.ActionType;
 
 public class ClickResult implements Result {
-    private final ActionType actionType;
-    private final ButtonState buttonState;
+  private final ActionType actionType;
+  private final ButtonState buttonState;
 
-    public ClickResult(ActionType actionType, ButtonState buttonState) {
-        this.actionType = actionType;
-        this.buttonState = buttonState;
-    }
+  public ClickResult(ActionType actionType, ButtonState buttonState) {
+    this.actionType = actionType;
+    this.buttonState = buttonState;
+  }
 
-    public ActionType getActionType() {
-        return actionType;
-    }
+  public ActionType getActionType() {
+    return actionType;
+  }
 
-    public ButtonState getButtonState() {
-        return buttonState;
-    }
+  public ButtonState getButtonState() {
+    return buttonState;
+  }
 }

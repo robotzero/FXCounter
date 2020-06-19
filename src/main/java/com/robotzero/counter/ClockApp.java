@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 @Import(TimerConfiguration.class)
 public class ClockApp {
+
   public static void main(String[] args) {
     // This is how normal Spring Boot app would be launched
     //SpringApplication.run(JavafxWeaverExampleApplication.class, args);

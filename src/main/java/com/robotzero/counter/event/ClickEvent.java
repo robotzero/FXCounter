@@ -1,19 +1,19 @@
 package com.robotzero.counter.event;
 
 public class ClickEvent implements MainViewEvent {
-    private final ButtonType buttonType;
-    private final ButtonState buttonState;
+  private final ButtonType buttonType;
+  private final ButtonState buttonState;
 
-    public ClickEvent(ButtonType buttonType, ButtonState buttonState) {
-        this.buttonType = buttonType;
-        this.buttonState = buttonState;
-    }
+  public ClickEvent(ButtonType buttonType, ButtonState buttonState) {
+    this.buttonType = buttonType;
+    this.buttonState = buttonState;
+  }
 
-    public ButtonType getButtonType() {
-        return buttonType;
-    }
+  public ButtonType getButtonType() {
+    return buttonType;
+  }
 
-    public ButtonState getButtonState() {
-        return buttonState;
-    }
+  public ButtonState getButtonState() {
+    return buttonState;
+  }
 }

@@ -6,66 +6,66 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class Cell {
+  private Integer rectangleId;
+  private Text label;
+  private TranslateTransition translateTransition;
+  private IntegerProperty currentSize;
+  private ColumnType columnType;
+  private CellState cellState;
 
-    private Integer rectangleId;
-    private Text label;
-    private TranslateTransition translateTransition;
-    private IntegerProperty currentSize;
-    private ColumnType columnType;
-    private CellState cellState;
+  public Cell(
+    Integer rectangleId,
+    Text label,
+    TranslateTransition translateTransition,
+    IntegerProperty currentSize,
+    ColumnType columnType,
+    CellState cellState
+  ) {
+    this.rectangleId = rectangleId;
+    this.label = label;
+    this.translateTransition = translateTransition;
+    this.currentSize = currentSize;
+    this.columnType = columnType;
+    this.cellState = cellState;
+  }
 
-    public Cell(
-            Integer rectangleId,
-            Text label,
-            TranslateTransition translateTransition,
-            IntegerProperty currentSize,
-            ColumnType columnType,
-            CellState cellState
+  public void animate(Duration duration) {
+    if (cellState.getId() == rectangleId) {
+      translateTransition.setDuration(duration);
+      translateTransition.setFromY(cellState.getCurrentLocation().getFromY());
+      translateTransition.setToY(cellState.getCurrentLocation().getToY());
+      translateTransition.play();
+    }
+  }
+
+  public void setLabel(int newLabel) {
+    if (
+      !this.label.textProperty()
+        .getValue()
+        .equals(String.format("%02d", newLabel))
     ) {
-        this.rectangleId = rectangleId;
-        this.label = label;
-        this.translateTransition = translateTransition;
-        this.currentSize = currentSize;
-        this.columnType = columnType;
-        this.cellState = cellState;
+      this.label.textProperty().setValue(String.format("%02d", newLabel));
     }
+  }
 
-    public void animate(Duration duration) {
-        if (cellState.getId() == rectangleId) {
-            translateTransition.setDuration(duration);
-            translateTransition.setFromY(cellState.getCurrentLocation().getFromY());
-            translateTransition.setToY(cellState.getCurrentLocation().getToY());
-            translateTransition.play();
-        }
-    }
+  public ColumnType getColumnType() {
+    return columnType;
+  }
 
-    public void setLabel(int newLabel) {
-        if (!this.label.textProperty().getValue().equals(String.format("%02d", newLabel))) {
-            this.label.textProperty().setValue(String.format("%02d", newLabel));
-        }
-    }
+  public int getId() {
+    return rectangleId;
+  }
 
-    public ColumnType getColumnType() {
-        return columnType;
-    }
+  public CellState getCellState() {
+    return cellState;
+  }
 
-    public int getId() {
-        return rectangleId;
-    }
+  @Override
+  public String toString() {
+    return "Cell{" + "rectangleId=" + rectangleId + ", label=" + label + '}';
+  }
 
-    public CellState getCellState() {
-        return cellState;
-    }
-
-    @Override
-    public String toString() {
-        return "Cell{" +
-                "rectangleId=" + rectangleId +
-                ", label=" + label +
-                '}';
-    }
-
-    public void setCellState(CellState newCellState) {
-        this.cellState = newCellState;
-    }
+  public void setCellState(CellState newCellState) {
+    this.cellState = newCellState;
+  }
 }

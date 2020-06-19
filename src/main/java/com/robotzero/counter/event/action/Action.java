@@ -1,4 +1,3 @@
 package com.robotzero.counter.event.action;
 
-public interface Action {
-}
+public interface Action {}
