@@ -2,6 +2,7 @@ package com.robotzero.counter.view;
 
 import static java.util.stream.Collectors.collectingAndThen;
 
+import com.robotzero.counter.data.CellWithColumnType;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.helper.ViewFilterHelper;
 import com.robotzero.counter.helper.ViewNodeHelper;
@@ -43,7 +44,7 @@ public class CellsFactory {
             new SimpleIntegerProperty(90)
           );
           ColumnType columnType = ColumnType.valueOf(node.getParent().getId().toUpperCase());
-          return new CellWithColumnType(cell, columnType);
+          return new CellWithColumnType<>(cell, columnType);
         }
       )
       .collect(
@@ -55,23 +56,5 @@ public class CellsFactory {
           )
         )
       );
-  }
-
-  private static class CellWithColumnType {
-    private final Cell cell;
-    private final ColumnType columnType;
-
-    public CellWithColumnType(Cell cell, ColumnType columnType) {
-      this.cell = cell;
-      this.columnType = columnType;
-    }
-
-    public Cell getCell() {
-      return cell;
-    }
-
-    public ColumnType getColumnType() {
-      return columnType;
-    }
   }
 }

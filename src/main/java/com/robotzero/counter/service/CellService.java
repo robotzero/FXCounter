@@ -1,7 +1,8 @@
 package com.robotzero.counter.service;
 
-import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.CellStateRepository;
+import com.robotzero.counter.domain.ColumnState;
+import com.robotzero.counter.domain.ColumnType;
 import java.util.Map;
 
 public class CellService {
@@ -11,14 +12,7 @@ public class CellService {
     this.cellStateRepository = cellStateRepository;
   }
 
-  public void initialize(final Map<Integer, CellState> cellStates) {
+  public void initialize(final Map<ColumnType, ColumnState> cellStates) {
     this.cellStateRepository.initialize(cellStates);
   }
-  //    public CellState get(final int id) {
-  //        return this.cellStateRepository.get(id);
-  //    }
-
-  //  public Column getColumn(final ColumnType columnType) {
-  //    return this.cellStateRepository.getColumn(columnType);
-  //  }
 }

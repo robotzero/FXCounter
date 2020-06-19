@@ -1,12 +1,9 @@
 package com.robotzero.counter.domain;
 
-import com.robotzero.counter.view.Column;
 import java.util.Map;
 
 public interface CellStateRepository {
-  void initialize(Map<Integer, CellState> cellStates);
-
-  //    CellState get(int id);
-
-  CellState getById(int cellStateId);
+  void initialize(final Map<ColumnType, ColumnState> columnStates);
+  CellState getById(final ColumnType columnType, final int cellStateId);
+  ColumnState getColumn(final ColumnType columnType);
 }

@@ -3,10 +3,10 @@ package com.robotzero.counter.domain;
 import java.util.Map;
 
 public class ColumnState {
-  private Map<Integer, CellState> cellStates;
+  private final Map<Integer, CellState> cellStates;
 
-  public void startCellStates() {
-    this.cellStates = ColumnStateFactory.build();
+  public ColumnState(final Map<Integer, CellState> cellStates) {
+    this.cellStates = cellStates;
   }
 
   public Map<Integer, CellState> getCellStates() {
