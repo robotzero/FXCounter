@@ -6,4 +6,5 @@ public interface CellStateRepository {
   void initialize(final Map<ColumnType, ColumnState> columnStates);
   CellState getById(final ColumnType columnType, final int cellStateId);
   ColumnState getColumn(final ColumnType columnType);
+  void save(final ColumnType columnType, final CellState cellState);
 }

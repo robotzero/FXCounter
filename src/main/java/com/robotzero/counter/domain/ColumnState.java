@@ -12,4 +12,13 @@ public class ColumnState {
   public Map<Integer, CellState> getCellStates() {
     return cellStates;
   }
+
+  public void save(CellState cellState) {
+    cellStates.computeIfPresent(
+      cellState.getId(),
+      (id, currentCellState) -> {
+        return cellState;
+      }
+    );
+  }
 }

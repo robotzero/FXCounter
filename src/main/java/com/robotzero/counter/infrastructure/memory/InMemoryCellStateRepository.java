@@ -10,7 +10,7 @@ public class InMemoryCellStateRepository implements CellStateRepository {
   private Map<ColumnType, ColumnState> cellStates;
 
   @Override
-  public void initialize(Map<ColumnType, ColumnState> cellStates) {
+  public void initialize(final Map<ColumnType, ColumnState> cellStates) {
     this.cellStates = cellStates;
   }
 
@@ -20,8 +20,13 @@ public class InMemoryCellStateRepository implements CellStateRepository {
   }
 
   @Override
-  public ColumnState getColumn(ColumnType columnType) {
+  public ColumnState getColumn(final ColumnType columnType) {
     return cellStates.get(columnType);
+  }
+
+  @Override
+  public void save(final ColumnType columnType, final CellState cellState) {
+    this.cellStates.get(columnType).save(cellState);
   }
 
   @Override

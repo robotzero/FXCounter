@@ -11,8 +11,8 @@ public class Column {
     this.cells = cells;
   }
 
-  public void play(Duration duration, Map<Integer, CellState> cellStates) {
-    this.cells.forEach((key, value) -> value.animate(duration, cellStates.get(value.getId())));
+  public void play(Duration duration, CellState cellState) {
+    this.cells.get(cellState.getId()).animate(duration, cellState);
   }
 
   public void setLabels(int index, Integer value) {

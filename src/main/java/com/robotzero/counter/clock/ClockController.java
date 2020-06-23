@@ -343,13 +343,44 @@ public class ClockController implements Initializable {
                 cellStates.forEach(
                   cellState -> {
                     int vboxId = cellState.getId();
-                    //                    Column column = this.timerColumns.get(cellState.getColumnType());
-                    //                    column.setLabel(vboxId, cellState.getTimerValue());
-                    //                    this.cellStateService.getColumn(cellState.getColumnType()).play(tickResult.getDuration());
-                    //                        column.play(tickResult.getDuration());
-                    //                    });
+                    this.viewCells.entrySet()
+                      .stream()
+                      .filter(
+                        columnTypeColumnEntry -> {
+                          return columnTypeColumnEntry.getValue().getCells().get(cellState.getId()) != null;
+                        }
+                      )
+                      .findFirst()
+                      .ifPresent(
+                        columnTypeColumnEntry -> {
+                          final var column = columnTypeColumnEntry.getValue();
+                          column.setLabel(vboxId, cellState.getTimerValue());
+                          column.play(tickResult.getDuration(), cellState);
+                        }
+                      );
                   }
                 );
+                cellStateService
+                  .getAllNonChangeable(ColumnType.SECONDS)
+                  .stream()
+                  .forEach(
+                    a -> {
+                      this.viewCells.entrySet()
+                        .stream()
+                        .filter(
+                          columnTypeColumnEntry -> {
+                            return columnTypeColumnEntry.getValue().getCells().get(a.getId()) != null;
+                          }
+                        )
+                        .findFirst()
+                        .ifPresent(
+                          columnTypeColumnEntry -> {
+                            final var column = columnTypeColumnEntry.getValue();
+                            column.play(tickResult.getDuration(), a);
+                          }
+                        );
+                    }
+                  );
               }
             );
 

@@ -112,10 +112,9 @@ public class LocalTimeClock implements Clock {
                   cell.getCurrentDirection(),
                   isChangeable
                 );
+                cellStateRepository.save(tick.getColumnType(), newCellState);
               }
             );
-
-          //            cellStateRepository.save(tick.getColumnType(), newCellState);
           clockmodes
             .get(action.getTimerType())
             .applyNewClockState(
@@ -146,9 +145,6 @@ public class LocalTimeClock implements Clock {
             )
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Nah"));
-          //            return updatedCellState.stream().filter(cellState -> cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE).map(cellState -> {
-          //                return cellState.withTimerValue(this.clockRepository.get(cellState.getColumnType()).get(cellState.getColumnType().getChronoField()));
-          //            }).findFirst().orElseThrow(() -> new RuntimeException("Nah"));
         }
       )
       .collect(Collectors.toList());
@@ -183,8 +179,7 @@ public class LocalTimeClock implements Clock {
       )
       .orElse(action);
 
-    //    List<CellState> cellStatesSoFar = produceCellsForTextChange(enrichedTickAction);
-    List<CellState> cellStatesSoFar = List.of();
+    List<CellState> cellStatesSoFar = produceCellsForTextChange(enrichedTickAction);
     return Observable.just(new CurrentClockState(cellStatesSoFar));
   }
 
