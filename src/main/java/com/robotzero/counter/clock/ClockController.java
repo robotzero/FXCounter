@@ -1,6 +1,7 @@
 package com.robotzero.counter.clock;
 
 import com.robotzero.counter.domain.CellState;
+import com.robotzero.counter.domain.CellStatePosition;
 import com.robotzero.counter.domain.ColumnStateFactory;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Tick;
@@ -354,33 +355,14 @@ public class ClockController implements Initializable {
                       .ifPresent(
                         columnTypeColumnEntry -> {
                           final var column = columnTypeColumnEntry.getValue();
-                          column.setLabel(vboxId, cellState.getTimerValue());
+                          if (cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE) {
+                            column.setLabel(vboxId, cellState.getTimerValue());
+                          }
                           column.play(tickResult.getDuration(), cellState);
                         }
                       );
                   }
                 );
-                cellStateService
-                  .getAllNonChangeable(ColumnType.SECONDS)
-                  .stream()
-                  .forEach(
-                    a -> {
-                      this.viewCells.entrySet()
-                        .stream()
-                        .filter(
-                          columnTypeColumnEntry -> {
-                            return columnTypeColumnEntry.getValue().getCells().get(a.getId()) != null;
-                          }
-                        )
-                        .findFirst()
-                        .ifPresent(
-                          columnTypeColumnEntry -> {
-                            final var column = columnTypeColumnEntry.getValue();
-                            column.play(tickResult.getDuration(), a);
-                          }
-                        );
-                    }
-                  );
               }
             );
 

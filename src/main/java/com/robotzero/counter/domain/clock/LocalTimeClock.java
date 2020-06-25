@@ -134,19 +134,19 @@ public class LocalTimeClock implements Clock {
             .getCellStates()
             .entrySet()
             .stream()
-            .filter(cells -> cells.getValue().getCellStatePosition() == CellStatePosition.CHANGEABLE)
             .map(cell -> cell.getValue())
             .map(
               cellState -> {
-                return cellState.withTimerValue(
-                  this.clockRepository.get(tick.getColumnType()).get(tick.getColumnType().getChronoField())
-                );
+                if (cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE) {
+                  return cellState.withTimerValue(
+                      this.clockRepository.get(tick.getColumnType()).get(tick.getColumnType().getChronoField())
+                  );
+                }
+                return cellState;
               }
-            )
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Nah"));
+            ).collect(Collectors.toList());
         }
-      )
+      ).flatMap(cellStates -> cellStates.stream())
       .collect(Collectors.toList());
   }
 
