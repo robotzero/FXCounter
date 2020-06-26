@@ -355,9 +355,9 @@ public class ClockController implements Initializable {
                       .ifPresent(
                         columnTypeColumnEntry -> {
                           final var column = columnTypeColumnEntry.getValue();
-                          if (cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE) {
+                          Optional.of(cellState.getCellStatePosition()).filter(cellStatePosition -> cellStatePosition == CellStatePosition.CHANGEABLE).ifPresent(cellStatePosition -> {
                             column.setLabel(vboxId, cellState.getTimerValue());
-                          }
+                          });
                           column.play(tickResult.getDuration(), cellState);
                         }
                       );

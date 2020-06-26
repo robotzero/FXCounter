@@ -9,8 +9,9 @@ import com.robotzero.counter.service.LocationMemoizerKey;
 import com.robotzero.counter.service.LocationService;
 import io.reactivex.rxjava3.core.Observable;
 import java.time.LocalTime;
-import java.time.temporal.*;
-import java.util.Collections;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -205,8 +206,7 @@ public class LocalTimeClock implements Clock {
             collectingAndThen(
               toList(),
               listOfIntegers -> {
-                listOfIntegers.sort(Collections.reverseOrder());
-                return new TreeSet<>(listOfIntegers);
+                return new TreeSet<>(listOfIntegers).descendingSet();
               }
             )
           )

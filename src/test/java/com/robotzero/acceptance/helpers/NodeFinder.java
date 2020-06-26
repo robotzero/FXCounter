@@ -35,9 +35,9 @@ public class NodeFinder {
         .filter(n -> !n.getClass().equals(Rectangle.class))
         .map(v -> ((VBox) v).getChildren())
         .flatMap(Collection::stream)
-        .filter(s -> s.getClass().equals(StackPane.class))
-        .map(sl -> ((StackPane) sl).getChildren())
-        .flatMap(Collection::stream)
+//        .filter(s -> s.getClass().equals(StackPane.class))
+//        .map(sl -> ((StackPane) sl).getChildren())
+//        .flatMap(Collection::stream)
         .filter(r -> r.getClass().equals(Text.class))
         .collect(Collectors.toList());
   }
