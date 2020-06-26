@@ -23,12 +23,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.testfx.framework.junit.ApplicationTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalTime;
 
 @SpringBootTest(classes = {TimerConfiguration.class, TestSpringApplicationConfiguration.class}, webEnvironment = WebEnvironment.NONE)
-public class CounterAppIT extends ApplicationTest {
+@ContextConfiguration(classes = {TimerConfiguration.class, TestSpringApplicationConfiguration.class})
+public class CounterAppIT {
 
 //    private final ApplicationContext injector = new AnnotationConfigApplicationContext(TestSpringApplicationConfiguration.class);
     public final static int TIME_WAIT = 650;
@@ -43,17 +44,17 @@ public class CounterAppIT extends ApplicationTest {
   }
 
   public static void main(String[] args) throws Exception {
-    launch(ClockFx.class);
+//    launch(ClockFx.class);
   }
 
-  @Override
+//  @Override
   public void init() {
 //    String[] args = getParameters().getRaw().toArray(new String[0]);
 
-    this.applicationContext = new SpringApplicationBuilder().sources(ClockApp.class).run();
+    this.applicationContext = new SpringApplicationBuilder().sources(ClockApp.class, TestSpringApplicationConfiguration.class).run();
   }
 
-  @Override
+//  @Override
   public void start(Stage stage) {
     FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
     Parent root = fxWeaver.loadView(ClockController.class);
@@ -74,7 +75,7 @@ public class CounterAppIT extends ApplicationTest {
     );
   }
 
-  @Override
+//  @Override
   public void stop() {
     this.applicationContext.close();
     Platform.exit();
