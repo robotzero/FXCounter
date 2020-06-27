@@ -1,5 +1,6 @@
 package com.robotzero.counter.clock;
 
+import com.google.common.collect.ImmutableSet;
 import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.CellStatePosition;
 import com.robotzero.counter.domain.ColumnStateFactory;
@@ -205,7 +206,7 @@ public class ClockController implements Initializable {
               )
               .thenApplyAsync(
                 ignored -> {
-                  Map<ColumnType, Set<Integer>> initialValues = this.clockService.initializeLabels();
+                  Map<ColumnType, ImmutableSet<Integer>> initialValues = this.clockService.initializeLabels();
                   return new InitViewResult(initialValues);
                 },
                 new SimpleAsyncTaskExecutor()

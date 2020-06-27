@@ -13,15 +13,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.testfx.api.FxRobot;
-import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Init;
 import org.testfx.framework.junit5.Start;
 
-@ExtendWith(ApplicationExtension.class)
 public final class InitializationTest extends ClockFxTest {
   private TimerRepository repository;
 
@@ -42,9 +40,13 @@ public final class InitializationTest extends ClockFxTest {
     repository.create("start", LocalTime.of(0, 0, 0));
   }
 
-  @Test
-  public void it_initializes_clock_to_correct_values_based_on_provided_time(FxRobot fxRobot) {
-    String[] expectedLabels = { "02", "01", "00", "59" };
+  @ParameterizedTest
+  @MethodSource("provideArguments")
+  public void it_initializes_clock_to_correct_values_based_on_provided_time(
+    LocalTime initialTime,
+    String[] expectedLabels,
+    FxRobot fxRobot
+  ) {
     StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
     StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
 
@@ -69,8 +71,13 @@ public final class InitializationTest extends ClockFxTest {
     }
   }
 
-  @Test
-  public void it_initializes_clock_to_zero_values_when_history_is_empty(FxRobot fxRobot) {
+  @ParameterizedTest
+  @MethodSource("provideArguments")
+  public void it_initializes_clock_to_zero_values_when_history_is_empty(
+    LocalTime initialTime,
+    String[] expectedLabels,
+    FxRobot fxRobot
+  ) {
     repository.deleteAll();
     StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
     StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
@@ -80,7 +87,6 @@ public final class InitializationTest extends ClockFxTest {
 
     Assertions.assertNull(repository.selectLatest());
 
-    String[] expectedLabels = { "02", "01", "00", "59" };
     List<String> visibleSecondsLabels = secondsLabels
       .stream()
       .map(text -> ((Text) text).getText())
@@ -100,7 +106,7 @@ public final class InitializationTest extends ClockFxTest {
     }
   }
 
-  public Stream<? extends Arguments> provideArguments() {
+  private static Stream<? extends Arguments> provideArguments() {
     String[] expectedLabels = { "02", "01", "00", "59" };
     return Stream.of(Arguments.of(LocalTime.of(0, 0, 0), expectedLabels));
   }

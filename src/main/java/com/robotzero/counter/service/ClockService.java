@@ -1,5 +1,6 @@
 package com.robotzero.counter.service;
 
+import com.google.common.collect.ImmutableSet;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.clock.Clock;
 import com.robotzero.counter.domain.clock.CurrentClockState;
@@ -19,7 +20,7 @@ public class ClockService {
     return clock.tick(action);
   }
 
-  public Map<ColumnType, Set<Integer>> initializeLabels() {
+  public Map<ColumnType, ImmutableSet<Integer>> initializeLabels() {
     return clock.initializeLabels();
   }
 

@@ -1,8 +1,18 @@
 package com.robotzero.counter.domain.clock;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toCollection;
 
-import com.robotzero.counter.domain.*;
+import com.google.common.collect.ImmutableSet;
+import com.robotzero.counter.domain.CellState;
+import com.robotzero.counter.domain.CellStatePosition;
+import com.robotzero.counter.domain.CellStateRepository;
+import com.robotzero.counter.domain.ColumnType;
+import com.robotzero.counter.domain.Direction;
+import com.robotzero.counter.domain.Location;
+import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.event.action.TickAction;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationMemoizerKey;
@@ -13,11 +23,10 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -70,12 +79,7 @@ public class LocalTimeClock implements Clock {
           .ofNullable(timerRepository.selectLatest())
           .orElseGet(
             () -> {
-              com.robotzero.counter.entity.Clock savedTimer = new com.robotzero.counter.entity.Clock(
-                "fake",
-                (LocalTime.of(22, 1, 10)),
-                Instant.now()
-              );
-              return savedTimer;
+              return new com.robotzero.counter.entity.Clock("fake", (LocalTime.of(0, 0, 0)), Instant.now());
             }
           )
           .getSavedTimer()
@@ -191,10 +195,10 @@ public class LocalTimeClock implements Clock {
   }
 
   @Override
-  public Map<ColumnType, Set<Integer>> initializeLabels() {
+  public Map<ColumnType, ImmutableSet<Integer>> initializeLabels() {
     LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
     return IntStream
-      .rangeClosed(-1, 2)
+      .of(2, 1, 0, -1)
       .mapToObj(
         index -> {
           int second = this.tick.apply(index, ChronoUnit.SECONDS).apply(mainClock).getSecond();
@@ -210,9 +214,14 @@ public class LocalTimeClock implements Clock {
           mapping(
             mapOfColumnValues -> mapOfColumnValues.getValue(),
             collectingAndThen(
-              toList(),
+              toCollection(ArrayList::new),
               listOfIntegers -> {
-                return new TreeSet<>(listOfIntegers).descendingSet();
+                return ImmutableSet.of(
+                  listOfIntegers.get(0),
+                  listOfIntegers.get(1),
+                  listOfIntegers.get(2),
+                  listOfIntegers.get(3)
+                );
               }
             )
           )

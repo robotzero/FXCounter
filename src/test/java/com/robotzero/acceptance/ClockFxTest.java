@@ -16,7 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import net.rgielen.fxweaver.core.FxWeaver;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,28 +47,27 @@ public class ClockFxTest {
     return applicationContext.getBean(c);
   }
 
-  @BeforeEach
-  public void setUp() {}
-
   @Start
   public void start(Stage stage) {
-    FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
-    Parent root = fxWeaver.loadView(ClockController.class);
-    Scene scene = new Scene(root);
-    Platform.runLater(
-      () -> {
-        stage.setTitle("Count Me Bubbles!");
-        stage.setX(1000);
-        stage.setY(100);
-        stage.setWidth(400);
-        stage.setHeight(600);
-        stage.setScene(scene);
-        GridPane gridPane = (GridPane) root;
-        ViewNodeHelper.setGridPane(gridPane);
-        WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
-        stage.show();
-      }
-    );
+    if (!stage.isShowing()) {
+      FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
+      Parent root = fxWeaver.loadView(ClockController.class);
+      Scene scene = new Scene(root);
+      Platform.runLater(
+        () -> {
+          stage.setTitle("Count Me Bubbles!");
+          stage.setX(1000);
+          stage.setY(100);
+          stage.setWidth(400);
+          stage.setHeight(600);
+          stage.setScene(scene);
+          GridPane gridPane = (GridPane) root;
+          ViewNodeHelper.setGridPane(gridPane);
+          WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
+          stage.show();
+        }
+      );
+    }
   }
 
   public NodeFinder getNodeFinder() {
