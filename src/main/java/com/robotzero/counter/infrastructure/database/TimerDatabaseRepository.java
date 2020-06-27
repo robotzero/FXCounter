@@ -10,7 +10,6 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 public class TimerDatabaseRepository implements TimerRepository {
@@ -32,13 +31,11 @@ public class TimerDatabaseRepository implements TimerRepository {
 
   @Override
   public Clock selectLatest() {
-    List<Clock> result = jdbcTemplate.query("SELECT * FROM timers WHERE created=(SELECT MAX (created) FROM timers)",
-        new ClockRowMapper());
-    System.out.println(result);
-    Clock clock = new Clock();
-    clock.setSavedTimer(LocalTime.of(0, 0, 0));
-    return clock;
-    //        return result.isEmpty() ? null : (Clock) result.get(0);
+    List<Clock> result = jdbcTemplate.query(
+      "SELECT * FROM timers WHERE created=(SELECT MAX (created) FROM timers)",
+      new ClockRowMapper()
+    );
+    return result.isEmpty() ? null : result.get(0);
   }
 
   @Override
@@ -58,10 +55,11 @@ public class TimerDatabaseRepository implements TimerRepository {
   private static class ClockResultSetExtractor implements ResultSetExtractor<Clock> {
 
     @Override
-    public Clock extractData(ResultSet rs) throws SQLException, DataAccessException {
-      Clock clock = new Clock();
-      clock.setSavedTimer(LocalTime.of(0, 0, 0));
-      return clock;
+    public Clock extractData(ResultSet rs) throws DataAccessException, SQLException {
+      final String name = (String) rs.getObject("name");
+      final String timer = (String) rs.getObject("saved_timer");
+      final String created = (String) rs.getObject("created");
+      return Clock.with(name, timer, created);
     }
   }
 }

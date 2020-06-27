@@ -8,6 +8,7 @@ import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationMemoizerKey;
 import com.robotzero.counter.service.LocationService;
 import io.reactivex.rxjava3.core.Observable;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -69,8 +70,11 @@ public class LocalTimeClock implements Clock {
           .ofNullable(timerRepository.selectLatest())
           .orElseGet(
             () -> {
-              com.robotzero.counter.entity.Clock savedTimer = new com.robotzero.counter.entity.Clock();
-              savedTimer.setSavedTimer(LocalTime.of(22, 1, 10));
+              com.robotzero.counter.entity.Clock savedTimer = new com.robotzero.counter.entity.Clock(
+                "fake",
+                (LocalTime.of(22, 1, 10)),
+                Instant.now()
+              );
               return savedTimer;
             }
           )
@@ -140,14 +144,16 @@ public class LocalTimeClock implements Clock {
               cellState -> {
                 if (cellState.getCellStatePosition() == CellStatePosition.CHANGEABLE) {
                   return cellState.withTimerValue(
-                      this.clockRepository.get(tick.getColumnType()).get(tick.getColumnType().getChronoField())
+                    this.clockRepository.get(tick.getColumnType()).get(tick.getColumnType().getChronoField())
                   );
                 }
                 return cellState;
               }
-            ).collect(Collectors.toList());
+            )
+            .collect(Collectors.toList());
         }
-      ).flatMap(cellStates -> cellStates.stream())
+      )
+      .flatMap(cellStates -> cellStates.stream())
       .collect(Collectors.toList());
   }
 

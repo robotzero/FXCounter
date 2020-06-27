@@ -2,33 +2,41 @@ package com.robotzero.counter.entity;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Clock {
   private String name;
   private LocalTime savedTimer;
   private Instant created;
 
-  public LocalTime getSavedTimer() {
-    return savedTimer;
+  public Clock(String name, LocalTime localTime, Instant created) {
+    this.name = name;
+    this.savedTimer = localTime;
+    this.created = created;
   }
 
-  public void setSavedTimer(final LocalTime savedTimer) {
-    this.savedTimer = savedTimer;
+  public LocalTime getSavedTimer() {
+    return savedTimer;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(final String name) {
-    this.name = name;
-  }
-
-  public Instant getCreated() {
-    return created;
-  }
-
-  public void setCreated(final Instant created) {
-    this.created = created;
+  public static Clock with(String name, String localTimeString, String createdString) {
+    final Set<Integer> timerValues = Arrays
+      .stream(localTimeString.split(":"))
+      .map(stringTimerValue -> Integer.parseInt(stringTimerValue))
+      .collect(Collectors.toSet());
+    final var iterator = timerValues.iterator();
+    final var localTime = LocalTime.of(
+      iterator.hasNext() ? iterator.next() : 0,
+      iterator.hasNext() ? iterator.next() : 0,
+      iterator.hasNext() ? iterator.next() : 0
+    );
+    final var created = Instant.parse(createdString);
+    return new Clock(name, localTime, created);
   }
 }

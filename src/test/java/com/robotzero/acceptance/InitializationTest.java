@@ -1,97 +1,107 @@
 package com.robotzero.acceptance;
 
-import com.robotzero.counter.domain.clock.TimerRepository;
-import com.tngtech.java.junit.dataprovider.DataProvider;
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import com.tngtech.java.junit.dataprovider.UseDataProvider;
-import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.testfx.api.FxAssert.assertContext;
 
+import com.robotzero.counter.domain.clock.TimerRepository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.Arguments;
+import org.testfx.api.FxRobot;
+import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.framework.junit5.Init;
+import org.testfx.framework.junit5.Start;
 
-import static org.testfx.api.FxAssert.assertContext;
+@ExtendWith(ApplicationExtension.class)
+public final class InitializationTest extends ClockFxTest {
+  private TimerRepository repository;
 
-@RunWith(DataProviderRunner.class)
-public class InitializationTest extends CounterAppIT {
+  @Init
+  public void init() {
+    super.init();
+  }
 
-    private TimerRepository repository;
+  @Start
+  public void start(Stage stage) {
+    super.start(stage);
+  }
 
-    @DataProvider
-    public static Object[][] getClockAndExpectedValues() {
-        String[] expectedLabels = {"02", "01", "00", "59"};
-        return new Object[][] {
-                { LocalTime.of(0, 0, 0), expectedLabels }
-        };
+  @BeforeEach
+  public void setUp() {
+    repository = this.getBean(TimerRepository.class);
+    repository.deleteAll();
+    repository.create("start", LocalTime.of(0, 0, 0));
+  }
+
+  @Test
+  public void it_initializes_clock_to_correct_values_based_on_provided_time(FxRobot fxRobot) {
+    String[] expectedLabels = { "02", "01", "00", "59" };
+    StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
+    StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
+
+    List<Node> secondsLabels = this.getNodeFinder().getLabels(seconds).get();
+    List<Node> minutesLabels = this.getNodeFinder().getLabels(minutes).get();
+    List<String> visibleSecondsLabels = secondsLabels
+      .stream()
+      .map(text -> ((Text) text).getText())
+      .collect(Collectors.toList());
+
+    for (int i = 0; i < visibleSecondsLabels.size(); i++) {
+      Assertions.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
     }
 
-    @Before
-    public void setUp() {
-        repository = this.getBean(TimerRepository.class);
-        repository.deleteAll();
+    List<String> visibleMinutesLabels = minutesLabels
+      .stream()
+      .map(text -> ((Text) text).getText())
+      .collect(Collectors.toList());
+
+    for (int i = 0; i < visibleMinutesLabels.size(); i++) {
+      Assertions.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
+    }
+  }
+
+  @Test
+  public void it_initializes_clock_to_zero_values_when_history_is_empty(FxRobot fxRobot) {
+    repository.deleteAll();
+    StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
+    StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
+
+    List<Node> secondsLabels = this.getNodeFinder().getLabels(seconds).get();
+    List<Node> minutesLabels = this.getNodeFinder().getLabels(minutes).get();
+
+    Assertions.assertNull(repository.selectLatest());
+
+    String[] expectedLabels = { "02", "01", "00", "59" };
+    List<String> visibleSecondsLabels = secondsLabels
+      .stream()
+      .map(text -> ((Text) text).getText())
+      .collect(Collectors.toList());
+
+    for (int i = 0; i < visibleSecondsLabels.size(); i++) {
+      Assertions.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
     }
 
-    @Test
-    @UseDataProvider("getClockAndExpectedValues")
-    public void it_initializes_clock_to_correct_values_based_on_provided_time(LocalTime initialClock, String[] expectedLabels) {
+    List<String> visibleMinutesLabels = minutesLabels
+      .stream()
+      .map(text -> ((Text) text).getText())
+      .collect(Collectors.toList());
 
-        // Prepare clock state;
-        repository.create("start", initialClock);
-
-        StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
-
-        List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
-        List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
-        List<String> visibleSecondsLabels = secondsLabels.stream()
-                                      .map(text -> ((Text) text).getText())
-                                      .collect(Collectors.toList());
-
-        for (int i = 0; i < visibleSecondsLabels.size(); i++) {
-            Assert.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
-        }
-
-        List<String> visibleMinutesLabels = minutesLabels.stream()
-                                        .map(text -> ((Text) text).getText())
-                                        .collect(Collectors.toList());
-
-        for (int i = 0; i < visibleMinutesLabels.size(); i++) {
-            Assert.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
-        }
+    for (int i = 0; i < visibleMinutesLabels.size(); i++) {
+      Assertions.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
     }
+  }
 
-    @Test
-    public void it_initializes_clock_to_zero_values_when_history_is_empty() {
-        StackPane seconds = assertContext().getNodeFinder().lookup("#paneSeconds").query();
-        StackPane minutes = assertContext().getNodeFinder().lookup("#paneMinutes").query();
-
-        List<Node> secondsLabels = nodeFinder.getLabels(seconds).get();
-        List<Node> minutesLabels = nodeFinder.getLabels(minutes).get();
-
-        Assert.assertNull(repository.selectLatest());
-
-        String[] expectedLabels = { "02", "01", "00", "59" };
-        List<String> visibleSecondsLabels = secondsLabels.stream()
-                .map(text -> ((Text) text).getText())
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < visibleSecondsLabels.size(); i++) {
-            Assert.assertEquals(expectedLabels[i], visibleSecondsLabels.get(i));
-        }
-
-        List<String> visibleMinutesLabels = minutesLabels.stream()
-                .map(text -> ((Text) text).getText())
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < visibleMinutesLabels.size(); i++) {
-            Assert.assertEquals(expectedLabels[i], visibleMinutesLabels.get(i));
-        }
-    }
+  public Stream<? extends Arguments> provideArguments() {
+    String[] expectedLabels = { "02", "01", "00", "59" };
+    return Stream.of(Arguments.of(LocalTime.of(0, 0, 0), expectedLabels));
+  }
 }
