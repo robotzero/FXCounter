@@ -96,9 +96,8 @@ public class Sequence {
 
     @Override
     public void execute(FxRobot fxrobot) {
-      String type = this.columnType.name();
-      String paneName = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
-      fxrobot.moveTo("#pane" + paneName);
+      String paneName = this.columnType.name().toLowerCase();
+      fxrobot.moveTo("#" + paneName);
       IntStream
         .range(0, this.scrollsNumber)
         .forEach(

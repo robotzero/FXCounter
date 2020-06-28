@@ -11,6 +11,7 @@ import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.ButtonType;
 import com.robotzero.counter.event.ClickEvent;
 import com.robotzero.counter.event.CurrentViewState;
+import com.robotzero.counter.event.InitEventType;
 import com.robotzero.counter.event.InitViewEvent;
 import com.robotzero.counter.event.MainViewEvent;
 import com.robotzero.counter.event.ScrollEvent;
@@ -124,9 +125,12 @@ public class ClockController implements Initializable {
 
     final var initViewEvent = JavaFxObservable
       .eventsOf(gridPane, EventType.ROOT)
-      .filter(c -> c.getEventType().getName().toLowerCase().equals("stageshow"))
-      .take(1)
-      .map(event -> new InitViewEvent());
+      .filter(c -> c.getEventType().getName().equals(InitEventType.SHOW.getName()) || c.getEventType().getName().equals(InitEventType.RESET.getName()))
+      .filter(event -> !event.isConsumed())
+      .map(event -> {
+        event.consume();
+        return new InitViewEvent();
+      });
 
     final var tickEvent = Observable
       .interval(1, TimeUnit.SECONDS)
@@ -142,7 +146,7 @@ public class ClockController implements Initializable {
     ObservableTransformer<ClickEvent, Action> clickEventTransformer = clickEvent ->
       clickEvent.concatMap(
         event -> {
-          return resetService.getActions(event.getButtonType(), event.getButtonState());
+          return resetService.getActions(event.getButtonType(), event.getButtonState(), gridPane);
         }
       );
 
