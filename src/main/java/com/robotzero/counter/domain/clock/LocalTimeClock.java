@@ -1,11 +1,8 @@
 package com.robotzero.counter.domain.clock;
 
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toCollection;
 
-import com.google.common.collect.ImmutableSet;
 import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.CellStatePosition;
 import com.robotzero.counter.domain.CellStateRepository;
@@ -14,6 +11,7 @@ import com.robotzero.counter.domain.Direction;
 import com.robotzero.counter.domain.Location;
 import com.robotzero.counter.domain.TimerType;
 import com.robotzero.counter.event.action.TickAction;
+import com.robotzero.counter.helper.InitViewCellStateSorter;
 import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationMemoizerKey;
 import com.robotzero.counter.service.LocationService;
@@ -23,10 +21,10 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalQuery;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,16 +72,7 @@ public class LocalTimeClock implements Clock {
   }
 
   public void initializeTime() {
-    this.clockRepository.initialize(
-        Optional
-          .ofNullable(timerRepository.selectLatest())
-          .orElseGet(
-            () -> {
-              return new com.robotzero.counter.entity.Clock("fake", (LocalTime.of(0, 0, 0)), Instant.now());
-            }
-          )
-          .getSavedTimer()
-      );
+    this.clockRepository.initialize(timerRepository.selectLatest().getSavedTimer());
   }
 
   private List<CellState> produceCellsForTextChange(final TickAction action) {
@@ -195,8 +184,25 @@ public class LocalTimeClock implements Clock {
   }
 
   @Override
-  public Map<ColumnType, ImmutableSet<Integer>> initializeLabels() {
+  public Map<ColumnType, Set<InitCellsMetadata>> initializeLabels() {
     LocalTime mainClock = this.clockRepository.get(ColumnType.MAIN);
+    final var currentCellStatesSeconds = this.cellStateRepository.getColumn(ColumnType.SECONDS);
+    final var currentCellStatesMinutes = this.cellStateRepository.getColumn(ColumnType.MINUTES);
+    final var currentCellStatesHours = this.cellStateRepository.getColumn(ColumnType.HOURS);
+
+    final var sortedCellSeconds = InitViewCellStateSorter.sortAndGetIterator(
+      currentCellStatesSeconds,
+      List.of(9, 10, 11, 12)
+    );
+    final var sortedCellsMinutes = InitViewCellStateSorter.sortAndGetIterator(
+      currentCellStatesMinutes,
+      List.of(5, 6, 7, 8)
+    );
+    final var sortedCellsHours = InitViewCellStateSorter.sortAndGetIterator(
+      currentCellStatesHours,
+      List.of(1, 2, 3, 4)
+    );
+
     return IntStream
       .of(2, 1, 0, -1)
       .mapToObj(
@@ -204,28 +210,40 @@ public class LocalTimeClock implements Clock {
           int second = this.tick.apply(index, ChronoUnit.SECONDS).apply(mainClock).getSecond();
           int minute = this.tick.apply(index, ChronoUnit.MINUTES).apply(mainClock).getMinute();
           int hour = this.tick.apply(index, ChronoUnit.HOURS).apply(mainClock).getHour();
-          return Map.of(ColumnType.SECONDS, second, ColumnType.MINUTES, minute, ColumnType.HOURS, hour);
+          return Map.of(
+            ColumnType.SECONDS,
+            new InitCellsMetadata(sortedCellSeconds.next(), second),
+            ColumnType.MINUTES,
+            new InitCellsMetadata(sortedCellsMinutes.next(), minute),
+            ColumnType.HOURS,
+            new InitCellsMetadata(sortedCellsHours.next(), hour)
+          );
         }
       )
       .flatMap(listOfMapOfColumnValues -> listOfMapOfColumnValues.entrySet().stream())
       .collect(
         groupingBy(
           mapOfColumnValues -> mapOfColumnValues.getKey(),
-          mapping(
-            mapOfColumnValues -> mapOfColumnValues.getValue(),
-            collectingAndThen(
-              toCollection(ArrayList::new),
-              listOfIntegers -> {
-                return ImmutableSet.of(
-                  listOfIntegers.get(0),
-                  listOfIntegers.get(1),
-                  listOfIntegers.get(2),
-                  listOfIntegers.get(3)
-                );
-              }
-            )
-          )
+          mapping(mapOfColumnValues -> mapOfColumnValues.getValue(), Collectors.toUnmodifiableSet())
         )
       );
+  }
+
+  public static class InitCellsMetadata {
+    private final int cellId;
+    private final int cellValue;
+
+    private InitCellsMetadata(int cellId, int cellValue) {
+      this.cellId = cellId;
+      this.cellValue = cellValue;
+    }
+
+    public int getCellId() {
+      return cellId;
+    }
+
+    public int getCellValue() {
+      return cellValue;
+    }
   }
 }

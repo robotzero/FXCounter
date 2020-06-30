@@ -2,6 +2,7 @@ package com.robotzero.counter;
 
 import com.robotzero.counter.clock.ClockController;
 import com.robotzero.counter.helper.ViewNodeHelper;
+import java.util.UUID;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -44,7 +45,10 @@ public class ClockFx extends Application {
         stage.setScene(scene);
         GridPane gridPane = (GridPane) root;
         ViewNodeHelper.setGridPane(gridPane);
-        WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
+        WindowEvent.fireEvent(
+          gridPane,
+          new Event("", gridPane, new EventType<>("StageShow" + UUID.randomUUID().toString()))
+        );
         stage.show();
       }
     );

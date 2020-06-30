@@ -9,6 +9,7 @@ import io.reactivex.rxjava3.core.Observable;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.scene.layout.GridPane;
@@ -21,7 +22,6 @@ public class ResetService {
   private final long hoursTop = 23;
   private final long hoursMiddle = 12;
   private final long hoursBottom = 1;
-  private Event event;
 
   public Observable<? extends Action> getActions(ButtonType buttonType, ButtonState buttonState, GridPane gridPane) {
     if (buttonType.equals(ButtonType.RIGHT)) {
@@ -31,55 +31,55 @@ public class ResetService {
       int hours = Math.toIntExact(tickNumber.get(2) * -1);
       //@TODO change that to one Action, at set the main clock and settings clock here?
       //@TODO Animation needs to finish before another can start playing so we do not need to slow down.
-      if (this.event == null) {
-        this.event = new Event(this, gridPane, new EventType<>("Reset"));
-      }
-//      gridPane.getEventDispatcher().dispatchEvent(this.event, new EventDispatchChainImpl());
-      WindowEvent.fireEvent(gridPane, this.event);
+      //      gridPane.getEventDispatcher().dispatchEvent(this.event, new EventDispatchChainImpl());
+      WindowEvent.fireEvent(
+        gridPane,
+        new Event(this, gridPane, new EventType<>("Reset" + UUID.randomUUID().toString()))
+      );
       return Observable.empty();
-//      return Observable
-//        .create(
-//          emitter -> {
-//            emitter.onNext(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
-//            IntStream
-//              .range(0, Math.abs(seconds))
-//              .mapToObj(
-//                index -> {
-//                  return new TickAction(
-//                    seconds,
-//                    Set.of(new Tick(ColumnType.SECONDS, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE)),
-//                    TimerType.RESET
-//                  );
-//                }
-//              )
-//              .forEach(emitter::onNext);
-//            IntStream
-//              .range(0, Math.abs(minutes))
-//              .mapToObj(
-//                index -> {
-//                  return new TickAction(
-//                    minutes,
-//                    Set.of(new Tick(ColumnType.MINUTES, ChronoUnit.MINUTES, ChronoField.SECOND_OF_MINUTE)),
-//                    TimerType.RESET
-//                  );
-//                }
-//              )
-//              .forEach(emitter::onNext);
-//            IntStream
-//              .range(0, Math.abs(hours))
-//              .mapToObj(
-//                index -> {
-//                  return new TickAction(
-//                    hours,
-//                    Set.of(new Tick(ColumnType.HOURS, ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY)),
-//                    TimerType.RESET
-//                  );
-//                }
-//              )
-//              .forEach(emitter::onNext);
-//          }
-//        )
-//        .zipWith(Observable.interval(60, TimeUnit.MILLISECONDS), (observable, interval) -> (Action) observable);
+      //      return Observable
+      //        .create(
+      //          emitter -> {
+      //            emitter.onNext(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
+      //            IntStream
+      //              .range(0, Math.abs(seconds))
+      //              .mapToObj(
+      //                index -> {
+      //                  return new TickAction(
+      //                    seconds,
+      //                    Set.of(new Tick(ColumnType.SECONDS, ChronoUnit.SECONDS, ChronoField.SECOND_OF_MINUTE)),
+      //                    TimerType.RESET
+      //                  );
+      //                }
+      //              )
+      //              .forEach(emitter::onNext);
+      //            IntStream
+      //              .range(0, Math.abs(minutes))
+      //              .mapToObj(
+      //                index -> {
+      //                  return new TickAction(
+      //                    minutes,
+      //                    Set.of(new Tick(ColumnType.MINUTES, ChronoUnit.MINUTES, ChronoField.SECOND_OF_MINUTE)),
+      //                    TimerType.RESET
+      //                  );
+      //                }
+      //              )
+      //              .forEach(emitter::onNext);
+      //            IntStream
+      //              .range(0, Math.abs(hours))
+      //              .mapToObj(
+      //                index -> {
+      //                  return new TickAction(
+      //                    hours,
+      //                    Set.of(new Tick(ColumnType.HOURS, ChronoUnit.HOURS, ChronoField.HOUR_OF_DAY)),
+      //                    TimerType.RESET
+      //                  );
+      //                }
+      //              )
+      //              .forEach(emitter::onNext);
+      //          }
+      //        )
+      //        .zipWith(Observable.interval(60, TimeUnit.MILLISECONDS), (observable, interval) -> (Action) observable);
     }
     return Observable.just(new ClickAction(ActionType.valueOf(buttonType.name()), buttonState));
   }

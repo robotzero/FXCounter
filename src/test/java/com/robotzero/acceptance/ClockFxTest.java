@@ -7,6 +7,7 @@ import com.robotzero.counter.clock.ClockController;
 import com.robotzero.counter.helper.ViewNodeHelper;
 import com.robotzero.di.TimerConfiguration;
 import java.time.LocalTime;
+import java.util.UUID;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -36,6 +37,8 @@ public class ClockFxTest {
   public static final int TIME_WAIT = 650;
   static final int TOP_NODE_LOCATION = 0;
   static final LocalTime DEFAULT_CLOCK_STATE = LocalTime.of(0, 16, 12);
+  Stage stage;
+  private Parent root;
 
   @Init
   public void init() {
@@ -49,21 +52,45 @@ public class ClockFxTest {
 
   @Start
   public void start(Stage stage) {
-    if (!stage.isShowing()) {
-      FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
-      Parent root = fxWeaver.loadView(ClockController.class);
-      Scene scene = new Scene(root);
+    this.stage = stage;
+    //    if (!stage.isShowing()) {
+    FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
+    Parent root = fxWeaver.loadView(ClockController.class);
+    this.root = root;
+    Scene scene = new Scene(root);
+
+    Platform.runLater(
+      () -> {
+        stage.setTitle("Count Me Bubbles!");
+        stage.setX(1000);
+        stage.setY(100);
+        stage.setWidth(400);
+        stage.setHeight(600);
+        stage.setScene(scene);
+        GridPane gridPane = (GridPane) root;
+        ViewNodeHelper.setGridPane(gridPane);
+        WindowEvent.fireEvent(
+          gridPane,
+          new Event("", root, new EventType<>("StageShow" + UUID.randomUUID().toString()))
+        );
+        stage.show();
+      }
+    );
+  }
+
+  //  }
+
+  void restart() {
+    if (stage.isShowing()) {
       Platform.runLater(
         () -> {
+          stage.setTitle("TEST");
+          stage.hide();
+          WindowEvent.fireEvent(
+            (GridPane) root,
+            new Event("", root, new EventType<>("StageShow" + UUID.randomUUID().toString()))
+          );
           stage.setTitle("Count Me Bubbles!");
-          stage.setX(1000);
-          stage.setY(100);
-          stage.setWidth(400);
-          stage.setHeight(600);
-          stage.setScene(scene);
-          GridPane gridPane = (GridPane) root;
-          ViewNodeHelper.setGridPane(gridPane);
-          WindowEvent.fireEvent(gridPane, new Event("", gridPane, new EventType<>("StageShow")));
           stage.show();
         }
       );

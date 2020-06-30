@@ -123,8 +123,8 @@ public class TimerConfiguration {
   }
 
   @Bean
-  public TimerService timerService() {
-    return new TimerService();
+  public TimerService timerService(final TimerRepository timerRepository, final ClockRepository clockRepository) {
+    return new TimerService(timerRepository, clockRepository);
   }
 
   @Bean

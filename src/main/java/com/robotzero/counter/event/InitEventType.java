@@ -1,7 +1,8 @@
 package com.robotzero.counter.event;
 
 public enum InitEventType {
-  SHOW("StageShow"), RESET("Reset");
+  SHOW("StageShow"),
+  RESET("Reset");
 
   private final String name;
 

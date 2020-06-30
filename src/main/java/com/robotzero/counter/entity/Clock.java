@@ -3,7 +3,7 @@ package com.robotzero.counter.entity;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Clock {
@@ -26,10 +26,10 @@ public class Clock {
   }
 
   public static Clock with(String name, String localTimeString, String createdString) {
-    final Set<Integer> timerValues = Arrays
+    final List<Integer> timerValues = Arrays
       .stream(localTimeString.split(":"))
       .map(stringTimerValue -> Integer.parseInt(stringTimerValue))
-      .collect(Collectors.toSet());
+      .collect(Collectors.toList());
     final var iterator = timerValues.iterator();
     final var localTime = LocalTime.of(
       iterator.hasNext() ? iterator.next() : 0,

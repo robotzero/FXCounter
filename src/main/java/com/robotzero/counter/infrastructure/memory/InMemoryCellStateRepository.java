@@ -5,6 +5,7 @@ import com.robotzero.counter.domain.CellStateRepository;
 import com.robotzero.counter.domain.ColumnState;
 import com.robotzero.counter.domain.ColumnType;
 import java.util.Map;
+import java.util.Optional;
 
 public class InMemoryCellStateRepository implements CellStateRepository {
   private Map<ColumnType, ColumnState> cellStates;
@@ -21,7 +22,14 @@ public class InMemoryCellStateRepository implements CellStateRepository {
 
   @Override
   public ColumnState getColumn(final ColumnType columnType) {
-    return cellStates.get(columnType);
+    return Optional
+      .ofNullable(cellStates)
+      .map(
+        cellStates -> {
+          return cellStates.get(columnType);
+        }
+      )
+      .orElseGet(() -> new ColumnState(Map.of()));
   }
 
   @Override

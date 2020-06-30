@@ -35,7 +35,9 @@ public class TimerDatabaseRepository implements TimerRepository {
       "SELECT * FROM timers WHERE created=(SELECT MAX (created) FROM timers)",
       new ClockRowMapper()
     );
-    return result.isEmpty() ? null : result.get(0);
+    return result.isEmpty()
+      ? Clock.with("latest", LocalTime.of(0, 0, 0).toString(), Instant.now().toString())
+      : result.get(0);
   }
 
   @Override

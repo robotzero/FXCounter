@@ -1,12 +1,12 @@
 package com.robotzero.counter.clock;
 
-import com.google.common.collect.ImmutableSet;
 import com.robotzero.counter.domain.CellState;
 import com.robotzero.counter.domain.CellStatePosition;
 import com.robotzero.counter.domain.ColumnStateFactory;
 import com.robotzero.counter.domain.ColumnType;
 import com.robotzero.counter.domain.Tick;
 import com.robotzero.counter.domain.TimerType;
+import com.robotzero.counter.domain.clock.LocalTimeClock.InitCellsMetadata;
 import com.robotzero.counter.event.ButtonState;
 import com.robotzero.counter.event.ButtonType;
 import com.robotzero.counter.event.ClickEvent;
@@ -30,6 +30,7 @@ import com.robotzero.counter.service.CellService;
 import com.robotzero.counter.service.ClockService;
 import com.robotzero.counter.service.ResetService;
 import com.robotzero.counter.service.TimerService;
+import com.robotzero.counter.view.Cell;
 import com.robotzero.counter.view.CellsFactory;
 import com.robotzero.counter.view.Column;
 import io.reactivex.rxjava3.core.Observable;
@@ -48,6 +49,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventType;
@@ -125,12 +127,18 @@ public class ClockController implements Initializable {
 
     final var initViewEvent = JavaFxObservable
       .eventsOf(gridPane, EventType.ROOT)
-      .filter(c -> c.getEventType().getName().equals(InitEventType.SHOW.getName()) || c.getEventType().getName().equals(InitEventType.RESET.getName()))
+      .filter(
+        c ->
+          c.getEventType().getName().contains(InitEventType.SHOW.getName()) ||
+          c.getEventType().getName().contains(InitEventType.RESET.getName())
+      )
       .filter(event -> !event.isConsumed())
-      .map(event -> {
-        event.consume();
-        return new InitViewEvent();
-      });
+      .map(
+        event -> {
+          event.consume();
+          return new InitViewEvent();
+        }
+      );
 
     final var tickEvent = Observable
       .interval(1, TimeUnit.SECONDS)
@@ -210,7 +218,7 @@ public class ClockController implements Initializable {
               )
               .thenApplyAsync(
                 ignored -> {
-                  Map<ColumnType, ImmutableSet<Integer>> initialValues = this.clockService.initializeLabels();
+                  Map<ColumnType, Set<InitCellsMetadata>> initialValues = this.clockService.initializeLabels();
                   return new InitViewResult(initialValues);
                 },
                 new SimpleAsyncTaskExecutor()
@@ -381,24 +389,29 @@ public class ClockController implements Initializable {
             .filter(CurrentViewState::isInit)
             .ifPresent(
               state -> {
+                Optional
+                  .ofNullable(this.viewCells)
+                  .ifPresentOrElse(
+                    viewCells -> {},
+                    () -> {
+                      this.viewCells = CellsFactory.build();
+                      this.cellStateService.initialize(ColumnStateFactory.build());
+                    }
+                  );
+                Map<Integer, Cell> viewCellsById = viewCells
+                  .values()
+                  .stream()
+                  .map(Column::getCells)
+                  .flatMap(entry -> entry.entrySet().stream())
+                  .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
                 InitViewResult initResult = (InitViewResult) currentViewState.getData().getResult();
-                CellsFactory.build();
-                this.viewCells = CellsFactory.build();
-                this.cellStateService.initialize(ColumnStateFactory.build());
                 initResult
                   .getInitialValues()
                   .forEach(
                     (columnType, timeValuesForEachCell) -> {
-                      final var iterator = timeValuesForEachCell.iterator();
-                      this.viewCells.get(columnType)
-                        .getCells()
-                        .forEach(
-                          (cellId_ignored, cell) -> {
-                            if (iterator.hasNext()) {
-                              cell.setLabel(iterator.next());
-                            }
-                          }
-                        );
+                      for (InitCellsMetadata initViewMetadata : timeValuesForEachCell) {
+                        viewCellsById.get(initViewMetadata.getCellId()).setLabel(initViewMetadata.getCellValue());
+                      }
                     }
                   );
               }
