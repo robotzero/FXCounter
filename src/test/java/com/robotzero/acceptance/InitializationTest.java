@@ -90,9 +90,9 @@ public final class InitializationTest extends ClockFxTest {
     }
 
     List<String> visibleHoursLabels = hoursLabels
-        .stream()
-        .map(text -> ((Text) text).getText())
-        .collect(Collectors.toList());
+      .stream()
+      .map(text -> ((Text) text).getText())
+      .collect(Collectors.toList());
 
     for (int i = 0; i < visibleHoursLabels.size(); i++) {
       Assertions.assertEquals(expectedHoursLabels.get(i), visibleHoursLabels.get(i));
@@ -105,12 +105,12 @@ public final class InitializationTest extends ClockFxTest {
     repository.deleteAll();
     restart();
     await()
-        .atMost(Duration.of(5, ChronoUnit.SECONDS))
-        .until(
-            () -> {
-              return stage.isShowing() && stage.getTitle().equals("Count Me Bubbles!");
-            }
-        );
+      .atMost(Duration.of(5, ChronoUnit.SECONDS))
+      .until(
+        () -> {
+          return stage.isShowing() && stage.getTitle().equals("Count Me Bubbles!");
+        }
+      );
     StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
     StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
 
@@ -140,9 +140,24 @@ public final class InitializationTest extends ClockFxTest {
 
   private static Stream<? extends Arguments> provideArguments() {
     return Stream.of(
-      Arguments.of(List.of("02", "01", "00", "59"), List.of("02", "01", "00", "59"), List.of("02", "01", "00", "23"), LocalTime.of(0, 0, 0)),
-      Arguments.of(List.of("12", "11", "10", "09"), List.of("02", "01", "00", "59"), List.of("14", "13", "12", "11"), LocalTime.of(12, 0, 10)),
-      Arguments.of(List.of("01", "00", "59", "58"), List.of("16", "15", "14", "13"), List.of("02", "01", "00", "23"), LocalTime.of(0, 14, 59))
+      Arguments.of(
+        List.of("02", "01", "00", "59"),
+        List.of("02", "01", "00", "59"),
+        List.of("02", "01", "00", "23"),
+        LocalTime.of(0, 0, 0)
+      ),
+      Arguments.of(
+        List.of("12", "11", "10", "09"),
+        List.of("02", "01", "00", "59"),
+        List.of("14", "13", "12", "11"),
+        LocalTime.of(12, 0, 10)
+      ),
+      Arguments.of(
+        List.of("01", "00", "59", "58"),
+        List.of("16", "15", "14", "13"),
+        List.of("02", "01", "00", "23"),
+        LocalTime.of(0, 14, 59)
+      )
     );
   }
 }

@@ -24,7 +24,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,41 +63,37 @@ public class ScrollTest extends ClockFxTest {
       Arguments.of(
         // @formatter:off
                 // Seconds UP
-
                     com.robotzero.acceptance.fixtures.Sequence.create(config -> config
                             .withStartClock(DEFAULT_CLOCK_STATE)
-                            .withExpectedValues(1, "14", 4, "11", 0, "18", 3, "15")
+                            .withExpectedValues(0, "14", 3, "11", -1, "18", 2, "15")
                             .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(2, "14", 1, "15", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(3, "14", 2, "15", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(4, "14", 3, "15", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 4).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(1, "18", 4, "15", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 5).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(2, "18", 1, "19", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 6).close())
+      ),
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(1, "14", 0, "15", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2).close())),
+      Arguments.of(
+
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(2, "14", 1, "15", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3).close())),
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(3, "14", 2, "15", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 4).close())),
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(0, "18", 3, "15", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 5).close())),
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(1, "18", 0, "19", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 6).close())
         //                ,
         //                // Seconds DOWN
         //
@@ -285,13 +280,13 @@ public class ScrollTest extends ClockFxTest {
     repository.create("start", sequence.clockStartState);
     restart();
     await()
-        .atMost(Duration.of(5, ChronoUnit.SECONDS))
-        .until(
-            () -> {
-              return stage.isShowing() && stage.getTitle().equals("Count Me Bubbles!");
-            }
-        );
-    Button reset = assertContext().getNodeFinder().lookup("#reset").query();
+      .atMost(Duration.of(5, ChronoUnit.SECONDS))
+      .until(
+        () -> {
+          return stage.isShowing() && stage.getTitle().equals("Count Me Bubbles!");
+        }
+      );
+
     StackPane seconds = assertContext().getNodeFinder().lookup("#seconds").query();
     StackPane minutes = assertContext().getNodeFinder().lookup("#minutes").query();
 
@@ -329,7 +324,6 @@ public class ScrollTest extends ClockFxTest {
       .get()
       .getId();
 
-    fxRobot.clickOn(reset);
     sequence.steps.forEach(
       step -> {
         step.execute(fxRobot);
@@ -350,23 +344,21 @@ public class ScrollTest extends ClockFxTest {
         if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
           String labelTop = secondsLabels
             .stream()
-            .filter(tr -> tr.getId().equals(exTopRectangle.get().getId()))
+            .filter(tr -> tr.getParent().getId().equals(exTopRectangle.get().getId()))
             .map(tt -> ((Text) tt).getText())
             .findAny()
             .get();
           String labelBottom = secondsLabels
             .stream()
-            .filter(tr -> tr.getId().equals(bottomIdSeconds))
+            .filter(tr -> tr.getParent().getId().equals(bottomIdSeconds))
             .map(tt -> ((Text) tt).getText())
             .findAny()
             .get();
 
           return (
-            exTopRectangle.get().getParent().getParent().getTranslateY() ==
-            sequence.expectedValues.topPositionSecondsMultiplier *
-            height &&
+            exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPositionSecondsMultiplier * height &&
             labelTop.equals(sequence.expectedValues.topLabelSeconds) &&
-            exBottomRectangle.get().getParent().getParent().getTranslateY() ==
+            exBottomRectangle.get().getTranslateY() ==
             sequence.expectedValues.bottomPositionSecondsMultiplier *
             height &&
             labelBottom.equals(sequence.expectedValues.bottomLabelSeconds)
@@ -391,23 +383,21 @@ public class ScrollTest extends ClockFxTest {
         if (exTopRectangle.isPresent() && exBottomRectangle.isPresent()) {
           String labelTop = minutesLabels
             .stream()
-            .filter(tr -> tr.getId().equals(exTopRectangle.get().getId()))
+            .filter(tr -> tr.getParent().getId().equals(exTopRectangle.get().getId()))
             .map(tt -> ((Text) tt).getText())
             .findAny()
             .get();
           String labelBottom = minutesLabels
             .stream()
-            .filter(tr -> tr.getId().equals(bottomIdMinutes))
+            .filter(tr -> tr.getParent().getId().equals(bottomIdMinutes))
             .map(tt -> ((Text) tt).getText())
             .findAny()
             .get();
 
           return (
-            exTopRectangle.get().getParent().getParent().getTranslateY() ==
-            sequence.expectedValues.topPositionMinutesMultiplier *
-            height &&
+            exTopRectangle.get().getTranslateY() == sequence.expectedValues.topPositionMinutesMultiplier * height &&
             labelTop.equals(sequence.expectedValues.topLabelMinutes) &&
-            exBottomRectangle.get().getParent().getParent().getTranslateY() ==
+            exBottomRectangle.get().getTranslateY() ==
             sequence.expectedValues.bottomPositionMinutesMultiplier *
             height &&
             labelBottom.equals(sequence.expectedValues.bottomLabelMinutes)

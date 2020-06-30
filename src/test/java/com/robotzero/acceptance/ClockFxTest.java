@@ -35,7 +35,7 @@ public class ClockFxTest {
   private ConfigurableApplicationContext applicationContext;
   private final NodeFinder nodeFinder = new NodeFinder();
   public static final int TIME_WAIT = 650;
-  static final int TOP_NODE_LOCATION = 0;
+  static final int TOP_NODE_LOCATION = -90;
   static final LocalTime DEFAULT_CLOCK_STATE = LocalTime.of(0, 16, 12);
   Stage stage;
   private Parent root;
