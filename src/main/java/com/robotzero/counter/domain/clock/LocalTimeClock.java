@@ -16,14 +16,12 @@ import com.robotzero.counter.service.DirectionService;
 import com.robotzero.counter.service.LocationMemoizerKey;
 import com.robotzero.counter.service.LocationService;
 import io.reactivex.rxjava3.core.Observable;
-import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalQuery;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -81,6 +79,19 @@ public class LocalTimeClock implements Clock {
       .parallelStream()
       .map(
         tick -> {
+          // Grab the first cell from the list, all have the same direction.
+          Direction newDirection = directionService.calculateDirection(
+            tick.getColumnType(),
+            cellStateRepository
+              .getColumn(tick.getColumnType())
+              .getCellStates()
+              .entrySet()
+              .stream()
+              .findAny()
+              .map(cell -> cell.getValue().getCurrentDirection())
+              .orElseThrow(),
+            action.getDelta()
+          );
           cellStateRepository
             .getColumn(tick.getColumnType())
             .getCellStates()
@@ -88,11 +99,6 @@ public class LocalTimeClock implements Clock {
               (key1, cell) -> {
                 Location newLocation = locationService.calculate(
                   new LocationMemoizerKey(action.getDelta(), cell.getCurrentLocation().getToY(), tick.getColumnType())
-                );
-                Direction newDirection = directionService.calculateDirection(
-                  tick.getColumnType(),
-                  cell.getCurrentDirection(),
-                  action.getDelta()
                 );
                 CellStatePosition isChangeable =
                   this.changeableStates.stream()

@@ -8,8 +8,6 @@ public class DirectionService {
 
   public Direction calculateDirection(ColumnType columnType, DirectionType currentDirection, double delta) {
     Direction newdirection = null;
-    //        System.out.println(currentDirection);
-    //        System.out.println(delta);
     if (delta < 0) {
       if (currentDirection == DirectionType.VOID) {
         newdirection = new Direction(columnType, DirectionType.STARTUP);
@@ -28,12 +26,8 @@ public class DirectionService {
         newdirection = new Direction(columnType, DirectionType.UP);
       }
 
-      if (currentDirection == DirectionType.STARTDOWN) {
+      if (currentDirection == DirectionType.STARTDOWN || currentDirection == DirectionType.SWITCHDOWN) {
         newdirection = new Direction(columnType, DirectionType.SWITCHUP);
-      }
-
-      if (currentDirection == DirectionType.SWITCHDOWN) {
-        newdirection = new Direction(columnType, DirectionType.DOWN);
       }
     } else {
       if (currentDirection == DirectionType.VOID) {
@@ -53,12 +47,8 @@ public class DirectionService {
         newdirection = new Direction(columnType, DirectionType.DOWN);
       }
 
-      if (currentDirection == DirectionType.STARTUP) {
+      if (currentDirection == DirectionType.STARTUP || currentDirection == DirectionType.SWITCHUP) {
         newdirection = new Direction(columnType, DirectionType.SWITCHDOWN);
-      }
-
-      if (currentDirection == DirectionType.SWITCHUP) {
-        newdirection = new Direction(columnType, DirectionType.UP);
       }
     }
 

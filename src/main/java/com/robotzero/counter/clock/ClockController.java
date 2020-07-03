@@ -118,6 +118,7 @@ public class ClockController implements Initializable {
       .mergeWith(JavaFxObservable.eventsOf(hours, javafx.scene.input.ScrollEvent.SCROLL))
       .observeOn(Schedulers.computation())
       .filter(event -> event.getDeltaY() != 0L)
+      .filter(event -> !timerService.resumed().get())
       .throttleFirst(200, TimeUnit.MILLISECONDS)
       .map(
         event -> {

@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -38,7 +36,6 @@ import org.testfx.framework.junit5.Start;
 
 public class ScrollTest extends ClockFxTest {
   private TimerRepository repository;
-  private BooleanProperty resetOption;
 
   @Init
   public void init() {
@@ -55,7 +52,6 @@ public class ScrollTest extends ClockFxTest {
     repository = this.getBean(TimerRepository.class);
     repository.deleteAll();
     repository.create("start", LocalTime.of(0, 0, 0));
-    resetOption = new SimpleBooleanProperty(false);
   }
 
   public static Stream<? extends Arguments> scrolls() {
@@ -93,179 +89,136 @@ public class ScrollTest extends ClockFxTest {
                             com.robotzero.acceptance.fixtures.Sequence.create(config -> config
                                     .withStartClock(DEFAULT_CLOCK_STATE)
                                     .withExpectedValues(1, "18", 0, "19", -1, "18", 2, "15")
-                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 6).close())
-        //                ,
-        //                // Seconds DOWN
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(3, "10", 2, "11", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(2, "10", 1, "11", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(1, "10", 0, "11", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 3).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "10", 3, "07", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 4).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(3, "06", 2, "07", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 5).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(2, "06", 1, "07", 0, "18", 3, "15")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 6).close())
-        //                ,
-        //                // Minutes UP
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 1, "18", 4, "15")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 2, "18", 1, "19")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 3, "18", 2, "19")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 4, "18", 3, "19")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 4).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 1, "22", 4, "19")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 5).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 2, "22", 1, "23")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 6).close())
-        //                ,
-        //                // Minutes DOWN
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 3, "14", 2, "15")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 2, "14", 1, "15")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 1, "14", 0, "15")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 0, "14", 3, "11")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 3, "10", 2, "11")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 5).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(0, "14", 3, "11", 2, "10", 1, "11")
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 6).close())
-        //                ,
-        //                // Seconds and Minutes
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(2, "10", 1, "11", 3, "18", 2, "19")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                            .withStartClock(DEFAULT_CLOCK_STATE)
-        //                            .withExpectedValues(4, "14", 3, "15", 1, "14", 4, "11")
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3)
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
-        //                            .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
-        //                            .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1).close())
-        //                ,
-        //
-        //                   com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                           .withStartClock(DEFAULT_CLOCK_STATE)
-        //                           .withExpectedValues(0, "14", 3, "11", 0, "18", 3, "15")
-        //                           .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
-        //                           .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
-        //                           .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
-        //                           .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1).close())
-        //                ,
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                          .withStartClock(DEFAULT_CLOCK_STATE)
-        //                          .withExpectedValues(0, "14", 3, "11", 2, "18", 1, "19")
-        //                          .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
-        //                          .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
-        //                          .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
-        //                          .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-        //                          .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2).close())
-        //                ,
-        //                // Different clock start state
-        //
-        //                    com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                           .withStartClock(LocalTime.of(0, 0, 0))
-        //                           .withExpectedValues(3, "02", 2, "03", 1, "58", 0, "59")
-        //                           .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
-        //                           .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
-        //                           .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
-        //                ,
-        //
-        //                        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                                .withStartClock(LocalTime.of(0, 0, 0))
-        //                                .withExpectedValues(2, "02", 1, "03", 3, "58", 2, "59")
-        //                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
-        //                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-        //                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())
-        //                ,
-        //
-        //                        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
-        //                                .withStartClock(LocalTime.of(0, 59, 56))
-        //                                .withExpectedValues(1, "58", 0, "59", 3, "57", 2, "58")
-        //                                .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
-        //                                .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
-        //                                .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 6).close())),
+      //                         Seconds DOWN
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(2, "10", 1, "11", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())),
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(1, "10", 0, "11", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2).close())),
+      Arguments.of(
+                            com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(0, "10", -1, "11", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 3).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "10", 2, "07", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 4).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(2, "06", 1, "07", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 5).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(1, "06", 0, "07", -1, "18", 2, "15")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 6).close())),
+      // Minutes UP
+
+        Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 0, "18", 3, "15")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 1, "18", 0, "19")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 2, "18", 1, "19")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 3, "18", 2, "19")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 4).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 0, "22", 3, "19")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 5).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 1, "22", 0, "23")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 6).close())),
+      // Minutes DOWN
+
+        Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 2, "14", 1, "15")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 1, "14", 0, "15")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 2).close())),
+      Arguments.of(         com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 0, "14", -1, "15")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3).close())),
+      Arguments.of(       com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", -1, "14", 2, "11")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4).close())),
+      Arguments.of(       com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 2, "10", 1, "11")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 5).close())),
+      Arguments.of(       com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(-1, "14", 2, "11", 1, "10", 0, "11")
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 6).close())),
+      // Seconds and Minutes
+
+        Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(1, "10", 0, "11", 2, "18", 1, "19")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 2)
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 3).close())),
+      Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                    .withStartClock(DEFAULT_CLOCK_STATE)
+                                    .withExpectedValues(3, "14", 2, "15", 0, "14", 3, "11")
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 3)
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 4)
+                                    .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                    .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1).close())),
+      Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                   .withStartClock(DEFAULT_CLOCK_STATE)
+                                   .withExpectedValues(-1, "14", 2, "11", -1, "18", 2, "15")
+                                   .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                   .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                   .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                   .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1).close())),
+      Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                  .withStartClock(DEFAULT_CLOCK_STATE)
+                                  .withExpectedValues(-1, "14", 2, "11", 1, "18", 0, "19")
+                                  .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                  .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 1)
+                                  .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1)
+                                  .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                  .addScroll(ColumnType.MINUTES, VerticalDirection.UP, 2).close())),
+      // Different clock start state
+
+        Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                   .withStartClock(LocalTime.of(0, 0, 0))
+                                   .withExpectedValues(2, "02", 1, "03", 0, "58", -1, "59")
+                                   .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                   .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 3)
+                                   .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())),
+      Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                        .withStartClock(LocalTime.of(0, 0, 0))
+                                        .withExpectedValues(1, "02", 0, "03", 2, "58", 1, "59")
+                                        .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1)
+                                        .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                        .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 1).close())),
+      Arguments.of(        com.robotzero.acceptance.fixtures.Sequence.create(config -> config
+                                        .withStartClock(LocalTime.of(0, 59, 56))
+                                        .withExpectedValues(0, "58", -1, "59", 2, "57", 1, "58")
+                                        .addScroll(ColumnType.SECONDS, VerticalDirection.UP, 2)
+                                        .addScroll(ColumnType.MINUTES, VerticalDirection.DOWN, 1)
+                                        .addScroll(ColumnType.SECONDS, VerticalDirection.DOWN, 1).close())
       )
     );
     //@formatter:on
@@ -274,13 +227,11 @@ public class ScrollTest extends ClockFxTest {
   @ParameterizedTest
   @MethodSource("scrolls")
   public void scroll(Sequence sequence, FxRobot fxRobot) {
-    // Should we check the database for new clock data.
-    resetOption.setValue(true);
     // Prepare clock state;
     repository.create("start", sequence.clockStartState);
     restart();
     await()
-      .atMost(Duration.of(5, ChronoUnit.SECONDS))
+      .atMost(Duration.of(120, ChronoUnit.SECONDS))
       .until(
         () -> {
           return stage.isShowing() && stage.getTitle().equals("Count Me Bubbles!");
@@ -411,10 +362,16 @@ public class ScrollTest extends ClockFxTest {
 
   @Test
   public void unable_to_scroll_after_pressing_start(FxRobot fxRobot) {
-    // Should we check the database for new clock data.
-    resetOption.setValue(true);
     // Prepare clock state;
     repository.create("start", DEFAULT_CLOCK_STATE);
+    restart();
+    await()
+      .atMost(Duration.of(120, ChronoUnit.SECONDS))
+      .until(
+        () -> {
+          return stage.isShowing() && stage.getTitle().equals("Count Me Bubbles!");
+        }
+      );
 
     Button reset = assertContext().getNodeFinder().lookup("#reset").query();
     Button start = assertContext().getNodeFinder().lookup("#start").query();
@@ -436,9 +393,7 @@ public class ScrollTest extends ClockFxTest {
       .get()
       .getId();
 
-    fxRobot.clickOn(reset);
     fxRobot.clickOn(start);
-
     fxRobot.moveTo("#minutes");
 
     IntStream
@@ -484,7 +439,7 @@ public class ScrollTest extends ClockFxTest {
             .get();
 
           return (
-            exTopRectangle.get().getTranslateY() == 0 &&
+            exTopRectangle.get().getTranslateY() == -90 &&
             labelTop.equals("18") &&
             exBottomRectangle.get().getTranslateY() == 2 * height &&
             labelBottom.equals("15")
